@@ -71,12 +71,14 @@ def create_medical_record_table(conn, cursor):
            DischargeDiagnosisID VARCHAR(255),
            PathologicalDiagnosisID VARCHAR(255),
            TreatStaffID INT,
+           BloodType INT,
            FOREIGN KEY (PatientIDCardNumber) REFERENCES Patient(IDCardNumber),
            FOREIGN KEY (UnitID) REFERENCES Unit(UnitID),
            FOREIGN KEY (TreatStaffID) REFERENCES Staff(StaffID),
            FOREIGN KEY (AdmissionDiagnosisID) REFERENCES Disease(DiseaseID),
            FOREIGN KEY (DischargeDiagnosisID) REFERENCES Disease(DiseaseID),
-           FOREIGN KEY (PathologicalDiagnosisID) REFERENCES Disease(DiseaseID)
+           FOREIGN KEY (PathologicalDiagnosisID) REFERENCES Disease(DiseaseID),
+           FOREIGN KEY (BloodType) REFERENCES BloodType(BloodTypeID)
        );
        """
     cursor.execute(create_medical_record_table_query)

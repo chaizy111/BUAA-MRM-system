@@ -21,3 +21,15 @@ def break_connect(conn, cursor): # 断开数据库连接
     conn.close()
 ##############################################################################################
 
+def create_medical_record(medical_record_info):
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def get_record_by_recordID(recordID):
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def delete_record_by_recordID(recordID):
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
