@@ -20,3 +20,27 @@ def break_connect(conn, cursor): # 断开数据库连接
     cursor.close()
     conn.close()
 ##############################################################################################
+
+def search_by_info(search_info):
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def search_disease_info():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def search_surgery_info():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def search_patient_info():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def search_borrow_info():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def search_adAndDe_info():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)

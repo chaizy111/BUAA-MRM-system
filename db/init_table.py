@@ -241,7 +241,7 @@ def drop_tables():
 
 def load_unit_data():
     # 打开Excel文件
-    workbook = xlrd.open_workbook('D:\桌面\科室名称.xls')
+    workbook = xlrd.open_workbook('D:\桌面\科室名称.xls') # xls表格路径
     sheet = workbook.sheet_by_index(0)  # 选择第一个工作表
 
     # 读取前两列数据
@@ -263,7 +263,7 @@ def load_unit_data():
 
 def load_disease_data():
     #打开excel
-    workbook = xlrd.open_workbook('D:\桌面\疾病代码.xls')
+    workbook = xlrd.open_workbook('D:\桌面\疾病代码.xls') # xls表格路径
     sheet = workbook.sheet_by_index(0)  # 选择第一个工作表
 
     # 读取前两列数据

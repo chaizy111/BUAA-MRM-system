@@ -20,3 +20,19 @@ def break_connect(conn, cursor): # 断开数据库连接
     cursor.close()
     conn.close()
 ##############################################################################################
+
+def get_fee_statistic():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def get_diagnosisInUnit_statistic():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def get_disease_statistic():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)
+
+def get_departurePatient_statistic():
+    conn, cucrsor = make_connect()
+    break_connect(conn, cucrsor)
