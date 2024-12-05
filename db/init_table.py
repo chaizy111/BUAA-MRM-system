@@ -25,7 +25,6 @@ def break_connect(conn, cursor): # 断开数据库连接
 def create_patients_table(conn, cursor):
     create_patients_table_query = """
        CREATE TABLE IF NOT EXISTS Patient (
-           ID INT AUTO_INCREMENT PRIMARY KEY,
            Name VARCHAR(255) NOT NULL,
            Gender ENUM('1', '2') NOT NULL,
            BirthDate DATE NOT NULL,
@@ -33,7 +32,7 @@ def create_patients_table(conn, cursor):
            Nationality VARCHAR(50),
            PlaceOfBirth VARCHAR(255),
            Ethnicity VARCHAR(50),
-           IDCardNumber VARCHAR(18) UNIQUE NOT NULL,
+           IDCardNumber VARCHAR(18) UNIQUE NOT NULL PRIMARY KEY,
            Occupation VARCHAR(100),
            MaritalStatus ENUM('Married', 'Single', 'Divorced', 'Widowed'),
            CurrentAddress TEXT,
@@ -49,22 +48,21 @@ def create_contact_table(conn, cursor):
     create_contact_table_query = """
     CREATE TABLE IF NOT EXISTS Contact (
         ID INT AUTO_INCREMENT PRIMARY KEY,
-        PatientID INT,
+        PatientID VARCHAR(18),
         Name VARCHAR(255) NOT NULL,
         Relationship VARCHAR(50),
         Address TEXT,
         Phone VARCHAR(20),
-        FOREIGN KEY (PatientID) REFERENCES Patient(ID)
+        FOREIGN KEY (PatientID) REFERENCES Patient(IDCardNumber)
     );
     """
     cursor.execute(create_contact_table_query)
     conn.commit()
 
-def create_medical_record_table(conn, cursor): #todo:诊断相关的属性还有问题
+def create_medical_record_table(conn, cursor):
     create_medical_record_table_query = """
        CREATE TABLE IF NOT EXISTS MedicalRecord (
-           RecordID INT AUTO_INCREMENT PRIMARY KEY,
-           MedicalRecordNumber VARCHAR(50) UNIQUE NOT NULL,
+           MedicalRecordNumber VARCHAR(50) UNIQUE NOT NULL PRIMARY KEY,
            PatientIDCardNumber VARCHAR(18),
            AdmissionDate DATE,
            DischargeDate DATE,
@@ -98,12 +96,12 @@ def create_surgery_table(conn, cursor):
     create_surgery_table_query = """
         CREATE TABLE IF NOT EXISTS Surgery (
             SurgeryID INT AUTO_INCREMENT PRIMARY KEY,
-            MedicalRecordID INT,
+            MedicalRecordID VARCHAR(50),
             SurgeryDate DATE NOT NULL,
             SurgeryType VARCHAR(255),
             SurgeonID INT,
             AssistantSurgeonID INT,
-            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(RecordID),
+            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(MedicalRecordNumber),
             FOREIGN KEY (SurgeonID) REFERENCES Staff(StaffID),
             FOREIGN KEY (AssistantSurgeonID) REFERENCES Staff(StaffID)
         );
@@ -136,12 +134,12 @@ def create_ward_table(conn, cursor):
 def create_recordAndWard_table(conn, cursor):
     create_medical_record_wards_table_query = """
         CREATE TABLE IF NOT EXISTS MedicalRecordWards (
-            MedicalRecordID INT,
+            MedicalRecordID VARCHAR(50),
             WardID INT,
             StartTime DATETIME,
             EndTime DATETIME,
             PRIMARY KEY (MedicalRecordID, WardID),
-            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(RecordID),
+            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(MedicalRecordNumber),
             FOREIGN KEY (WardID) REFERENCES Ward(WardID)
         );
         """
@@ -152,10 +150,10 @@ def create_cost_table(conn, cursor):
     create_cost_table_query = """
         CREATE TABLE IF NOT EXISTS Cost (
             CostID INT AUTO_INCREMENT PRIMARY KEY,
-            MedicalRecordID INT,
+            MedicalRecordID VARCHAR(50),
             Amount DECIMAL(10, 2) NOT NULL,
             Description TEXT,
-            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(RecordID)
+            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(MedicalRecordNumber)
         );
         """
     cursor.execute(create_cost_table_query)
@@ -165,10 +163,10 @@ def create_nursing_table(conn, cursor):
     create_nursing_table_query = """
         CREATE TABLE IF NOT EXISTS Nursing (
             NursingID INT AUTO_INCREMENT PRIMARY KEY,
-            MedicalRecordID INT,
+            MedicalRecordID VARCHAR(50),
             NursingLevel VARCHAR(50),
             Duration INT,
-            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(RecordID)
+            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(MedicalRecordNumber)
         );
         """
     cursor.execute(create_nursing_table_query)
