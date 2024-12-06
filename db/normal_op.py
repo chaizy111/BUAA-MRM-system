@@ -51,8 +51,9 @@ def create_medical_record(medical_record_info):
                                         DischargeDiagnosisID, 
                                         PathologicalDiagnosisID, 
                                         TreatStaffID, 
-                                        BloodType)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                        BloodType,
+                                        PaymentMethod)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
     cursor.execute(insert_query, (medical_record_info.patient_info.id_card_num,
                                         medical_record_info.admission_date,
@@ -62,7 +63,8 @@ def create_medical_record(medical_record_info):
                                         medical_record_info.discharge_diagnosis_id,
                                         medical_record_info.pathological_diagnosis_id,
                                         get_staffId_by_name(medical_record_info.doctor_name),
-                                        medical_record_info.blood_type
+                                        medical_record_info.blood_type,
+                                        medical_record_info.payment_method
                                   ))
     conn.commit()
     break_connect(conn, cursor)
@@ -150,7 +152,8 @@ def get_record_by_recordID(recordID):
         discharge_diagnosis_id=record[6],
         pathological_diagnosis_id=record[7],
         doctor_name=get_staffId_by_name(record[8]),
-        blood_type=record[9]
+        blood_type=record[9],
+        payment_method=record[10]
     )
     break_connect(conn, cursor)
     return medical_record_info

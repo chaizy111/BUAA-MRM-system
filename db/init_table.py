@@ -72,6 +72,7 @@ def create_medical_record_table(conn, cursor):
            PathologicalDiagnosisID VARCHAR(255),
            TreatStaffID INT,
            BloodType INT,
+           PayMentMethod VARCHAR(50),
            FOREIGN KEY (PatientIDCardNumber) REFERENCES Patient(IDCardNumber),
            FOREIGN KEY (UnitID) REFERENCES Unit(UnitID),
            FOREIGN KEY (TreatStaffID) REFERENCES Staff(StaffID),
