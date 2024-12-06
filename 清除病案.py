@@ -18,10 +18,10 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(570, 40, 75, 23))
+        self.pushButton.setGeometry(QtCore.QRect(430, 40, 75, 23))
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(660, 40, 75, 23))
+        self.pushButton_2.setGeometry(QtCore.QRect(520, 40, 75, 23))
         self.pushButton_2.setObjectName("pushButton_2")
         self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.layoutWidget.setGeometry(QtCore.QRect(80, 40, 187, 21))
@@ -35,18 +35,6 @@ class Ui_MainWindow(object):
         self.lineEdit = QtWidgets.QLineEdit(self.layoutWidget)
         self.lineEdit.setObjectName("lineEdit")
         self.horizontalLayout.addWidget(self.lineEdit)
-        self.layoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.layoutWidget_2.setGeometry(QtCore.QRect(320, 40, 101, 21))
-        self.layoutWidget_2.setObjectName("layoutWidget_2")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.layoutWidget_2)
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.label_2 = QtWidgets.QLabel(self.layoutWidget_2)
-        self.label_2.setObjectName("label_2")
-        self.horizontalLayout_2.addWidget(self.label_2)
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.layoutWidget_2)
-        self.lineEdit_2.setObjectName("lineEdit_2")
-        self.horizontalLayout_2.addWidget(self.lineEdit_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
@@ -57,6 +45,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -65,19 +54,3 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "作废[&S]"))
         self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
         self.label.setText(_translate("MainWindow", "病案号："))
-        self.label_2.setText(_translate("MainWindow", "住院次数"))
-
-
-from PyQt5.QtWidgets import QApplication, QMainWindow
-import sys
-
-if __name__ == '__main__':
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    app = QApplication(sys.argv)
-
-    mainWindow = QMainWindow()
-
-    ui = Ui_MainWindow()
-    ui.setupUi(mainWindow)
-    mainWindow.show()
-    sys.exit(app.exec_())
