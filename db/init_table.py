@@ -62,10 +62,10 @@ def create_contact_table(conn, cursor):
 def create_medical_record_table(conn, cursor):
     create_medical_record_table_query = """
        CREATE TABLE IF NOT EXISTS MedicalRecord (
-           MedicalRecordNumber VARCHAR(50) UNIQUE NOT NULL PRIMARY KEY,
+           MedicalRecordNumber INT AUTO_INCREMENT PRIMARY KEY,
            PatientIDCardNumber VARCHAR(18),
            AdmissionDate DATE,
-           DischargeDate DATE,
+           DischargeDate DATE, 
            UnitID INT,
            AdmissionDiagnosisID VARCHAR(255),
            DischargeDiagnosisID VARCHAR(255),
@@ -98,9 +98,9 @@ def create_surgery_table(conn, cursor):
     create_surgery_table_query = """
         CREATE TABLE IF NOT EXISTS Surgery (
             SurgeryID INT AUTO_INCREMENT PRIMARY KEY,
-            MedicalRecordID VARCHAR(50),
+            MedicalRecordID INT,
             SurgeryDate DATE NOT NULL,
-            SurgeryType VARCHAR(255),
+            SurgeryName VARCHAR(255),
             SurgeonID INT,
             AssistantSurgeonID INT,
             FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(MedicalRecordNumber),
@@ -136,7 +136,7 @@ def create_ward_table(conn, cursor):
 def create_recordAndWard_table(conn, cursor):
     create_medical_record_wards_table_query = """
         CREATE TABLE IF NOT EXISTS MedicalRecordWards (
-            MedicalRecordID VARCHAR(50),
+            MedicalRecordID INT,
             WardID INT,
             StartTime DATETIME,
             EndTime DATETIME,
@@ -152,26 +152,13 @@ def create_cost_table(conn, cursor):
     create_cost_table_query = """
         CREATE TABLE IF NOT EXISTS Cost (
             CostID INT AUTO_INCREMENT PRIMARY KEY,
-            MedicalRecordID VARCHAR(50),
+            MedicalRecordID INT,
             Amount DECIMAL(10, 2) NOT NULL,
-            Description TEXT,
+            Kind VarChar(50),
             FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(MedicalRecordNumber)
         );
         """
     cursor.execute(create_cost_table_query)
-    conn.commit()
-
-def create_nursing_table(conn, cursor):
-    create_nursing_table_query = """
-        CREATE TABLE IF NOT EXISTS Nursing (
-            NursingID INT AUTO_INCREMENT PRIMARY KEY,
-            MedicalRecordID VARCHAR(50),
-            NursingLevel VARCHAR(50),
-            Duration INT,
-            FOREIGN KEY (MedicalRecordID) REFERENCES MedicalRecord(MedicalRecordNumber)
-        );
-        """
-    cursor.execute(create_nursing_table_query)
     conn.commit()
 
 def create_staff_table(conn, cursor):
@@ -191,10 +178,44 @@ def create_bloodType_table(conn, cursor):
     create_blood_type_table_query = """
         CREATE TABLE IF NOT EXISTS BloodType (
             BloodTypeID INT AUTO_INCREMENT PRIMARY KEY,
-            Type VARCHAR(5) NOT NULL UNIQUE
+            Type VARCHAR(50) NOT NULL,
+            RhType VARCHAR(50) NOT NULL 
         );
         """
     cursor.execute(create_blood_type_table_query)
+    conn.commit()
+
+def create_medical_record_borrow_table(conn, cursor):
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS MedicalRecordBorrow (
+         BorrowID INT AUTO_INCREMENT PRIMARY KEY,
+         MedicalRecordNumber INT NOT NULL,
+         BorrowDate DATETIME NOT NULL,
+         BorrowedBy VARCHAR(255) NOT NULL,
+         UnitID INT,
+         IDCardNumber VARCHAR(18),
+         Status ENUM('Pending', 'Approved', 'Rejected') NOT NULL DEFAULT 'Pending',
+         FOREIGN KEY (MedicalRecordNumber) REFERENCES MedicalRecord(MedicalRecordNumber),
+         FOREIGN KEY (UnitID) REFERENCES Unit(UnitID)
+     );
+    """
+    cursor.execute(create_table_query)
+    conn.commit()
+
+def create_medical_record_return_table(conn, cursor):
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS MedicalRecordReturn (
+         ReturnID INT AUTO_INCREMENT PRIMARY KEY,
+         MedicalRecordNumber INT NOT NULL,
+         ReturnDate DATETIME NOT NULL,
+         ReturnedBy VARCHAR(255) NOT NULL,
+         UnitID INT,
+         IDCardNumber VARCHAR(18),
+         FOREIGN KEY (MedicalRecordNumber) REFERENCES MedicalRecord(MedicalRecordNumber),
+         FOREIGN KEY (UnitID) REFERENCES Unit(UnitID)
+     );
+    """
+    cursor.execute(create_table_query)
     conn.commit()
 
 def create_tables():
@@ -205,13 +226,14 @@ def create_tables():
     create_unit_table(conn, cursor)
     create_staff_table(conn, cursor)
     create_disease_table(conn, cursor)
+    create_bloodType_table(conn, cursor)
     create_medical_record_table(conn, cursor)
     create_surgery_table(conn, cursor)
     create_ward_table(conn, cursor)
     create_recordAndWard_table(conn, cursor)
     create_cost_table(conn, cursor)
-    create_nursing_table(conn, cursor)
-    create_bloodType_table(conn, cursor)
+    create_medical_record_borrow_table(conn, cursor)
+    create_medical_record_return_table(conn, cursor)
 
     break_connect(conn, cursor)
 
@@ -223,10 +245,10 @@ def drop_table_if_exists(conn, cursor, schema_name, table_name):
 def drop_tables():
     conn, cursor = make_connect()
 
-    drop_table_if_exists(conn, cursor, 'medical_record_management', 'BloodType')
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'Contact')
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'Cost')
-    drop_table_if_exists(conn, cursor, 'medical_record_management', 'Nursing')
+    drop_table_if_exists(conn, cursor, 'medical_record_management', 'MedicalRecordBorrow')
+    drop_table_if_exists(conn, cursor, 'medical_record_management', 'MedicalRecordReturn')
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'Surgery')
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'MedicalRecordWards')
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'MedicalRecord')
@@ -235,6 +257,7 @@ def drop_tables():
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'Ward')
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'Staff')
     drop_table_if_exists(conn, cursor, 'medical_record_management', 'Unit')
+    drop_table_if_exists(conn, cursor, 'medical_record_management', 'BloodType')
 
 
     break_connect(conn, cursor)
@@ -283,8 +306,31 @@ def load_disease_data():
 
     break_connect(conn, cursor)
 
+def load_bloodType_data():
+    # 打开excel
+    workbook = xlrd.open_workbook('D:\桌面\血型代码表.xls')  # xls表格路径
+    sheet = workbook.sheet_by_index(0)  # 选择第一个工作表
+
+    # 读取前两列数据
+    data = []
+    for row in range(1, sheet.nrows):  # 跳过标题行，从第二行开始
+        row_data = [sheet.cell_value(row, col) for col in range(0, 3)]
+        data.append(row_data)
+
+    conn, cursor = make_connect()
+
+    # 插入数据的SQL语句
+    insert_query = "INSERT INTO bloodtype (BloodTypeID, Type, RhType) VALUES (%s, %s, %s)"
+    # 遍历数据并插入到数据库
+    for row in data:
+        cursor.execute(insert_query, row)
+    conn.commit()
+
+    break_connect(conn, cursor)
+
 if __name__ == '__main__':
     drop_tables() #注意这个方法，每次跑的时候都会导致表的新建
     create_tables()
     load_unit_data()
     load_disease_data()
+    load_bloodType_data()

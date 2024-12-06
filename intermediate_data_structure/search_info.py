@@ -4,7 +4,7 @@ class QueryConditions:
                  ethnicity=None, address=None, contact_phone=None, contact_address=None, birth_from=None, birth_to=None,
                  admission_time_from=None, admission_time_to=None, discharge_time_from=None, discharge_time_to=None,
                  department=None, patient_age_from=None, patient_age_to=None, disease_name=None,
-                 diagnosis_type=None, treatment_status=None):
+                 diagnosis_type=None):
         self.gender = gender
         self.medical_record_number = medical_record_number
         self.patient_name = patient_name
@@ -25,4 +25,3 @@ class QueryConditions:
         self.patient_age_to = patient_age_to
         self.disease_name = disease_name
         self.diagnosis_type = diagnosis_type
-        self.treatment_status = treatment_status
