@@ -3,6 +3,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
+
+from designer.db.search_op import get_patients_by_info
 from print_dialog import PrintDialog  # 假设打印窗口的类在 `print_dialog.py` 中
 
 
@@ -25,12 +27,72 @@ class Ui_MainWindow1(object):
         MainWindow.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        '''
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(520, 30, 75, 23))
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(640, 30, 75, 23))
         self.pushButton_2.setObjectName("pushButton_2")
+        '''
+
+
+        # 表格布局
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(50, 150, 700, 300))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(9)
+        self.tableWidget.setHorizontalHeaderLabels([
+            "病历号", "患者姓名", "性别", "出生年月", "省市","区县",
+            "民族", "职业", "患者地址"
+        ])
+
+
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        #self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "查询条件1"))
+        #self.pushButton.setText(_translate("MainWindow", "查询[&S]"))
+        #self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
+        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(400, 30, 320, 80))
+        self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.pushButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout_2.addWidget(self.pushButton)
+        self.pushButton_2 = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_2.addWidget(self.pushButton_2)
+        self.pushButton_3 = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.horizontalLayout_2.addWidget(self.pushButton_3)
+        self.pushButton_4 = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.horizontalLayout_2.addWidget(self.pushButton_4)
         self.frame = QtWidgets.QFrame(self.centralwidget)
         self.frame.setGeometry(QtCore.QRect(50, 90, 701, 281))
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -207,24 +269,29 @@ class Ui_MainWindow1(object):
         spacerItem1 = QtWidgets.QSpacerItem(158, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout_7)
+
+
+
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+
+        # 绑定按钮事件
+        self.pushButton_2.clicked.connect(self.openPrintDialog)  # 打印按钮绑定事件
+        self.pushButton_4.clicked.connect(MainWindow.close)      # 退出按钮关闭窗口
+        self.pushButton.clicked.connect(self.openQueryDialog)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "查询条件1"))
-        self.pushButton.setText(_translate("MainWindow", "查询[&S]"))
-        self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "患者信息查询"))
+        self.pushButton.setText(_translate("MainWindow", "查询(&S)"))
+        self.pushButton_2.setText(_translate("MainWindow", "打印(&P)"))
+        self.pushButton_3.setText(_translate("MainWindow", "导出(&D)"))
+        self.pushButton_4.setText(_translate("MainWindow", "退出(&E)"))
         self.label.setText(_translate("MainWindow", "病历号;"))
         self.label_4.setText(_translate("MainWindow", "患者姓名："))
         self.label_5.setText(_translate("MainWindow", "性别："))
@@ -253,62 +320,6 @@ class Ui_MainWindow1(object):
         self.label_27.setText(_translate("MainWindow", "疾病名称："))
         self.label_26.setText(_translate("MainWindow", "住院天数："))
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(400, 30, 320, 80))
-        self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.pushButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout_2.addWidget(self.pushButton)
-        self.pushButton_2 = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout_2.addWidget(self.pushButton_2)
-        self.pushButton_3 = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.horizontalLayout_2.addWidget(self.pushButton_3)
-        self.pushButton_4 = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
-        self.pushButton_4.setObjectName("pushButton_4")
-        self.horizontalLayout_2.addWidget(self.pushButton_4)
-
-        # 表格布局
-        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(50, 150, 700, 300))
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(9)
-        self.tableWidget.setHorizontalHeaderLabels([
-            "病历号", "患者姓名", "性别", "出生年月", "省市","区县",
-            "民族", "职业", "患者地址"
-        ])
-
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        self.retranslateUi(MainWindow)
-
-        # 绑定按钮事件
-        self.pushButton_2.clicked.connect(self.openPrintDialog)  # 打印按钮绑定事件
-        self.pushButton_4.clicked.connect(MainWindow.close)      # 退出按钮关闭窗口
-        self.pushButton.clicked.connect(self.openQueryDialog)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "患者信息查询"))
-        self.pushButton.setText(_translate("MainWindow", "查询(&S)"))
-        self.pushButton_2.setText(_translate("MainWindow", "打印(&P)"))
-        self.pushButton_3.setText(_translate("MainWindow", "导出(&D)"))
-        self.pushButton_4.setText(_translate("MainWindow", "退出(&E)"))
-
     def openPrintDialog(self):
         """打开打印窗口"""
         self.printDialog = PrintDialog()  # 创建打印窗口实例
@@ -320,6 +331,50 @@ class Ui_MainWindow(object):
         self.ui_query = Ui_MainWindow1()  # 创建查询条件窗口的UI实例
         self.ui_query.setupUi(self.queryDialog)  # 初始化查询条件窗口的UI
         self.queryDialog.show()  # 显示查询条件窗口
+
+        search_info = {
+            "medical_record_number": self.ui.lineEdit.text(),  # 病历号
+            "name": self.ui.lineEdit_2.text(),  # 患者姓名
+            "gender": self.ui.comboBox.currentText(),  # 性别
+            "payment_method": self.ui.comboBox_2.currentText(),  # 医疗付款方式
+            "nationality": self.ui.lineEdit_6.text(),  # 国籍
+            "ethnicity": self.ui.lineEdit_7.text(),  # 民族
+            "occupation": self.ui.lineEdit_8.text(),  # 职业
+            "address": self.ui.lineEdit_9.text(),  # 地址
+            "phone_number": self.ui.lineEdit_10.text(),  # 联系电话
+            "postal_code": self.ui.lineEdit_11.text(),  # 患者邮编
+            "contact_person": self.ui.lineEdit_12.text(),  # 联系人
+            "contact_address": self.ui.lineEdit_13.text(),  # 联系人地址
+            "contact_phone": self.ui.lineEdit_14.text(),  # 联系人电话
+            "birth_date": self.ui.dateEdit.date().toString("yyyy-MM-dd"),  # 出生年月
+            "age": self.ui.spinBox.value(),  # 患者年龄
+            "admission_date": self.ui.dateEdit_2.date().toString("yyyy-MM-dd"),  # 入院时间
+            "discharge_date": self.ui.dateEdit_3.date().toString("yyyy-MM-dd"),  # 出院时间
+            "disease_name": self.ui.lineEdit_15.text(),  # 疾病名称
+            "hospital_stay_days": self.ui.spinBox_2.value()  # 住院天数
+        }
+
+        # 调用数据库查询函数
+        try:
+            results = get_patients_by_info(search_info)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "查询失败", f"数据库查询失败：{str(e)}")
+            return
+
+        # 更新表格显示
+        self.update_table(results)
+
+
+    def update_table(self, results):
+        # 清空表格
+        self.ui.tableWidget.setRowCount(0)
+
+        # 填充查询结果
+        for row_num, row_data in enumerate(results):
+            self.ui.tableWidget.insertRow(row_num)
+            for col_num, col_data in enumerate(row_data):
+                self.ui.tableWidget.setItem(row_num, col_num, QtWidgets.QTableWidgetItem(str(col_data)))
+
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)

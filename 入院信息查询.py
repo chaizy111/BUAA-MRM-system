@@ -10,6 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from designer.db.search_op import get_admission_info
+from print_dialog import PrintDialog  # 假设打印窗口的类在 `print_dialog.py` 中
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -103,6 +105,10 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+
+        self.pushButton_4.clicked.connect(self.openPrintDialog)  # 打印按钮绑定事件
+        self.pushButton_2.clicked.connect(MainWindow.close)  # 退出按钮关闭窗口
+        self.pushButton.clicked.connect(self.on_search_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -115,8 +121,38 @@ class Ui_MainWindow(object):
         self.pushButton_4.setText(_translate("MainWindow", "打印(&P)"))
         self.pushButton_2.setText(_translate("MainWindow", "关闭(&E)"))
 
+    def openPrintDialog(self):
+        """打开打印窗口"""
+        self.printDialog = PrintDialog()  # 创建打印窗口实例
+        self.printDialog.show()  # 显示打印窗口
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
+
+    def on_search_clicked(self):
+        # 获取输入的日期范围和科室
+        admission_start_date = self.dateTimeEdit.date().toString("yyyy-MM-dd")
+        admission_end_date = self.dateTimeEdit_2.date().toString("yyyy-MM-dd")
+        unit_name = self.lineEdit.text()
+
+        try:
+            # 调用数据库查询函数
+            admission_info = get_admission_info(admission_start_date, admission_end_date, unit_name)
+
+            # 更新表格显示
+            self.update_table(admission_info)
+        except Exception as e:
+            QMessageBox.critical(self, "查询失败", f"数据库查询失败：{str(e)}")
+
+    def update_table(self, results):
+        # 清空表格
+        self.tableWidget.setRowCount(0)
+
+        # 填充查询结果
+        for row_num, row_data in enumerate(results):
+            self.tableWidget.insertRow(row_num)
+            for col_num, col_data in enumerate(row_data):
+                self.tableWidget.setItem(row_num, col_num, QTableWidgetItem(str(col_data)))
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
 import sys
 
 if __name__ == '__main__':
