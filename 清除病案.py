@@ -54,3 +54,18 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "作废[&S]"))
         self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
         self.label.setText(_translate("MainWindow", "病案号："))
+
+
+from PyQt5.QtWidgets import QApplication, QMainWindow
+import sys
+
+if __name__ == '__main__':
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    app = QApplication(sys.argv)
+
+    mainWindow = QMainWindow()
+
+    ui = Ui_MainWindow()
+    ui.setupUi(mainWindow)
+    mainWindow.show()
+    sys.exit(app.exec_())

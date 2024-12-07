@@ -91,6 +91,8 @@ class Ui_MainWindow(object):
         self.actionw.setObjectName("actionw")
         self.actiona_3 = QtWidgets.QAction(MainWindow)
         self.actiona_3.setObjectName("actiona_3")
+        self.actionchu = QtWidgets.QAction(MainWindow)
+        self.actionchu.setObjectName("actionchu")
 
         # 退出操作的菜单项
         self.actione.setText("退出(&Q)")  # 修改文本为"退出(&Q)"
@@ -111,6 +113,7 @@ class Ui_MainWindow(object):
         self.menu_S.addAction(self.actionh)
         self.menu_S.addSeparator()
         self.menu_S.addAction(self.actionm)
+        self.menu_S.addAction(self.actionchu)
         self.menu_R.addAction(self.actiona)
         self.menu_R.addSeparator()
         self.menu_R.addAction(self.actionb_2)
@@ -147,7 +150,7 @@ class Ui_MainWindow(object):
         self.actiong.setText(_translate("MainWindow", "疾病分类年报表"))
         self.actionk.setText(_translate("MainWindow", "门诊动态日报统计表"))
         self.actionl.setText(_translate("MainWindow", "出院病人信息报表"))
-        self.actionm.setText(_translate("MainWindow", "出/入院信息查询"))
+        self.actionm.setText(_translate("MainWindow", "入院信息查询"))
         self.actionn.setText(_translate("MainWindow", "出院患者信息查询"))
         self.actionh.setText(_translate("MainWindow", "借阅信息查询"))
         self.actionk_2.setText(_translate("MainWindow", "病案归还信息查询"))
@@ -163,6 +166,7 @@ class Ui_MainWindow(object):
         self.actionf_2.setText(_translate("MainWindow", "病案字典维护"))
         self.actionw.setText(_translate("MainWindow", "基本数据维护"))
         self.actiona_3.setText(_translate("MainWindow", "患者信息查询"))
+        self.actionchu.setText(_translate("MainWindow", "出院信息查询"))
 
     def connection(self):
         actions = {
@@ -177,7 +181,8 @@ class Ui_MainWindow(object):
             "actionf": "手术信息查询.py",
             "actiona_3": "患者信息查询.py",
             "actionh": "借阅信息查询.py",
-            "actionm": "出入院信息查询.py",
+            "actionm": "入院信息查询.py",
+            "actionchu": "出院信息查询",
 
             "actiona": "医疗费用报表.py",
             "actionb_2": "科室就诊情况报表.py",

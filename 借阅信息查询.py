@@ -152,6 +152,17 @@ class Ui_MainWindow(object):
         self.lineEdit_4.setObjectName("lineEdit_4")
         self.horizontalLayout_5.addWidget(self.lineEdit_4)
         self.verticalLayout.addLayout(self.horizontalLayout_5)
+
+        # 表格布局
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(50, 150, 700, 300))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(9)
+        self.tableWidget.setHorizontalHeaderLabels([
+            "病历号", "患者姓名", "性别", "科室", "借阅人", "电话",
+            "借阅时间", "批准人", "借阅原因"
+        ])
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -163,7 +174,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "借阅信息查询"))
         self.pushButton.setText(_translate("MainWindow", "查询[&S]"))
         self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
         self.label.setText(_translate("MainWindow", "医疗付款方式："))

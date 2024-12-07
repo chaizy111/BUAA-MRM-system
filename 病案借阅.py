@@ -10,6 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from designer.db.normal_op import create_borrow_request
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -107,3 +109,35 @@ class Ui_MainWindow(object):
         self.label_9.setText(_translate("MainWindow", "证件号："))
         self.label_4.setText(_translate("MainWindow", "借阅原因："))
         self.label_8.setText(_translate("MainWindow", "联系电话："))
+
+    def handle_borrow(self):
+        br_info = {
+            'record_id': self.lineEdit.text().strip(),
+            'borrower_name': self.lineEdit_borrower.text().strip(),
+            'department': self.lineEdit_7.text().strip(),
+            'id_card': self.lineEdit_9.text().strip(),
+            'reason': self.lineEdit_4.text().strip(),
+            'contact': self.lineEdit_8.text().strip()
+        }
+        if not all(br_info.values()):
+            QMessageBox.warning(None, "警告", "请完整填写所有信息！")
+            return
+
+        if create_borrow_request(br_info):
+            QMessageBox.information(None, "成功", "借阅请求已提交！")
+        else:
+            QMessageBox.critical(None, "失败", "借阅请求提交失败！")
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+import sys
+
+if __name__ == '__main__':
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    app = QApplication(sys.argv)
+
+    mainWindow = QMainWindow()
+
+    ui = Ui_MainWindow()
+    ui.setupUi(mainWindow)
+    mainWindow.show()
+    sys.exit(app.exec_())

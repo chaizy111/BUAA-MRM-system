@@ -12,6 +12,9 @@ import os  # 用于运行外部脚本
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
+from designer.db.normal_op import delete_record_by_recordID
+from designer.db.search_op import search_by_info
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -57,17 +60,33 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "病案号："))
 
     def open_new_case(self):
-        """打开‘新建病案.py’脚本"""
-        # 假设‘新建病案.py’在同一目录下
-        script_path = os.path.join(os.getcwd(), "新建病案.py")
-        if os.path.exists(script_path):
-            os.system(f'python "{script_path}"')  # 运行脚本
-        else:
-            QtWidgets.QMessageBox.critical(
-                None, "错误", "新建病案.py 文件未找到！", QtWidgets.QMessageBox.Ok
+        search_info = self.lineEdit.text()  # 获取病案号
+        if not search_info:
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "请输入病案号！", QtWidgets.QMessageBox.Ok
             )
+            return
 
-
+        # 查找病案
+        result = search_by_info(search_info)
+        if result:
+            # 找到病案，删除原有病案
+            delete_record_by_recordID(search_info)
+            QtWidgets.QMessageBox.information(
+                None, "成功", "原有病案已删除！现在打开新建病案。", QtWidgets.QMessageBox.Ok
+            )
+            # 打开新建病案脚本
+            script_path = os.path.join(os.getcwd(), "新建病案.py")
+            if os.path.exists(script_path):
+                os.system(f'python "{script_path}"')  # 运行脚本
+            else:
+                QtWidgets.QMessageBox.critical(
+                    None, "错误", "新建病案.py 文件未找到！", QtWidgets.QMessageBox.Ok
+                )
+        else:
+            QtWidgets.QMessageBox.warning(
+                None, "未找到病案", "没有找到相关病案！", QtWidgets.QMessageBox.Ok
+            )
 
 
 
