@@ -20,3 +20,25 @@ def break_connect(conn, cursor): # 断开数据库连接
     cursor.close()
     conn.close()
 ##############################################################################################
+
+def login(username, password):
+    conn, cursor = make_connect()
+    query = """
+            SELECT * FROM login WHERE name = %s AND password = %s
+            """
+    cursor.execute(query, (username, password))
+    result = cursor.fetchone()
+    break_connect(conn, cursor)
+    if result:
+        return True  # 登录成功
+    else:
+        return False  # 登录失败
+
+#传入用户名，密码，是否为患者，是否为医生，姓名，证件号，科室名。
+# 实现逻辑：如果是患者，直接向login表中加条目，identity为Patient；
+# 如果是医生，需要先找到staff中姓名相同的所有项，检查证件号是否与这些项的一致，
+# 如果一致，检查科室名对应的id是否与staff表中的科室id一致，
+# 如果科室名是病案科，且符合前边的判断条件，添加条目并将identity设为Manager， 否则设为Doctor。
+def sign():
+    conn, cursor = make_connect()
+    break_connect(conn, cursor)

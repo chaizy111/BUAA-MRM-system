@@ -254,18 +254,70 @@ def delete_record_by_recordID(recordID):
 #借阅方法
 def create_borrow_request(br_info):
     conn, cursor = make_connect()
+    insert_query = """
+            INSERT INTO MedicalRecordBorrow (MedicalRecordNumber, BorrowDate, BorrowedBy, 
+                                            UnitID, IDCardNumber, BorrowReason, 
+                                            ContactPhone, Status)
+            VALUES (%s, NOW(), %s, %s, %s, %s, %s, 'Pending')
+            """
+    cursor.execute(insert_query, (br_info.medical_record_id, br_info.borrowed_by,
+                                  get_unitId_by_name(br_info.unit_name),
+                                  br_info.IDcard_num, br_info.borrow_reason,
+                                  br_info.contact_phone))
+    conn.commit()
     break_connect(conn, cursor)
 
-#归还方法，与借阅不同，其没有状态属性，直接加到表中即可
+#归还方法，与借阅不同，其没有状态属性，如果对于该病案号借阅次数比归还次数多就可以归还
 def create_return_request(br_info):
     conn, cursor = make_connect()
+    cursor.execute("SELECT COUNT(*) FROM MedicalRecordBorrow WHERE MedicalRecordNumber = %s", (br_info.medical_record_id, ))
+    borrow_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM MedicalRecordReturn WHERE MedicalRecordNumber = %s", (br_info.medical_record_id, ))
+    return_count = cursor.fetchone()[0]
+
+    if borrow_count > return_count:
+        # 插入归还记录
+        insert_query = """
+                INSERT INTO MedicalRecordReturn (MedicalRecordNumber, ReturnDate, 
+                                                 ReturnedBy, UnitID, IDCardNumber, ContactPhone)
+                VALUES (%s, NOW(), %s, %s, %s, %s)
+                """
+        cursor.execute(insert_query, (
+            br_info.medical_record_id, br_info.borrowed_by,
+            get_unitId_by_name(br_info.unit_name), br_info.IDcard_num, br_info.contact_phone))
+        conn.commit()
     break_connect(conn, cursor)
 
 #借阅请求处理有关方法
 def get_pending_requests():
     conn, cursor = make_connect()
+    cursor = conn.cursor()
+    query = """
+            SELECT * FROM MedicalRecordBorrow WHERE Status = 'Pending'
+            """
+    cursor.execute(query)
+    pending_borrows = cursor.fetchall()  # 获取所有匹配的记录
+    break_connect(conn, cursor)
+    return pending_borrows
+
+def change_request_status_to_approved(borrow_request_ids):
+    conn, cursor = make_connect()
+    record_id_conditions = ', '.join(map(str, borrow_request_ids))
+    #todo:还要update批准人的名字，这给需要先实现登录界面，批准人的名字就是当前用户的名字
+    update_query = f"""
+            UPDATE MedicalRecordBorrow SET Status = 'Approved' WHERE MedicalRecordNumber IN ({record_id_conditions})
+            """
+    cursor.execute(update_query)
+    conn.commit()
     break_connect(conn, cursor)
 
-def change_request_status(borrow_request_ids):
+def change_request_status_to_rejected(borrow_request_ids):
     conn, cursor = make_connect()
+    record_id_conditions = ', '.join(map(str, borrow_request_ids))
+    update_query = f"""
+            UPDATE MedicalRecordBorrow SET Status = 'Rejected' WHERE MedicalRecordNumber IN ({record_id_conditions})
+            """
+    cursor.execute(update_query)
+    conn.commit()
     break_connect(conn, cursor)

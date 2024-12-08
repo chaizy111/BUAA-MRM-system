@@ -22,7 +22,7 @@ def break_connect(conn, cursor): # 断开数据库连接
 ##############################################################################################
 
 #这个方法是患者查询使用的方法
-def get_patients_by_info(search_info):
+def search_patients_by_info(search_info):
     conn, cursor = make_connect()
     records = search_ids_by_info(search_info)
 
@@ -181,11 +181,7 @@ def search_disease_info(medical_record_number=None, patient_name=None, gender=No
     break_connect(conn, cursor)
     return records
 
-def search_surgery_info():
-    conn, cursor = make_connect()
-    break_connect(conn, cursor)
-
-def get_surgery_details(medical_record_number=None, patient_name=None, patient_gender=None, payment_method=None,
+def search_surgery_info(medical_record_number=None, patient_name=None, patient_gender=None, payment_method=None,
                         admission_date_from=None, admission_date_to=None,
                         discharge_date_from=None, discharge_date_to=None,
                         unit_name=None, age_from=None, age_to=None, days_from=None, days_to=None,
@@ -252,15 +248,120 @@ def get_surgery_details(medical_record_number=None, patient_name=None, patient_g
     surgery_details = cursor.fetchall()
     return surgery_details
 
-def search_patient_info():
+def search_return_info(medical_record_number=None, payment_method=None,
+                                   patient_name=None, borrower_name=None,
+                                   borrower_phone=None, borrower_id_card_number=None,
+                                   department=None, borrow_reason=None,
+                                   start_time=None, end_time=None):
     conn, cursor = make_connect()
-    break_connect(conn, cursor)
+    base_query = """
+            SELECT m.MedicalRecordNumber, p.Name AS PatientName, p.Gender, u.Name AS UnitName, br.BorrowedBy, r.ReturnDate, br.BorrowReason
+            FROM MedicalRecord m
+            JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
+            JOIN MedicalRecordBorrow br ON m.MedicalRecordNumber = br.MedicalRecordNumber
+            JOIN MedicalRecordReturn r ON m.MedicalRecordNumber = r.MedicalRecordNumber AND br.BorrowedBy = r.ReturnedBy
+            JOIN Unit u ON m.UnitID = u.UnitID
+            WHERE 1=1
+            """
+    conditions = []
+    values = []
 
-def search_borrow_info():
+    # 构建查询条件
+    if medical_record_number:
+        conditions.append("m.MedicalRecordNumber LIKE %s")
+        values.append(f"%{medical_record_number}%")
+    if payment_method:
+        conditions.append("m.PaymentMethod LIKE %s")
+        values.append(f"%{payment_method}%")
+    if patient_name:
+        conditions.append("p.Name LIKE %s")
+        values.append(f"%{patient_name}%")
+    if borrower_name:
+        conditions.append("br.BorrowedBy LIKE %s")
+        values.append(f"%{borrower_name}%")
+    if borrower_phone:
+        conditions.append("br.ContactPhone LIKE %s")
+        values.append(f"%{borrower_phone}%")
+    if borrower_id_card_number:
+        conditions.append("br.IDCardNumber LIKE %s")
+        values.append(f"%{borrower_id_card_number}%")
+    if department:
+        conditions.append("u.Name LIKE %s")
+        values.append(department)
+    if borrow_reason:
+        conditions.append("br.BorrowReason LIKE %s")
+        values.append(f"%{borrow_reason}%")
+    if start_time and end_time:
+        conditions.append("r.ReturnDate BETWEEN %s AND %s")
+        values.extend([start_time, end_time])
+
+    # 将条件连接为一个字符串
+    if conditions:
+        condition_str = " AND ".join(conditions)
+        base_query += f" AND {condition_str}"
+
+    cursor.execute(base_query, values)
+    records = cursor.fetchall()
+    break_connect(conn, cursor)
+    return records
+
+def search_borrow_info(medical_record_number=None, payment_method=None, patient_name=None,
+                                   borrower_name=None, borrower_phone=None, borrower_id_card_number=None,
+                                   department=None, borrow_reason=None,
+                                   start_time=None, end_time=None, approver=None):
     conn, cursor = make_connect()
-    break_connect(conn, cursor)
+    base_query = """
+        SELECT m.MedicalRecordNumber, p.Name AS PatientName, p.Gender, u.Name AS UnitName, br.BorrowedBy, br.BorrowDate, br.BorrowReason, br.Approver AS ApprovedByName
+        FROM MedicalRecord m
+        JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
+        JOIN MedicalRecordBorrow br ON m.MedicalRecordNumber = br.MedicalRecordNumber
+        JOIN Unit u ON m.UnitID = u.UnitID
+        WHERE 1=1
+        """
+    conditions = []
+    values = []
 
-def get_admission_info(admission_start_date, admission_end_date, unit_name):
+    # 构建查询条件
+    if medical_record_number:
+        conditions.append("m.MedicalRecordNumber LIKE %s")
+        values.append(f"%{medical_record_number}%")
+    if payment_method:
+        conditions.append("m.PaymentMethod LIKE %s")
+        values.append(f"%{payment_method}%")
+    if patient_name:
+        conditions.append("p.Name LIKE %s")
+        values.append(f"%{patient_name}%")
+    if borrower_name:
+        conditions.append("br.BorrowedBy LIKE %s")
+        values.append(f"%{borrower_name}%")
+    if borrower_phone:
+        conditions.append("br.ContactPhone LIKE %s")
+        values.append(f"%{borrower_phone}%")
+    if borrower_id_card_number:
+        conditions.append("br.IDCardNumber LIKE %s")
+        values.append(f"%{borrower_id_card_number}%")
+    if department:
+        conditions.append("u.Name LIKE %s")
+        values.append(department)
+    if borrow_reason:
+        conditions.append("br.BorrowReason LIKE %s")
+        values.append(f"%{borrow_reason}%")
+    if start_time and end_time:
+        conditions.append("br.BorrowDate BETWEEN %s AND %s")
+        values.extend([start_time, end_time])
+    if approver:
+        conditions.append("br.Approver LIKE %s")
+        values.append(f"%{approver}%")
+
+    if conditions:
+        condition_str = " AND ".join(conditions)
+        base_query += f" AND {condition_str}"
+
+    cursor.execute(base_query, values)
+    records = cursor.fetchall()
+    return records
+
+def search_admission_info(admission_start_date, admission_end_date, unit_name):
     conn, cursor = make_connect()
     query = """
         SELECT m.MedicalRecordNumber, p.Name, p.Gender, m.AdmissionDate, u.Name AS UnitName
@@ -274,7 +375,7 @@ def get_admission_info(admission_start_date, admission_end_date, unit_name):
     break_connect(conn, cursor)
     return admission_info
 
-def get_patient_discharge_info(medical_record_number=None, unit_name=None, start_date=None, end_date=None):
+def search_discharge_info(medical_record_number=None, unit_name=None, start_date=None, end_date=None):
     conn, cursor = make_connect()
     query = """
         SELECT 

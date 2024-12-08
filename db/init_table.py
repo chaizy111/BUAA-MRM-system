@@ -195,6 +195,9 @@ def create_medical_record_borrow_table(conn, cursor):
          BorrowedBy VARCHAR(255) NOT NULL,
          UnitID INT,
          IDCardNumber VARCHAR(18),
+         BorrowReason TEXT,
+         ContactPhone VARCHAR(18),
+         Approver VARCHAR(255),
          Status ENUM('Pending', 'Approved', 'Rejected') NOT NULL DEFAULT 'Pending',
          FOREIGN KEY (MedicalRecordNumber) REFERENCES MedicalRecord(MedicalRecordNumber),
          FOREIGN KEY (UnitID) REFERENCES Unit(UnitID)
@@ -212,6 +215,7 @@ def create_medical_record_return_table(conn, cursor):
          ReturnedBy VARCHAR(255) NOT NULL,
          UnitID INT,
          IDCardNumber VARCHAR(18),
+         ContactPhone VARCHAR(18),
          FOREIGN KEY (MedicalRecordNumber) REFERENCES MedicalRecord(MedicalRecordNumber),
          FOREIGN KEY (UnitID) REFERENCES Unit(UnitID)
      );

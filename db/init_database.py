@@ -20,7 +20,8 @@ def create_table(cursor, schema_name, table_name):
     CREATE TABLE `{schema_name}`.`{table_name}` (  
         `uid` INT NOT NULL AUTO_INCREMENT,  
         `name` VARCHAR(45) NOT NULL,  
-        `password` VARCHAR(45) NOT NULL,  
+        `password` VARCHAR(45) NOT NULL, 
+        `identity` ENUM('Patient', 'Doctor', 'Manager') NOT NULL DEFAULT 'Patient' 
         PRIMARY KEY (`uid`)  
     );  
     """)
