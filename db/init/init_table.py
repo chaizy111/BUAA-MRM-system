@@ -194,13 +194,14 @@ def create_medical_record_borrow_table(conn, cursor):
          BorrowDate DATETIME NOT NULL,
          BorrowedBy VARCHAR(255) NOT NULL,
          UnitID INT,
-         IDCardNumber VARCHAR(18),
+         IDCardNumber INT,
          BorrowReason TEXT,
          ContactPhone VARCHAR(18),
          Approver VARCHAR(255),
          Status ENUM('Pending', 'Approved', 'Rejected') NOT NULL DEFAULT 'Pending',
          FOREIGN KEY (MedicalRecordNumber) REFERENCES MedicalRecord(MedicalRecordNumber),
-         FOREIGN KEY (UnitID) REFERENCES Unit(UnitID)
+         FOREIGN KEY (UnitID) REFERENCES Unit(UnitID),
+         FOREIGN KEY (IDCardNumber) REFERENCES Staff(StaffID)
      );
     """
     cursor.execute(create_table_query)
@@ -214,10 +215,11 @@ def create_medical_record_return_table(conn, cursor):
          ReturnDate DATETIME NOT NULL,
          ReturnedBy VARCHAR(255) NOT NULL,
          UnitID INT,
-         IDCardNumber VARCHAR(18),
+         IDCardNumber INT,
          ContactPhone VARCHAR(18),
          FOREIGN KEY (MedicalRecordNumber) REFERENCES MedicalRecord(MedicalRecordNumber),
-         FOREIGN KEY (UnitID) REFERENCES Unit(UnitID)
+         FOREIGN KEY (UnitID) REFERENCES Unit(UnitID),
+         FOREIGN KEY (IDCardNumber) REFERENCES Staff(StaffID)
      );
     """
     cursor.execute(create_table_query)

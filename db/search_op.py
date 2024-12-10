@@ -283,7 +283,7 @@ def search_return_info(medical_record_number=None, payment_method=None,
         conditions.append("br.ContactPhone LIKE %s")
         values.append(f"%{borrower_phone}%")
     if borrower_id_card_number:
-        conditions.append("br.IDCardNumber LIKE %s")
+        conditions.append("br.IDCardNumber = %s")
         values.append(f"%{borrower_id_card_number}%")
     if department:
         conditions.append("u.Name LIKE %s")
@@ -338,7 +338,7 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
         conditions.append("br.ContactPhone LIKE %s")
         values.append(f"%{borrower_phone}%")
     if borrower_id_card_number:
-        conditions.append("br.IDCardNumber LIKE %s")
+        conditions.append("br.IDCardNumber = %s")
         values.append(f"%{borrower_id_card_number}%")
     if department:
         conditions.append("u.Name LIKE %s")
