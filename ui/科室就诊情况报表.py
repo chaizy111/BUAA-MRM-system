@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
 import sys
 
-from designer.db.search_op import search_adAndDe_info
+from db.search_op import search_admission_info
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
 
@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
         """查询按钮点击事件"""
         try:
             # 获取查询结果
-            results = search_adAndDe_info()
+            results = search_admission_info()
 
             # 清空表格
             self.tableWidget.setRowCount(0)

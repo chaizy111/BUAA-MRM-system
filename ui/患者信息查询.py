@@ -3,7 +3,7 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
 
-from designer.db.search_op import get_patients_by_info
+from db.search_op import search_patients_by_info
 from ui.print_dialog import PrintDialog  # 假设打印窗口的类在 `print_dialog.py` 中
 
 
@@ -355,7 +355,7 @@ class Ui_MainWindow(object):
 
         # 调用数据库查询函数
         try:
-            results = get_patients_by_info(search_info)
+            results = search_patients_by_info(search_info)
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "查询失败", f"数据库查询失败：{str(e)}")
             return

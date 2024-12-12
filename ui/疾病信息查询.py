@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 import sys
 
-from designer.db.search_op import search_disease_info
+from db.search_op import search_disease_info
 
 
 class Ui_MainWindow2(object):

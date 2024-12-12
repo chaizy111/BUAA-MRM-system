@@ -10,7 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from designer.db.normal_op import create_borrow_request
+from db.normal_op import create_borrow_request
 
 
 class Ui_MainWindow(object):

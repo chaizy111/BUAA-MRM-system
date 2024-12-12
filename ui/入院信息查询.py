@@ -10,7 +10,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-from designer.db.search_op import get_admission_info
+from db.search_op import search_admission_info
 from ui.print_dialog import PrintDialog  # 假设打印窗口的类在 `print_dialog.py` 中
 
 class Ui_MainWindow(object):
@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
 
         try:
             # 调用数据库查询函数
-            admission_info = get_admission_info(admission_start_date, admission_end_date, unit_name)
+            admission_info = search_admission_info(admission_start_date, admission_end_date, unit_name)
 
             # 更新表格显示
             self.update_table(admission_info)

@@ -3,7 +3,7 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QTableWidget
 import sys
 
-from designer.db.search_op import search_surgery_info
+from db.search_op import search_surgery_info
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
 # -*- coding: utf-8 -*-

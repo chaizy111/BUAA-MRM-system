@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
-from 查询条件 import Ui_MainWindow1  # 引入查询条件界面
+from 查询条件1 import Ui_MainWindow1  # 引入查询条件界面
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

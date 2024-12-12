@@ -12,8 +12,8 @@ import os  # 用于运行外部脚本
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
-from designer.db.normal_op import delete_record_by_recordID
-from designer.db.search_op import search_by_info
+from db.normal_op import delete_record_by_recordID
+from db.search_op import search_patients_by_info
 
 
 class Ui_MainWindow(object):
@@ -68,7 +68,7 @@ class Ui_MainWindow(object):
             return
 
         # 查找病案
-        result = search_by_info(search_info)
+        result = search_patients_by_info(search_info)
         if result:
             # 找到病案，删除原有病案
             delete_record_by_recordID(search_info)

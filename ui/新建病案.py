@@ -13,10 +13,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
-from designer.db.init_table import create_cost_table
-from designer.db.normal_op import create_patient
-from designer.intermediate_data_structure.cost_info import CostInfo
-from designer.intermediate_data_structure.patient_info import PatientInfo
+from db.init.init_table import create_cost_table
+from db.normal_op import create_patient
+from intermediate_data_structure.cost_info import CostInfo
+from intermediate_data_structure.patient_info import PatientInfo
 
 
 class Ui_MainWindow(object):
@@ -799,11 +799,11 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "保存[&S]"))
         self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
 
-        def scroll_frame(self, value):
+    def scroll_frame(self, value):
             """根据滚动条的值移动 frame 内容"""
             self.frame.move(self.frame.x(), 0 - value)  # 更新 Y 轴位置
 
-        def save_patient_info(self):
+    def save_patient_info(self):
             try:
                 # 按顺序提取用户输入信息
                 name = self.lineEdit_410.text()  # 姓名

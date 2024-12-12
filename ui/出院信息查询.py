@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
 import sys
 
-from designer.db.search_op import get_patient_discharge_info
+from db.search_op import search_discharge_info
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
 
@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
 
         try:
             # 调用数据库查询函数
-            admission_info = get_patient_discharge_info( unit_name, admission_start_date, admission_end_date )
+            admission_info = search_discharge_info( unit_name, admission_start_date, admission_end_date )
 
             # 更新表格显示
             self.update_table(admission_info)

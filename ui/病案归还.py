@@ -5,7 +5,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 import pymysql
 
-from designer.db.normal_op import create_return_request
+from db.normal_op import create_return_request
 
 
 class Ui_MainWindow(object):
