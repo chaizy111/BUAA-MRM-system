@@ -97,6 +97,12 @@ class Ui_MainWindow(object):
         # 退出操作的菜单项
         self.actione.setText("退出(&Q)")  # 修改文本为"退出(&Q)"
 
+        # 添加登录按钮
+        self.loginButton = QtWidgets.QPushButton(self.centralwidget)
+        self.loginButton.setGeometry(QtCore.QRect(400, 300, 100, 30))  # 按钮位置和大小
+        self.loginButton.setObjectName("loginButton")
+        self.loginButton.setText("登录")  # 按钮文本
+
         self.menu_H.addAction(self.actiona_2)
         self.menu_H.addAction(self.actionb_3)
         self.menu_H.addAction(self.actione_2)
@@ -197,6 +203,7 @@ class Ui_MainWindow(object):
 
             # 连接退出操作槽
         self.actione.triggered.connect(self.exit_application)
+        self.loginButton.clicked.connect(lambda: self.open_script("登录.py"))
 
     def open_script(self, script):
 
