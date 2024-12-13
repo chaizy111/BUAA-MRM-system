@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 import sys
 from ui.print_dialog import PrintDialog  # 假设打印窗口的类位于文件 print_dialog.py 中
+from db.statistic_op import get_disease_statistic
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -52,9 +54,20 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(20, 100, 700, 450))
+        self.tableWidget.setColumnCount(10)
+        self.tableWidget.setHorizontalHeaderLabels(
+            ["疾病名称", "疾病ID", "总人数", "0-7岁", "8-18岁", "19-30岁", "31-45岁", "46-60岁", "61-75岁", "75岁以上"]
+        )
+
+        MainWindow.setCentralWidget(self.centralwidget)
+        MainWindow.setWindowTitle("疾病统计报表")
+
         self.retranslateUi(MainWindow)
         self.pushButton_4.clicked.connect(MainWindow.close)  # 关闭按钮
         self.pushButton_2.clicked.connect(self.openPrintDialog)  # 打印按钮
+        self.pushButton.clicked.connect(self.query_data)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -72,7 +85,13 @@ class Ui_MainWindow(object):
         self.printDialog = PrintDialog()  # 创建打印窗口实例
         self.printDialog.show()  # 显示打印窗口
 
-
+    def query_data(self):
+        """查询数据并显示在表格中"""
+        data = get_disease_statistic()
+        self.tableWidget.setRowCount(len(data))
+        for row_idx, row_data in enumerate(data):
+            for col_idx, value in enumerate(row_data):
+                self.tableWidget.setItem(row_idx, col_idx, QTableWidgetItem(str(value)))
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)

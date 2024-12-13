@@ -63,7 +63,7 @@ class Ui_MainWindow1(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "查询条件1"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "结果"))
         #self.pushButton.setText(_translate("MainWindow", "查询[&S]"))
         #self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
 

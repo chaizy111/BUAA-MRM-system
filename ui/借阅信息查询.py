@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from db.search_op import search_borrow_info
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -155,7 +155,7 @@ class Ui_MainWindow(object):
 
         # 表格布局
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(50, 150, 700, 300))
+        self.tableWidget.setGeometry(QtCore.QRect(50, 200, 700, 300))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(9)
         self.tableWidget.setHorizontalHeaderLabels([
@@ -169,6 +169,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.pushButton.clicked.connect(self.perform_search)
         self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -191,6 +192,47 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "——"))
         self.label_13.setText(_translate("MainWindow", "经办人："))
         self.label_5.setText(_translate("MainWindow", "备注："))
+
+    def perform_search(self):
+        # 获取用户输入的查询条件
+        medical_record_number = self.lineEdit_5.text()
+        payment_method = self.lineEdit.text()
+        patient_name = self.lineEdit_9.text()
+        borrower_name = self.lineEdit_2.text()
+        borrower_phone = self.lineEdit_6.text()
+        borrower_id_card_number = self.lineEdit_10.text()
+        department = self.lineEdit_3.text()
+        borrow_reason = self.lineEdit_7.text()
+        start_time = self.dateTimeEdit.text() if self.dateTimeEdit.text() else None
+        end_time = self.dateTimeEdit_2.text() if self.dateTimeEdit_2.text() else None
+        approver = self.lineEdit_11.text()
+
+        # 调用 search_borrow_info 查询数据库
+        results = search_borrow_info(
+            medical_record_number=medical_record_number,
+            payment_method=payment_method,
+            patient_name=patient_name,
+            borrower_name=borrower_name,
+            borrower_phone=borrower_phone,
+            borrower_id_card_number=borrower_id_card_number,
+            department=department,
+            borrow_reason=borrow_reason,
+            start_time=start_time,
+            end_time=end_time,
+            approver=approver
+        )
+
+        # 将查询结果填充到表格中
+        self.populate_table(results)
+
+        self.tableWidget.setRowCount(0)
+        for row_data in results:
+            row_number = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                item = QtWidgets.QTableWidgetItem(str(data))
+                self.tableWidget.setItem(row_number, column_number, item)
+
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
