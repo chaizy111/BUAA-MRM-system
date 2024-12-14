@@ -51,13 +51,13 @@ def sign(username, password, is_patient, is_doctor, name, id_number, department_
                 SELECT s.*, u.Name AS UnitName
                 FROM Staff s
                 JOIN Unit u ON s.UnitID = u.UnitID
-                WHERE s.name = %s AND s.IDCardNumber = %s AND u.Name = %s""",
+                WHERE s.name = %s AND s.StaffID = %s AND u.Name = %s""",
                        (name, id_number, department_name))
         doctor_info = cursor.fetchone()
         if doctor_info:
-            if doctor_info[3] != department_name:
+            if doctor_info[4] != department_name:
                 return False
-            elif doctor_info[3] == '病案科':
+            elif doctor_info[4] == '病案科':
                 cursor.execute("""
                         INSERT INTO login (name, password, identity)
                         VALUES (%s, %s, 'Manager')
@@ -140,3 +140,8 @@ def get_user_identity(username):
         return result[0]  # 返回用户身份
     else:
         return None  # 如果没有找到，返回None
+
+
+#if __name__ == '__main__':
+    #print(sign(111, 111, False, True, "米琳", 77, "病案科"))
+    #print(login(111,111))

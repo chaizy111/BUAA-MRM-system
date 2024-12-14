@@ -26,7 +26,7 @@ def create_patients_table(conn, cursor):
     create_patients_table_query = """
        CREATE TABLE IF NOT EXISTS Patient (
            Name VARCHAR(255) NOT NULL,
-           Gender ENUM('1', '2') NOT NULL,
+           Gender ENUM('男', '女') NOT NULL,
            BirthDate DATE NOT NULL,
            Age INT,
            Nationality VARCHAR(50),
@@ -313,6 +313,50 @@ def load_disease_data():
 
     break_connect(conn, cursor)
 
+def load_staff_data():
+    #打开excel
+    workbook = xlrd.open_workbook('D:\桌面\医院职员表.xls') # xls表格路径
+    sheet = workbook.sheet_by_index(0)  # 选择第一个工作表
+
+    # 读取前两列数据
+    data = []
+    for row in range(0, sheet.nrows):
+        row_data = [sheet.cell_value(row, col) for col in range(0, 4)]
+        data.append(row_data)
+
+    conn, cursor = make_connect()
+
+    # 插入数据的SQL语句
+    insert_query = "INSERT INTO staff (StaffID, Name, Position, UnitID) VALUES (%s, %s, %s, %s)"
+    # 遍历数据并插入到数据库
+    for row in data:
+        cursor.execute(insert_query, row)
+    conn.commit()
+
+    break_connect(conn, cursor)
+
+def load_ward_data():
+    #打开excel
+    workbook = xlrd.open_workbook('D:\桌面\病房表.xls') # xls表格路径
+    sheet = workbook.sheet_by_index(0)  # 选择第一个工作表
+
+    # 读取前两列数据
+    data = []
+    for row in range(0, sheet.nrows):
+        row_data = [sheet.cell_value(row, col) for col in range(0, 3)]
+        data.append(row_data)
+
+    conn, cursor = make_connect()
+
+    # 插入数据的SQL语句
+    insert_query = "INSERT INTO ward (WardID, UnitID, Description) VALUES (%s, %s, %s)"
+    # 遍历数据并插入到数据库
+    for row in data:
+        cursor.execute(insert_query, row)
+    conn.commit()
+
+    break_connect(conn, cursor)
+
 def load_bloodType_data():
     # 打开excel
     workbook = xlrd.open_workbook('D:\桌面\血型代码表.xls')  # xls表格路径
@@ -341,3 +385,5 @@ if __name__ == '__main__':
     load_unit_data()
     load_disease_data()
     load_bloodType_data()
+    load_staff_data()
+    load_ward_data()
