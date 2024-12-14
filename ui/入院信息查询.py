@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+from db.login_op import check_permission
 from db.search_op import search_admission_info
 from ui.print_dialog import PrintDialog  # 假设打印窗口的类在 `print_dialog.py` 中
 
@@ -128,6 +129,24 @@ class Ui_MainWindow(object):
 
 
     def on_search_clicked(self):
+
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
+
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "admission_info_search"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限查询！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
         # 获取输入的日期范围和科室
         admission_start_date = self.dateTimeEdit.date().toString("yyyy-MM-dd")
         admission_end_date = self.dateTimeEdit_2.date().toString("yyyy-MM-dd")
@@ -152,7 +171,7 @@ class Ui_MainWindow(object):
             for col_num, col_data in enumerate(row_data):
                 self.tableWidget.setItem(row_num, col_num, QTableWidgetItem(str(col_data)))
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QInputDialog
 import sys
 
 if __name__ == '__main__':

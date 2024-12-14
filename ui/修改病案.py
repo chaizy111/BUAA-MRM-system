@@ -10,8 +10,9 @@
 import sys
 import os  # 用于运行外部脚本
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QInputDialog
 
+from db.login_op import check_permission
 from db.normal_op import delete_record_by_recordID
 from db.search_op import search_patients_by_info
 
@@ -60,6 +61,24 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "病案号："))
 
     def open_new_case(self):
+
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
+
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "medical_record_update"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
         search_info = self.lineEdit.text()  # 获取病案号
         if not search_info:
             QtWidgets.QMessageBox.warning(

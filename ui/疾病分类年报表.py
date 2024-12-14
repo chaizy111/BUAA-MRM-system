@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QInputDialog
 import sys
+
+from db.login_op import check_permission
 from ui.print_dialog import PrintDialog  # 假设打印窗口的类位于文件 print_dialog.py 中
 from db.statistic_op import get_disease_statistic
 
@@ -86,6 +88,24 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def query_data(self):
+
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
+
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "disease_classification_report"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
         """查询数据并显示在表格中"""
         data = get_disease_statistic()
         self.tableWidget.setRowCount(len(data))

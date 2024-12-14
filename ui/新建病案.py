@@ -11,9 +11,10 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
 from db.init.init_table import create_cost_table
+from db.login_op import check_permission
 from db.normal_op import create_patient
 from intermediate_data_structure.cost_info import CostInfo
 from intermediate_data_structure.patient_info import PatientInfo
@@ -804,6 +805,23 @@ class Ui_MainWindow(object):
             self.frame.move(self.frame.x(), 0 - value)  # 更新 Y 轴位置
 
     def save_patient_info(self):
+
+            username, ok = QInputDialog.getText(
+                None, "输入账号", "请输入您的账号："
+            )
+
+            if not ok or not username.strip():
+                QtWidgets.QMessageBox.warning(
+                    None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+                )
+                return
+
+        # 检查权限
+            if not check_permission(username.strip(), "medical_record_create"):
+                QtWidgets.QMessageBox.critical(
+                    None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
+                )
+                return
             try:
                 # 按顺序提取用户输入信息
                 name = self.lineEdit_410.text()  # 姓名

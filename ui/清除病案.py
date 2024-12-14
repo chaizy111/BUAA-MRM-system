@@ -10,6 +10,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from db.login_op import check_permission
+from db.normal_op import delete_record_by_recordID
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -46,6 +49,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        self.pushButton.clicked.connect(self.on_delete_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -55,8 +59,37 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
         self.label.setText(_translate("MainWindow", "病案号："))
 
+    def on_delete_clicked(self):
+        """点击作废按钮后触发的逻辑"""
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "medical_record_update"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限删除病案！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        recordID = self.lineEdit.text().strip()
+        if not recordID:
+            QMessageBox.warning(self.centralwidget, "输入错误", "请输入病案号！")
+            return
+
+        success, message = delete_record_by_recordID(recordID)
+        if success:
+            QMessageBox.information(self.centralwidget, "操作成功", message)
+        else:
+            QMessageBox.critical(self.centralwidget, "操作失败", message)
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog
 import sys
 
 if __name__ == '__main__':

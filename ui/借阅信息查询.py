@@ -9,6 +9,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+from db.login_op import check_permission
 from db.search_op import search_borrow_info
 
 class Ui_MainWindow(object):
@@ -194,6 +196,24 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "备注："))
 
     def perform_search(self):
+
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
+
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "medical_record_borrow"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
         # 获取用户输入的查询条件
         medical_record_number = self.lineEdit_5.text()
         payment_method = self.lineEdit.text()
@@ -234,7 +254,7 @@ class Ui_MainWindow(object):
                 self.tableWidget.setItem(row_number, column_number, item)
 
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog
 import sys
 
 if __name__ == '__main__':

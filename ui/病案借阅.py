@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from db.login_op import check_permission
 from db.normal_op import create_borrow_request
 
 
@@ -111,6 +112,24 @@ class Ui_MainWindow(object):
         self.label_8.setText(_translate("MainWindow", "联系电话："))
 
     def handle_borrow(self):
+
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
+
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "medical_record_borrow"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限借阅病案！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
         br_info = {
             'record_id': self.lineEdit.text().strip(),
             'borrower_name': self.lineEdit_borrower.text().strip(),
@@ -128,7 +147,7 @@ class Ui_MainWindow(object):
         else:
             QMessageBox.critical(None, "失败", "借阅请求提交失败！")
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog
 import sys
 
 if __name__ == '__main__':

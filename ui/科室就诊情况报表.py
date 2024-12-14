@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QInputDialog
 import sys
 
+from db.login_op import check_permission
 from db.search_op import search_admission_info
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
@@ -85,6 +86,24 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def on_search_button_clicked(self):
+
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
+
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "unit_visit_report"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
         """查询按钮点击事件"""
         try:
             # 获取查询结果

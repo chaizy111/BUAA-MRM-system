@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog
 import sys
 
 from PyQt5.uic.properties import QtGui
 
 import db
+from db.login_op import check_permission
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 from db.statistic_op import get_fee_statistic_by_day
 from db.statistic_op import get_fee_statistic_by_month
@@ -107,6 +108,24 @@ class Ui_MainWindow(object):
 
 
     def perform_search(self, report_type):
+
+        username, ok = QInputDialog.getText(
+            None, "输入账号", "请输入您的账号："
+        )
+
+        if not ok or not username.strip():
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        # 检查权限
+        if not check_permission(username.strip(), "discharge_info_search"):
+            QtWidgets.QMessageBox.critical(
+                None, "权限不足", "您没有权限查看！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
         """
         根据报表类型执行查询并展示结果
         :param report_type: str, "year", "month", "day"
