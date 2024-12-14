@@ -2,7 +2,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from db.login_op import sign, login
-
+from ui.主界面 import Ui_MainWindow1
 
 class LoginWindow(QtWidgets.QWidget):
     switch_to_register = QtCore.pyqtSignal()
@@ -51,9 +51,17 @@ class LoginWindow(QtWidgets.QWidget):
 
         if login(account, password):
             QtWidgets.QMessageBox.information(self, "登录成功", f"欢迎登录，账号：{account}")
+            self.close()
+
+
+            self.main_window1 = QtWidgets.QMainWindow()  # 创建主窗口实例
+            self.ui1 = Ui_MainWindow1()  # 创建 Ui_MainWindow 类的实例
+            self.ui1.setupUi(self.main_window1)  # 设置主界面的UI
+            self.main_window1.resize(1600, 1200)
+            self.main_window1.show()
+
         else:
             QtWidgets.QMessageBox.warning(self, "登录失败", "账号或密码错误！")
-
 class RegisterWindow(QtWidgets.QWidget):
     switch_to_login = QtCore.pyqtSignal()
 
@@ -86,7 +94,7 @@ class RegisterWindow(QtWidgets.QWidget):
         self.combo_identity.addItems(["病人", "医生"])
 
         # 医生专属输入框
-        self.label_department = QtWidgets.QLabel("科室号：", self)
+        self.label_department = QtWidgets.QLabel("科室名：", self)
         self.label_department.setGeometry(400, 450, 100, 40)
         self.input_department = QtWidgets.QLineEdit(self)
         self.input_department.setGeometry(500, 450, 300, 40)
