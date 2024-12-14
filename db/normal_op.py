@@ -55,7 +55,7 @@ def create_medical_record(medical_record_info):
                                         PaymentMethod)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
-    cursor.execute(insert_query, (medical_record_info.patient_info.id_card_num,
+    cursor.execute(insert_query, (medical_record_info.patient_info.id_card_number,
                                         medical_record_info.admission_date,
                                         medical_record_info.discharge_date,
                                         get_unitId_by_name(medical_record_info.unit_name),
@@ -68,7 +68,7 @@ def create_medical_record(medical_record_info):
                                   ))
     conn.commit()
     break_connect(conn, cursor)
-    medical_record_id = get_medicalRecordId_by_patientId(medical_record_info.patient_info.id_card_num)
+    medical_record_id = get_medicalRecordId_by_patientId(medical_record_info.patient_info.id_card_number)
     for surgery_info in medical_record_info.surgery_infos:
         create_surgery(medical_record_id, surgery_info)
     for ward_info in medical_record_info.ward_infos:
@@ -105,12 +105,12 @@ def create_contact(contact_info):
 def create_surgery(medical_record_id, surgery_info):
     conn, cursor = make_connect()
     insert_query = """
-            INSERT INTO Surgery (MedicalRecordID, SurgeryDate, SurgeryType, 
-                                    SurgeonName, AssistantSurgeonName)
+            INSERT INTO Surgery (MedicalRecordID, SurgeryDate, SurgeryName, 
+                                    SurgeonID, AssistantSurgeonID)
             VALUES (%s, %s, %s, %s, %s)
             """
     cursor.execute(insert_query, (medical_record_id, surgery_info.surgery_date, surgery_info.surgery_name,
-                                        surgery_info.surgeon_name, surgery_info.assistant_surgeon_name))
+                                        get_staffId_by_name(surgery_info.surgeon_name), get_staffName_by_id(surgery_info.assistant_surgeon_name)))
     conn.commit()
     break_connect(conn, cursor)
 
