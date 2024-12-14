@@ -1,6 +1,6 @@
 from pymysql import Error
 
-from assist_op import *
+from db.assist_op import *
 from intermediate_data_structure import medical_record_info
 from intermediate_data_structure import patient_info
 from intermediate_data_structure import contact_info
