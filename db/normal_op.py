@@ -20,10 +20,12 @@ from intermediate_data_structure.ward_info import WardInfo
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(
-        host='localhost',		# 主机名（或IP地址）
+        # host='localhost',		# 主机名（或IP地址）
+        # password='2003',  # 你本地的数据库密码,请自行更改
+        host='110.42.33.194',		# 主机名（或IP地址）
+        password='123456',  # 你本地的数据库密码,请自行更改
         port=3306,				# 端口号，默认为3306
         user='root',			# 用户名
-        password='2003',	# 你本地的数据库密码,请自行更改
         charset='utf8mb4'  		# 设置字符编码
     )
     conn.select_db("medical_record_management") # 选择数据库
@@ -140,8 +142,8 @@ def get_record_by_recordID(recordID):
     conn, cursor = make_connect()
     record = get_medicalRecord_by_id(recordID)
     medical_record_info = MedicalRecordInfo(
-        patient_info=get_patient_info(record[2]),
-        contact_info=get_contact_info(record[2]),
+        patient_info=get_patient_info(record[1]),
+        contact_info=get_contact_info(record[1]),
         surgery_infos=get_surgery_infos(recordID),
         ward_infos=get_ward_infos(recordID),
         cost_infos=get_cost_infos(recordID),
@@ -160,7 +162,7 @@ def get_record_by_recordID(recordID):
 
 def get_patient_info(patientId):
     conn, cursor = make_connect()
-    query = "SELECT * FROM Patient WHERE ID = %s"
+    query = "SELECT * FROM Patient WHERE IDCardNumber = %s"
     cursor.execute(query, (patientId,))
     patient_data = cursor.fetchone()  # 获取查询结果的第一行
     break_connect(conn, cursor)
@@ -176,7 +178,7 @@ def get_contact_info(patientId):
     cursor.execute(query, (patientId,))
     data = cursor.fetchone()  # 获取所有匹配的联系人信息
     break_connect(conn, cursor)
-    return ContactInfo(name=data[1], relationship=data[2], address=data[3], phone=data[4])
+    return ContactInfo(name=data[1], relationship=data[2], address=data[3], phone=data[4], patient_id=patientId)
 
 
 def get_surgery_infos(medicalRecordId):
@@ -229,28 +231,37 @@ def get_cost_infos(medicalRecordId):
 
 #以上为修改过程中使用的方法
 
-#根据病案号删除，注意删除与其相关的手术，费用，病房，借还信息
+#根据病案号删除，注意删除与其相关的所有信息
 def delete_record_by_recordID(recordID):
     conn, cursor = make_connect()
     try:
+        cursor.execute("SELECT PatientIDCardNumber FROM MedicalRecord WHERE MedicalRecordNumber = %s", (recordID,))
+        patient_id_card_number = cursor.fetchone()[0]
+
         # 删除借阅信息
         cursor.execute("DELETE FROM MedicalRecordBorrow WHERE MedicalRecordNumber = %s", (recordID,))
         # 删除归还信息
         cursor.execute("DELETE FROM MedicalRecordReturn WHERE MedicalRecordNumber = %s", (recordID,))
         # 删除费用信息
-        cursor.execute("DELETE FROM Cost WHERE MedicalRecordNumber = %s", (recordID,))
+        cursor.execute("DELETE FROM Cost WHERE MedicalRecordID = %s", (recordID,))
         # 删除手术信息
         cursor.execute("DELETE FROM Surgery WHERE MedicalRecordID = %s", (recordID,))
         # 删除病房信息
-        cursor.execute("DELETE FROM MedicalRecordWards WHERE MedicalRecordNumber = %s", (recordID,))
+        cursor.execute("DELETE FROM MedicalRecordWards WHERE MedicalRecordID = %s", (recordID,))
+        # 删除联系人信息
+        cursor.execute("DELETE FROM Contact WHERE PatientID = %s", (patient_id_card_number,))
         # 删除病案信息
         cursor.execute("DELETE FROM MedicalRecord WHERE MedicalRecordNumber = %s", (recordID,))
+        # 删除病人信息
+        cursor.execute("DELETE FROM Patient WHERE IDCardNumber = %s", (patient_id_card_number,))
+
         conn.commit()
     except Error as e:
         print(f"The error '{e}' occurred when deleting the medical record and related information.")
         conn.rollback()  # 回滚事务，以防部分删除操作成功
+        return False
     break_connect(conn, cursor)
-
+    return True
 #借阅方法
 def create_borrow_request(br_info):
     conn, cursor = make_connect()

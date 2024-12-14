@@ -3,10 +3,12 @@ import pymysql
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(
-        host='localhost',		# 主机名（或IP地址）
+        # host='localhost',		# 主机名（或IP地址）
+        # password='2003',  # 你本地的数据库密码,请自行更改
+        host='110.42.33.194',		# 主机名（或IP地址）
+        password='123456',  # 你本地的数据库密码,请自行更改
         port=3306,				# 端口号，默认为3306
         user='root',			# 用户名
-        password='2003',    	# 你本地的数据库密码,请自行更改
         charset='utf8mb4'  		# 设置字符编码
     )
     conn.select_db("medical_record_management") # 选择数据库
@@ -189,7 +191,7 @@ def search_surgery_info(medical_record_number=None, patient_name=None, patient_g
                         ):
     conn, cursor = make_connect()
     base_query = """
-        SELECT m.MedicalRecordNumber, p.Name AS PatientName, p.Gender, s.SurgeryDate, s.SurgeryType, st.Name AS SurgeonName
+        SELECT m.MedicalRecordNumber, p.Name AS PatientName, p.Gender, s.SurgeryDate, s.SurgeryName, st.Name AS SurgeonName
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
         JOIN Surgery s ON m.MedicalRecordNumber = s.MedicalRecordID
@@ -361,7 +363,7 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
     records = cursor.fetchall()
     return records
 
-def search_admission_info(admission_start_date, admission_end_date, unit_name):
+def search_admission_info(admission_start_date, admission_end_date, unit_name=None):
     conn, cursor = make_connect()
     query = """
         SELECT m.MedicalRecordNumber, p.Name, p.Gender, m.AdmissionDate, u.Name AS UnitName
@@ -384,7 +386,7 @@ def search_discharge_info(medical_record_number=None, unit_name=None, start_date
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
         JOIN Unit u ON m.UnitID = u.UnitID
-        LEFT JOIN Cost c ON m.MedicalRecordNumber = c.MedicalRecordNumber
+        LEFT JOIN Cost c ON m.MedicalRecordNumber = c.MedicalRecordID
         WHERE 1=1
         """
     conditions = []
