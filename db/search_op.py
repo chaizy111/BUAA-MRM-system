@@ -1,4 +1,5 @@
 import pymysql
+from pymysql import Error
 
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
@@ -26,39 +27,50 @@ def break_connect(conn, cursor): # 断开数据库连接
 #这个方法是患者查询使用的方法
 def search_patients_by_info(search_info):
     conn, cursor = make_connect()
-    result = search_ids_by_info(search_info)
-    records = []
-    for r in result:
-        records.append(r[0])
-    record_ids = ', '.join(map(str, records))
-    query = f"""
+    try:
+        result = search_ids_by_info(search_info, conn, cursor)
+        records = []
+        for r in result:
+            records.append(r[0])
+        record_ids = ', '.join(map(str, records))
+        query = f"""
         SELECT * FROM Patient p
         JOIN MedicalRecord m ON m.PatientIDCardNumber = p.IDCardNumber 
         WHERE m.MedicalRecordNumber IN ({record_ids})
         """
-    cursor.execute(query)
-    patients = cursor.fetchall()
+        cursor.execute(query)
+        patients = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when get patient info.")
+        break_connect(conn, cursor)
+        return []
     break_connect(conn, cursor)
     return patients
 
 #这个方法是病案查询使用的方法
 def get_medical_records_by_info(search_info):
     conn, cursor = make_connect()
-    result = search_ids_by_info(search_info)
-    records = []
-    for r in result:
-        records.append(r[0])
-    record_ids = ', '.join(map(str, records))
-    query = f"""
+    try:
+        result = search_ids_by_info(search_info, conn, cursor)
+        records = []
+        for r in result:
+            records.append(r[0])
+        record_ids = ', '.join(map(str, records))
+        query = f"""
         SELECT * FROM MedicalRecord WHERE MedicalRecordNumber IN ({record_ids})
         """
-    cursor.execute(query)
-    medical_records = cursor.fetchall()
+        cursor.execute(query)
+        medical_records = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when medical record info.")
+        break_connect(conn, cursor)
+        return []
     break_connect(conn, cursor)
     return medical_records
 
-def search_ids_by_info(search_info):
-    conn, cursor = make_connect()
+def search_ids_by_info(search_info, conn, cursor):
     query = """
         SELECT m.MedicalRecordNumber
         FROM MedicalRecord m
@@ -133,7 +145,6 @@ def search_ids_by_info(search_info):
 
     cursor.execute(query, values)
     records = cursor.fetchall()
-    break_connect(conn, cursor)
     return records
 
 #使用的时候要使用多次，根据下边诊断类型来决定最后一个参数，先查所有入院诊断为该疾病的病案，再查所有出院诊断为该疾病的病案，最后查病理诊断为该疾病的病案，最后组合后返回
@@ -142,7 +153,8 @@ def search_disease_info(medical_record_number=None, patient_name=None, gender=No
                         discharge_date_from=None, discharge_date_to=None,
                         unit_name=None, disease_name=None, diagnosis_type=None):
     conn, cursor = make_connect()
-    query = """
+    try:
+        query = """
         SELECT m.MedicalRecordNumber, p.Name, p.Gender, m.AdmissionDate, u.Name AS UnitName, DATEDIFF(m.DischargeDate, m.AdmissionDate) AS HospitalizationDays,
                 d.DiseaseID, d.Description AS DiseaseName
         FROM MedicalRecord m
@@ -151,41 +163,46 @@ def search_disease_info(medical_record_number=None, patient_name=None, gender=No
         JOIN Disease d ON m.AdmissionDiagnosisID = d.DiseaseID OR m.DischargeDiagnosisID = d.DiseaseID OR m.PathologicalDiagnosisID = d.DiseaseID
         WHERE 1=1
         """
-    conditions = []
-    values = []
+        conditions = []
+        values = []
 
-    if medical_record_number:
-        conditions.append("m.MedicalRecordNumber = %s")
-        values.append(medical_record_number)
-    if patient_name:
-        conditions.append("p.Name LIKE %s")
-        values.append(f"%{patient_name}%")
-    if gender:
-        conditions.append("p.Gender = %s")
-        values.append(gender)
-    if admission_date_from and admission_date_to:
-        conditions.append("m.AdmissionDate BETWEEN %s AND %s")
-        values.extend([admission_date_from, admission_date_to])
-    if discharge_date_from and discharge_date_to:
-        conditions.append("m.DischargeDate BETWEEN %s AND %s")
-        values.extend([discharge_date_from, discharge_date_to])
-    if unit_name:
-        conditions.append("u.Name LIKE %s")
-        values.append(f"%{unit_name}%")
-    if disease_name:
-        conditions.append("d.Description LIKE %s")
-        values.append(f"%{disease_name}%")
-    if diagnosis_type == 'Admission':
-        conditions.append("m.AdmissionDiagnosisID IS NOT NULL")
-    elif diagnosis_type == 'Discharge':
-        conditions.append("m.DischargeDiagnosisID IS NOT NULL")
-    elif diagnosis_type == 'Pathological':
-        conditions.append("m.PathologicalDiagnosisID IS NOT NULL")
+        if medical_record_number:
+            conditions.append("m.MedicalRecordNumber = %s")
+            values.append(medical_record_number)
+        if patient_name:
+            conditions.append("p.Name LIKE %s")
+            values.append(f"%{patient_name}%")
+        if gender:
+            conditions.append("p.Gender = %s")
+            values.append(gender)
+        if admission_date_from and admission_date_to:
+            conditions.append("m.AdmissionDate BETWEEN %s AND %s")
+            values.extend([admission_date_from, admission_date_to])
+        if discharge_date_from and discharge_date_to:
+            conditions.append("m.DischargeDate BETWEEN %s AND %s")
+            values.extend([discharge_date_from, discharge_date_to])
+        if unit_name:
+            conditions.append("u.Name LIKE %s")
+            values.append(f"%{unit_name}%")
+        if disease_name:
+            conditions.append("d.Description LIKE %s")
+            values.append(f"%{disease_name}%")
+        if diagnosis_type == 'Admission':
+            conditions.append("m.AdmissionDiagnosisID IS NOT NULL")
+        elif diagnosis_type == 'Discharge':
+            conditions.append("m.DischargeDiagnosisID IS NOT NULL")
+        elif diagnosis_type == 'Pathological':
+            conditions.append("m.PathologicalDiagnosisID IS NOT NULL")
 
-    query += " AND " + " AND ".join(conditions)
+        query += " AND " + " AND ".join(conditions)
 
-    cursor.execute(query, values)
-    records = cursor.fetchall()
+        cursor.execute(query, values)
+        records = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when get disease info.")
+        break_connect(conn, cursor)
+        return []
     break_connect(conn, cursor)
     return records
 
@@ -196,7 +213,8 @@ def search_surgery_info(medical_record_number=None, patient_name=None, patient_g
                         surgery_name=None, surgery_date_from=None, surgery_date_to=None, surgeon_name=None
                         ):
     conn, cursor = make_connect()
-    base_query = """
+    try:
+        base_query = """
         SELECT m.MedicalRecordNumber, p.Name AS PatientName, p.Gender, s.SurgeryDate, s.SurgeryName, st.Name AS SurgeonName
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
@@ -205,55 +223,61 @@ def search_surgery_info(medical_record_number=None, patient_name=None, patient_g
         JOIN Staff st ON s.SurgeonID = st.StaffID
         WHERE 1=1
         """
-    conditions = []
-    values = []
+        conditions = []
+        values = []
 
-    # 根据查询条件添加查询条件
-    if medical_record_number:
-        conditions.append("m.MedicalRecordNumber = %s")
-        values.append(medical_record_number)
-    if patient_name:
-        conditions.append("p.Name LIKE %s")
-        values.append(f"%{patient_name}%")
-    if patient_gender:
-        conditions.append("p.Gender = %s")
-        values.append(patient_gender)
-    if payment_method:
-        conditions.append("m.PaymentMethod LIKE %s")
-        values.append(payment_method)
-    if admission_date_from and admission_date_to:
-        conditions.append("m.AdmissionDate BETWEEN %s AND %s")
-        values.extend([admission_date_from, admission_date_to])
-    if discharge_date_from and discharge_date_to:
-        conditions.append("m.DischargeDate BETWEEN %s AND %s")
-        values.extend([discharge_date_from, discharge_date_to])
-    if unit_name:
-        conditions.append("u.Name LIKE %s")
-        values.append(f"%{unit_name}%")
-    if age_from and age_to:
-        conditions.append("p.Age BETWEEN %s AND %s")
-        values.extend([age_from, age_to])
-    if days_from and days_to:
-        conditions.append("DATEDIFF(m.DischargeDate, m.AdmissionDate) BETWEEN %s AND %s")
-        values.append([days_from, days_to])
-    if surgery_name:
-        conditions.append("s.SurgeryName LIKE %s")
-        values.append(f"%{surgery_name}%")
-    if surgery_date_from and surgery_date_to:
-        conditions.append("s.SurgeryDate BETWEEN %s AND %s")
-        values.extend([surgery_date_from, surgery_date_to])
-    if surgeon_name:
-        conditions.append("st.Name LIKE %s")
-        values.append(surgeon_name)
+        # 根据查询条件添加查询条件
+        if medical_record_number:
+            conditions.append("m.MedicalRecordNumber = %s")
+            values.append(medical_record_number)
+        if patient_name:
+            conditions.append("p.Name LIKE %s")
+            values.append(f"%{patient_name}%")
+        if patient_gender:
+            conditions.append("p.Gender = %s")
+            values.append(patient_gender)
+        if payment_method:
+            conditions.append("m.PaymentMethod LIKE %s")
+            values.append(payment_method)
+        if admission_date_from and admission_date_to:
+            conditions.append("m.AdmissionDate BETWEEN %s AND %s")
+            values.extend([admission_date_from, admission_date_to])
+        if discharge_date_from and discharge_date_to:
+            conditions.append("m.DischargeDate BETWEEN %s AND %s")
+            values.extend([discharge_date_from, discharge_date_to])
+        if unit_name:
+            conditions.append("u.Name LIKE %s")
+            values.append(f"%{unit_name}%")
+        if age_from and age_to:
+            conditions.append("p.Age BETWEEN %s AND %s")
+            values.extend([age_from, age_to])
+        if days_from and days_to:
+            conditions.append("DATEDIFF(m.DischargeDate, m.AdmissionDate) BETWEEN %s AND %s")
+            values.append([days_from, days_to])
+        if surgery_name:
+            conditions.append("s.SurgeryName LIKE %s")
+            values.append(f"%{surgery_name}%")
+        if surgery_date_from and surgery_date_to:
+            conditions.append("s.SurgeryDate BETWEEN %s AND %s")
+            values.extend([surgery_date_from, surgery_date_to])
+        if surgeon_name:
+            conditions.append("st.Name LIKE %s")
+            values.append(surgeon_name)
 
-    # 将条件连接为一个字符串
-    if conditions:
-        condition_str = " AND ".join(conditions)
-        base_query += f" AND {condition_str}"
+        # 将条件连接为一个字符串
+        if conditions:
+            condition_str = " AND ".join(conditions)
+            base_query += f" AND {condition_str}"
 
-    # 执行查询
-    cursor.execute(base_query, values)
-    surgery_details = cursor.fetchall()
+        # 执行查询
+        cursor.execute(base_query, values)
+        surgery_details = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when get surgery info.")
+        break_connect(conn, cursor)
+        return []
+    break_connect(conn, cursor)
     return surgery_details
 
 def search_return_info(medical_record_number=None, payment_method=None,
@@ -262,7 +286,8 @@ def search_return_info(medical_record_number=None, payment_method=None,
                                    department=None, borrow_reason=None,
                                    start_time=None, end_time=None):
     conn, cursor = make_connect()
-    base_query = """
+    try:
+        base_query = """
             SELECT m.MedicalRecordNumber, p.Name AS PatientName, p.Gender, u.Name AS UnitName, br.BorrowedBy, r.ReturnDate, br.BorrowReason
             FROM MedicalRecord m
             JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
@@ -271,45 +296,50 @@ def search_return_info(medical_record_number=None, payment_method=None,
             JOIN Unit u ON r.UnitID = u.UnitID
             WHERE 1=1
             """
-    conditions = []
-    values = []
+        conditions = []
+        values = []
 
-    # 构建查询条件
-    if medical_record_number:
-        conditions.append("m.MedicalRecordNumber LIKE %s")
-        values.append(f"%{medical_record_number}%")
-    if payment_method:
-        conditions.append("m.PaymentMethod LIKE %s")
-        values.append(f"%{payment_method}%")
-    if patient_name:
-        conditions.append("p.Name LIKE %s")
-        values.append(f"%{patient_name}%")
-    if borrower_name:
-        conditions.append("br.BorrowedBy LIKE %s")
-        values.append(f"%{borrower_name}%")
-    if borrower_phone:
-        conditions.append("br.ContactPhone LIKE %s")
-        values.append(f"%{borrower_phone}%")
-    if borrower_id_card_number:
-        conditions.append("br.IDCardNumber LIKE %s")
-        values.append(f"%{borrower_id_card_number}%")
-    if department:
-        conditions.append("u.Name LIKE %s")
-        values.append(f"%{department}%")
-    if borrow_reason:
-        conditions.append("br.BorrowReason LIKE %s")
-        values.append(f"%{borrow_reason}%")
-    if start_time and end_time:
-        conditions.append("r.ReturnDate BETWEEN %s AND %s")
-        values.extend([start_time, end_time])
+        # 构建查询条件
+        if medical_record_number:
+            conditions.append("m.MedicalRecordNumber LIKE %s")
+            values.append(f"%{medical_record_number}%")
+        if payment_method:
+            conditions.append("m.PaymentMethod LIKE %s")
+            values.append(f"%{payment_method}%")
+        if patient_name:
+            conditions.append("p.Name LIKE %s")
+            values.append(f"%{patient_name}%")
+        if borrower_name:
+            conditions.append("br.BorrowedBy LIKE %s")
+            values.append(f"%{borrower_name}%")
+        if borrower_phone:
+            conditions.append("br.ContactPhone LIKE %s")
+            values.append(f"%{borrower_phone}%")
+        if borrower_id_card_number:
+            conditions.append("br.IDCardNumber LIKE %s")
+            values.append(f"%{borrower_id_card_number}%")
+        if department:
+            conditions.append("u.Name LIKE %s")
+            values.append(f"%{department}%")
+        if borrow_reason:
+            conditions.append("br.BorrowReason LIKE %s")
+            values.append(f"%{borrow_reason}%")
+        if start_time and end_time:
+            conditions.append("r.ReturnDate BETWEEN %s AND %s")
+            values.extend([start_time, end_time])
 
-    # 将条件连接为一个字符串
-    if conditions:
-        condition_str = " AND ".join(conditions)
-        base_query += f" AND {condition_str}"
+        # 将条件连接为一个字符串
+        if conditions:
+            condition_str = " AND ".join(conditions)
+            base_query += f" AND {condition_str}"
 
-    cursor.execute(base_query, values)
-    records = cursor.fetchall()
+        cursor.execute(base_query, values)
+        records = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when get return info.")
+        break_connect(conn, cursor)
+        return []
     break_connect(conn, cursor)
     return records
 
@@ -318,7 +348,8 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
                                    department=None, borrow_reason=None,
                                    start_time=None, end_time=None, approver=None):
     conn, cursor = make_connect()
-    base_query = """
+    try:
+        base_query = """
         SELECT m.MedicalRecordNumber, p.Name AS PatientName, p.Gender, u.Name AS UnitName, br.BorrowedBy, br.BorrowDate, br.BorrowReason, br.Approver AS ApprovedByName
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
@@ -326,66 +357,79 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
         JOIN Unit u ON br.UnitID = u.UnitID
         WHERE 1=1
         """
-    conditions = []
-    values = []
+        conditions = []
+        values = []
 
-    # 构建查询条件
-    if medical_record_number:
-        conditions.append("m.MedicalRecordNumber LIKE %s")
-        values.append(f"%{medical_record_number}%")
-    if payment_method:
-        conditions.append("m.PaymentMethod LIKE %s")
-        values.append(f"%{payment_method}%")
-    if patient_name:
-        conditions.append("p.Name LIKE %s")
-        values.append(f"%{patient_name}%")
-    if borrower_name:
-        conditions.append("br.BorrowedBy LIKE %s")
-        values.append(f"%{borrower_name}%")
-    if borrower_phone:
-        conditions.append("br.ContactPhone LIKE %s")
-        values.append(f"%{borrower_phone}%")
-    if borrower_id_card_number:
-        conditions.append("br.IDCardNumber LIKE %s")
-        values.append(f"%{borrower_id_card_number}%")
-    if department:
-        conditions.append("u.Name LIKE %s")
-        values.append(f"%{department}%")
-    if borrow_reason:
-        conditions.append("br.BorrowReason LIKE %s")
-        values.append(f"%{borrow_reason}%")
-    if start_time and end_time:
-        conditions.append("br.BorrowDate BETWEEN %s AND %s")
-        values.extend([start_time, end_time])
-    if approver:
-        conditions.append("br.Approver LIKE %s")
-        values.append(f"%{approver}%")
+        # 构建查询条件
+        if medical_record_number:
+            conditions.append("m.MedicalRecordNumber LIKE %s")
+            values.append(f"%{medical_record_number}%")
+        if payment_method:
+            conditions.append("m.PaymentMethod LIKE %s")
+            values.append(f"%{payment_method}%")
+        if patient_name:
+            conditions.append("p.Name LIKE %s")
+            values.append(f"%{patient_name}%")
+        if borrower_name:
+            conditions.append("br.BorrowedBy LIKE %s")
+            values.append(f"%{borrower_name}%")
+        if borrower_phone:
+            conditions.append("br.ContactPhone LIKE %s")
+            values.append(f"%{borrower_phone}%")
+        if borrower_id_card_number:
+            conditions.append("br.IDCardNumber LIKE %s")
+            values.append(f"%{borrower_id_card_number}%")
+        if department:
+            conditions.append("u.Name LIKE %s")
+            values.append(f"%{department}%")
+        if borrow_reason:
+            conditions.append("br.BorrowReason LIKE %s")
+            values.append(f"%{borrow_reason}%")
+        if start_time and end_time:
+            conditions.append("br.BorrowDate BETWEEN %s AND %s")
+            values.extend([start_time, end_time])
+        if approver:
+            conditions.append("br.Approver LIKE %s")
+            values.append(f"%{approver}%")
 
-    if conditions:
-        condition_str = " AND ".join(conditions)
-        base_query += f" AND {condition_str}"
+        if conditions:
+            condition_str = " AND ".join(conditions)
+            base_query += f" AND {condition_str}"
 
-    cursor.execute(base_query, values)
-    records = cursor.fetchall()
+        cursor.execute(base_query, values)
+        records = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when get borrow info.")
+        break_connect(conn, cursor)
+        return []
+    break_connect(conn, cursor)
     return records
 
 def search_admission_info(admission_start_date, admission_end_date, unit_name=None):
     conn, cursor = make_connect()
-    query = """
+    try:
+        query = """
         SELECT m.MedicalRecordNumber, p.Name, p.Gender, m.AdmissionDate, u.Name AS UnitName
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
         JOIN Unit u ON m.UnitID = u.UnitID
         WHERE m.AdmissionDate BETWEEN %s AND %s AND u.Name = %s
         """
-    cursor.execute(query, (admission_start_date, admission_end_date, unit_name))
-    admission_info = cursor.fetchall()
+        cursor.execute(query, (admission_start_date, admission_end_date, unit_name))
+        admission_info = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when get admission info.")
+        break_connect(conn, cursor)
+        return []
     break_connect(conn, cursor)
     return admission_info
 
 def search_discharge_info(medical_record_number=None, unit_name=None, start_date=None, end_date=None):
     conn, cursor = make_connect()
-    query = """
+    try:
+        query = """
         SELECT 
             m.MedicalRecordNumber, p.Name, p.Gender, u.Name, c.Amount, 
             m.AdmissionDate, m.DischargeDate, DATEDIFF(m.DischargeDate, m.AdmissionDate) AS hospitalization_days
@@ -395,24 +439,29 @@ def search_discharge_info(medical_record_number=None, unit_name=None, start_date
         LEFT JOIN Cost c ON m.MedicalRecordNumber = c.MedicalRecordID
         WHERE 1=1
         """
-    conditions = []
-    values = []
+        conditions = []
+        values = []
 
-    if medical_record_number:
-        conditions.append("m.MedicalRecordNumber = %s")
-        values.append(medical_record_number)
-    if unit_name:
-        conditions.append("u.Name = %s")
-        values.append(unit_name)
-    if start_date and end_date:
-        conditions.append("m.AdmissionDate >= %s AND m.DischargeDate <= %s")
-        values.extend([start_date, end_date])
+        if medical_record_number:
+            conditions.append("m.MedicalRecordNumber = %s")
+            values.append(medical_record_number)
+        if unit_name:
+            conditions.append("u.Name = %s")
+            values.append(unit_name)
+        if start_date and end_date:
+            conditions.append("m.AdmissionDate >= %s AND m.DischargeDate <= %s")
+            values.extend([start_date, end_date])
 
-    if conditions:
-        query += " AND " + " AND ".join(conditions)
+        if conditions:
+            query += " AND " + " AND ".join(conditions)
 
-    cursor.execute(query, values)
-    results = cursor.fetchall()
+        cursor.execute(query, values)
+        results = cursor.fetchall()
+    except Error as e:
+        conn.rollback()  # 回滚事务，以防部分删除操作成功
+        print(f"The error '{e}' occurred when get discharge info.")
+        break_connect(conn, cursor)
+        return []
     break_connect(conn, cursor)
     return results
 
