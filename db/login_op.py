@@ -8,7 +8,7 @@ def make_connect():     # 建立数据库连接
         host='110.42.33.194',		# 主机名（或IP地址）
         password='123456',  # 你本地的数据库密码,请自行更改
         port=3306,				# 端口号，默认为3306
-        user='root',			# 用户名
+        user='dba',			# 用户名
         charset='utf8mb4'  		# 设置字符编码
     )
     conn.select_db("medical_record_management") # 选择数据库

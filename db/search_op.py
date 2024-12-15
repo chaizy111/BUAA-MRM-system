@@ -8,7 +8,7 @@ def make_connect():     # 建立数据库连接
         host='110.42.33.194',		# 主机名（或IP地址）
         password='123456',  # 你本地的数据库密码,请自行更改
         port=3306,				# 端口号，默认为3306
-        user='root',			# 用户名
+        user='dba',			# 用户名
         charset='utf8mb4'  		# 设置字符编码
     )
     conn.select_db("medical_record_management") # 选择数据库
@@ -26,11 +26,15 @@ def break_connect(conn, cursor): # 断开数据库连接
 #这个方法是患者查询使用的方法
 def search_patients_by_info(search_info):
     conn, cursor = make_connect()
-    records = search_ids_by_info(search_info)
-
-    record_ids = ', '.join(records)
+    result = search_ids_by_info(search_info)
+    records = []
+    for r in result:
+        records.append(r[0])
+    record_ids = ', '.join(map(str, records))
     query = f"""
-        SELECT * FROM Patient WHERE IDCardNumber IN ({record_ids})
+        SELECT * FROM Patient p
+        JOIN MedicalRecord m ON m.PatientIDCardNumber = p.IDCardNumber 
+        WHERE m.MedicalRecordNumber IN ({record_ids})
         """
     cursor.execute(query)
     patients = cursor.fetchall()
@@ -75,19 +79,19 @@ def search_ids_by_info(search_info):
         conditions.append("p.Name LIKE %s")
         values.append(f"%{search_info.patient_name}%")
     if search_info.payment_method:
-        conditions.append("m.PayMentMethod = %s")
+        conditions.append("m.PayMentMethod LIKE %s")
         values.append(f"%{search_info.payment_method}%")
     if search_info.nationality:
-        conditions.append("p.Nationality = %s")
+        conditions.append("p.Nationality LIKE %s")
         values.append(f"%{search_info.nationality}%")
     if search_info.ethnicity:
-        conditions.append("p.Ethnicity = %s")
+        conditions.append("p.Ethnicity LIKE %s")
         values.append(f"%{search_info.ethnicity}%")
     if search_info.occupation:
-        conditions.append("p.Occupation = %s")
+        conditions.append("p.Occupation LIKE %s")
         values.append(f"%{search_info.occupation}%")
     if search_info.address:
-        conditions.append("p.Address LIKE %s")
+        conditions.append("p.CurrentAddress LIKE %s")
         values.append(f"%{search_info.address}%")
     if search_info.phone:
         conditions.append("p.Phone LIKE %s")
@@ -104,12 +108,12 @@ def search_ids_by_info(search_info):
     if search_info.birth_from and search_info.birth_to:
         conditions.append("p.BirthDate BETWEEN %s AND %s")
         values.extend([search_info.birth_from, search_info.birth_to])
-    if search_info.admission_date_from and search_info.admission_date_to:
+    if search_info.admission_time_from and search_info.admission_time_to:
         conditions.append("m.AdmissionDate BETWEEN %s AND %s")
-        values.extend([search_info.admission_date_from, search_info.admission_date_to])
-    if search_info.discharge_date_from and search_info.discharge_date_to:
+        values.extend([search_info.admission_time_from, search_info.admission_time_to])
+    if search_info.discharge_time_from and search_info.discharge_time_to:
         conditions.append("m.DischargeDate BETWEEN %s AND %s")
-        values.extend([search_info.discharge_date_from, search_info.discharge_date_to])
+        values.extend([search_info.discharge_time_from, search_info.discharge_time_to])
     if search_info.department:
         conditions.append("u.Name LIKE %s")
         values.append(f"%{search_info.department}%")
@@ -213,7 +217,7 @@ def search_surgery_info(medical_record_number=None, patient_name=None, patient_g
         conditions.append("p.Gender = %s")
         values.append(patient_gender)
     if payment_method:
-        conditions.append("m.PaymentMethod = %s")
+        conditions.append("m.PaymentMethod LIKE %s")
         values.append(payment_method)
     if admission_date_from and admission_date_to:
         conditions.append("m.AdmissionDate BETWEEN %s AND %s")

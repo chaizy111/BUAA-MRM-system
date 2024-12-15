@@ -1,4 +1,4 @@
-class QueryConditions:
+class SearchInfo:
     def __init__(self, gender=None, medical_record_number=None,
                   patient_name=None, payment_method=None, nationality=None,
                  ethnicity=None, occupation=None, address=None, phone=None, contact_name=None, contact_phone=None,
