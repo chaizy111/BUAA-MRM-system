@@ -312,23 +312,26 @@ def get_pending_requests():
     break_connect(conn, cursor)
     return pending_borrows
 
-def change_request_status_to_approved(borrow_request_ids):
+def change_request_status_to_approved(borrow_request_ids, username):
     conn, cursor = make_connect()
     record_id_conditions = ', '.join(map(str, borrow_request_ids))
-    #todo:还要update批准人的名字，这给需要先实现登录界面，批准人的名字就是当前用户的名字
     update_query = f"""
-            UPDATE MedicalRecordBorrow SET Status = 'Approved' WHERE MedicalRecordNumber IN ({record_id_conditions})
+            UPDATE MedicalRecordBorrow 
+            SET Status = 'Approved' , Approver = %s
+            WHERE BorrowID IN ({record_id_conditions})
             """
-    cursor.execute(update_query)
+    cursor.execute(update_query, (username,))
     conn.commit()
     break_connect(conn, cursor)
 
-def change_request_status_to_rejected(borrow_request_ids):
+def change_request_status_to_rejected(borrow_request_ids, username):
     conn, cursor = make_connect()
     record_id_conditions = ', '.join(map(str, borrow_request_ids))
     update_query = f"""
-            UPDATE MedicalRecordBorrow SET Status = 'Rejected' WHERE MedicalRecordNumber IN ({record_id_conditions})
+            UPDATE MedicalRecordBorrow 
+            SET Status = 'Rejected' , Approver = %s
+            WHERE BorrowID IN ({record_id_conditions})
             """
-    cursor.execute(update_query)
+    cursor.execute(update_query, (username,))
     conn.commit()
     break_connect(conn, cursor)

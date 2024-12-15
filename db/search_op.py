@@ -44,9 +44,11 @@ def search_patients_by_info(search_info):
 #这个方法是病案查询使用的方法
 def get_medical_records_by_info(search_info):
     conn, cursor = make_connect()
-    records = search_ids_by_info(search_info)
-
-    record_ids = ', '.join(records)
+    result = search_ids_by_info(search_info)
+    records = []
+    for r in result:
+        records.append(r[0])
+    record_ids = ', '.join(map(str, records))
     query = f"""
         SELECT * FROM MedicalRecord WHERE MedicalRecordNumber IN ({record_ids})
         """
@@ -125,7 +127,7 @@ def search_ids_by_info(search_info):
         values.append(f"%{search_info.disease_name}%")
     if search_info.days_from and search_info.days_to:
         conditions.append("DATEDIFF(m.DischargeDate, m.AdmissionDate) BETWEEN %s AND %s")
-        values.append([search_info.days_from, search_info.days_to])
+        values.extend([search_info.days_from, search_info.days_to])
 
     query += " AND " + " AND ".join(conditions)
 
@@ -265,8 +267,8 @@ def search_return_info(medical_record_number=None, payment_method=None,
             FROM MedicalRecord m
             JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
             JOIN MedicalRecordBorrow br ON m.MedicalRecordNumber = br.MedicalRecordNumber
-            JOIN MedicalRecordReturn r ON m.MedicalRecordNumber = r.MedicalRecordNumber AND br.BorrowedBy = r.ReturnedBy
-            JOIN Unit u ON m.UnitID = u.UnitID
+            JOIN MedicalRecordReturn r ON br.MedicalRecordNumber = r.MedicalRecordNumber AND br.BorrowedBy = r.ReturnedBy
+            JOIN Unit u ON r.UnitID = u.UnitID
             WHERE 1=1
             """
     conditions = []
@@ -289,11 +291,11 @@ def search_return_info(medical_record_number=None, payment_method=None,
         conditions.append("br.ContactPhone LIKE %s")
         values.append(f"%{borrower_phone}%")
     if borrower_id_card_number:
-        conditions.append("br.IDCardNumber = %s")
+        conditions.append("br.IDCardNumber LIKE %s")
         values.append(f"%{borrower_id_card_number}%")
     if department:
         conditions.append("u.Name LIKE %s")
-        values.append(department)
+        values.append(f"%{department}%")
     if borrow_reason:
         conditions.append("br.BorrowReason LIKE %s")
         values.append(f"%{borrow_reason}%")
@@ -321,7 +323,7 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
         JOIN MedicalRecordBorrow br ON m.MedicalRecordNumber = br.MedicalRecordNumber
-        JOIN Unit u ON m.UnitID = u.UnitID
+        JOIN Unit u ON br.UnitID = u.UnitID
         WHERE 1=1
         """
     conditions = []
@@ -344,11 +346,11 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
         conditions.append("br.ContactPhone LIKE %s")
         values.append(f"%{borrower_phone}%")
     if borrower_id_card_number:
-        conditions.append("br.IDCardNumber = %s")
+        conditions.append("br.IDCardNumber LIKE %s")
         values.append(f"%{borrower_id_card_number}%")
     if department:
         conditions.append("u.Name LIKE %s")
-        values.append(department)
+        values.append(f"%{department}%")
     if borrow_reason:
         conditions.append("br.BorrowReason LIKE %s")
         values.append(f"%{borrow_reason}%")
