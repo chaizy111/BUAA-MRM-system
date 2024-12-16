@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QTableW
 import sys
 
 from db.search_op import search_surgery_info
+from intermediate_data_structure.search_info import SearchInfo
+from intermediate_data_structure.surgery_info import SurgeryInfo
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
 # -*- coding: utf-8 -*-
@@ -17,52 +19,6 @@ from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件�
 
 
 from PyQt5 import QtCore, QtWidgets
-
-
-
-class Ui_MainWindow1(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-
-        '''
-        self.pushButton.setGeometry(QtCore.QRect(520, 30, 75, 23))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(640, 30, 75, 23))
-        self.pushButton_2.setObjectName("pushButton_2")
-        '''
-
-        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(50, 350, 700, 200))
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(6)
-        self.tableWidget.setHorizontalHeaderLabels([
-            "病历号", "患者姓名", "性别", "手术日期", "手术名称", "医生名称"
-
-        ])
-
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        self.retranslateUi(MainWindow)
-        #self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "查询结果"))
-        #self.pushButton.setText(_translate("MainWindow", "查询[&S]"))
-        #self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
 
 
 class Ui_MainWindow(object):
@@ -215,6 +171,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addWidget(self.checkBox_3)
         self.verticalLayout.addLayout(self.horizontalLayout_7)
 
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(50, 350, 700, 200))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(6)
+        self.tableWidget.setHorizontalHeaderLabels([
+            "病历号", "患者姓名", "性别", "手术日期", "手术名称", "医生名称"
+
+        ])
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -256,6 +221,15 @@ class Ui_MainWindow(object):
         self.checkBox.setText(_translate("MainWindow", "门诊诊断"))
         self.checkBox_2.setText(_translate("MainWindow", "出院主要诊断"))
         self.checkBox_3.setText(_translate("MainWindow", "病理诊断"))
+        '''self.lineEdit.setText("1")
+        self.lineEdit_4.setText("4")
+        self.lineEdit_5.setText("5")
+        self.lineEdit_20.setText("20")
+        self.lineEdit_19.setText("19")
+        self.lineEdit_4.setText("4")
+        self.lineEdit_17.setText("17")
+        self.lineEdit_18.setText("18")'''
+
 
     def openPrintDialog(self):
         """打开打印窗口"""
@@ -263,24 +237,21 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
+        medical_record_number = self.lineEdit.text()
+        patient_name = self.lineEdit_4.text()
+        gender = self.lineEdit_5.text()
+        payment_method = self.comboBox.currentText()
+        admission_date_from = self.dateTimeEdit_6.date()
+        admission_date_to = self.dateTimeEdit_4.date()
 
-        search_info = {
-            "medical_record_number": self.ui.lineEdit.text(),  # 病历号
-            "name": self.ui.lineEdit_2.text(),  # 患者姓名
-            "gender": self.ui.comboBox_gender.currentText(),  # 性别（假设有一个 comboBox_gender 控件）
-            "payment_method": self.ui.comboBox_payment.currentText(),  # 医疗付款方式
-            "disease_name": self.ui.lineEdit_disease.text(),  # 疾病名称
-            "age": self.ui.spinBox_age.value(),  # 患者年龄
-            "admission_date": self.ui.dateEdit_admission.date().toString("yyyy-MM-dd"),  # 入院时间
-            "discharge_date": self.ui.dateEdit_discharge.date().toString("yyyy-MM-dd"),  # 出院时间
-            "department": self.ui.lineEdit_department.text(),  # 科室
-            "hospital_stay_days": self.ui.spinBox_hospital_stay_days.value(),  # 住院天数
-            "diagnosis_type": self.ui.comboBox_diagnosis_type.currentText(),  # 诊断类型（假设有一个 comboBox_diagnosis_type 控件）
-            "outpatient_diagnosis": self.ui.checkBox_outpatient_diagnosis.isChecked(),  # 门诊诊断（复选框）
-            "discharge_main_diagnosis": self.ui.checkBox_discharge_main_diagnosis.isChecked(),  # 出院主要诊断（复选框）
-            "pathological_diagnosis": self.ui.checkBox_pathological_diagnosis.isChecked(),  # 病理诊断（复选框）
+        search_info = SearchInfo(
+            medical_record_number = medical_record_number,
+            patient_name=patient_name,
+            gender=gender,
+            payment_method=payment_method,
+        )
 
-        }
+
 
         # 调用数据库查询函数
         try:
@@ -298,7 +269,7 @@ class Ui_MainWindow(object):
 
         # 填充查询结果
         for row_num, row_data in enumerate(results):
-            self.ableWidget.insertRow(row_num)
+            self.tableWidget.insertRow(row_num)
             for col_num, col_data in enumerate(row_data):
                 self.tableWidget.setItem(row_num, col_num, QtWidgets.QTableWidgetItem(str(col_data)))
 

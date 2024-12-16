@@ -60,8 +60,9 @@ class Ui_MainWindow(object):
 
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(20, 120, 760, 400))  # Adjust the size of the table
-        self.tableWidget.setColumnCount(4)  # 4 columns for the data
-        self.tableWidget.setHorizontalHeaderLabels(["住院总时间", "平均时间", "入院时间", "出院时间"])
+        self.tableWidget.setColumnCount(10)  # 4 columns for the data
+        self.tableWidget.setHorizontalHeaderLabels(["住院总时间", "平均时间", "病历号", "患者姓名",
+            "性别","名字","数量","入院时间","出院时间","住院时长" ])
         self.tableWidget.setObjectName("tableWidget")
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -105,7 +106,7 @@ class Ui_MainWindow(object):
     def openQueryDialog(self):
         start_date = self.dateTimeEdit.text().toString("yyyy-MM-dd")
         end_date = self.dateTimeEdit_2.text().toString("yyyy-MM-dd")
-        results, date= get_departurePatient_statistic(start_date, end_date)
+        results, date = get_departurePatient_statistic(start_date, end_date)
 
         self.tableWidget.setRowCount(0)
 
@@ -115,6 +116,13 @@ class Ui_MainWindow(object):
             self.tableWidget.insertRow(row_position)
             for col, value in enumerate(row_data):
                 self.tableWidget.setItem(row_position, col, QtWidgets.QTableWidgetItem(str(value)))
+
+        for row_data in date:
+            row_position = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(row_position)
+            for col, value in enumerate(row_data):
+                self.tableWidget.setItem(row_position, col, QtWidgets.QTableWidgetItem(str(value)))
+
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
