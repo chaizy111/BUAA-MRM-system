@@ -1,4 +1,5 @@
 from db.normal_op import *
+from db.statistic_op import *
 from intermediate_data_structure.patient_info import PatientInfo
 from intermediate_data_structure.contact_info import ContactInfo
 from intermediate_data_structure.surgery_info import SurgeryInfo
@@ -8,14 +9,14 @@ from intermediate_data_structure.cost_info import CostInfo
 class MedicalRecordInfo:
     def __init__(self):
         self.patient_info = PatientInfo(
-            name="王一",
+            name="王五",
             gender="男",
             birth_date="1990-01-01",
             age=34,
             nationality="中国",
             place_of_birth="北京",
             ethnicity="汉",
-            id_card_number="123456789012345111",
+            id_card_number="123456789012345112",
             occupation="科员",
             marital_status="Married",
             current_address="123 Main St, Anytown, USA",
@@ -25,7 +26,7 @@ class MedicalRecordInfo:
         )
         self.contact_info = ContactInfo(
             patient_id=self.patient_info.id_card_number,
-            name="王二",
+            name="王六",
             relationship="父亲",
             address="123 Main St, Anytown, USA",
             phone="987-654-3210"
@@ -37,7 +38,7 @@ class MedicalRecordInfo:
         self.discharge_diagnosis_id = "A00.000"
         self.pathological_diagnosis_id = "A00.000"
         self.doctor_name = "唐洋"
-        self.blood_type = "11" #todo
+        self.blood_type = "11"
         self.payment_method = "Credit Card"
         self.surgery_infos = self.surgery_infos = [
             SurgeryInfo(
@@ -56,7 +57,7 @@ class MedicalRecordInfo:
         ]
         self.cost_infos = [
             CostInfo(
-                num=1000.00,
+                num=10000.00,
                 kind="手术费"
             )
         ]
@@ -76,5 +77,13 @@ def test_create_medical_record():
 
 if __name__=='__main__':
 # 运行测试样例
-#     test_create_medical_record()
-    delete_record_by_recordID(1)
+    test_create_medical_record()
+
+    #search_patients_by_info()
+    #get_medical_records_by_info()
+    #search_return_info()
+    #search_borrow_info()
+    #create_borrow_request()
+    #create_return_request()
+    #get_pending_requests()
+    #change_request_status_to_approved()
