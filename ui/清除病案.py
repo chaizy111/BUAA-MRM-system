@@ -65,11 +65,12 @@ class Ui_MainWindow(object):
             QMessageBox.warning(self.centralwidget, "输入错误", "请输入病案号！")
             return
 
-        success, message = delete_record_by_recordID(recordID)
-        if success:
-            QMessageBox.information(self.centralwidget, "操作成功", message)
-        else:
-            QMessageBox.critical(self.centralwidget, "操作失败", message)
+        success = delete_record_by_recordID(recordID)  # 调用删除记录的函数
+        if success:  # 如果删除成功
+            QMessageBox.information(self.centralwidget, "操作成功", "病案号已成功删除！")
+        else:  # 如果删除失败
+            QMessageBox.critical(self.centralwidget, "操作失败", "删除病案号失败，请重试。")
+
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog
 import sys

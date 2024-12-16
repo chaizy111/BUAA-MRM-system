@@ -10,6 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from db.search_op import search_disease_info
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -139,6 +141,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        self.pushButton.clicked.connect(self.search_disease) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -159,6 +162,9 @@ class Ui_MainWindow(object):
         self.label_8.setText(_translate("MainWindow", "年龄："))
         self.label_4.setText(_translate("MainWindow", "省市："))
         self.label_9.setText(_translate("MainWindow", "区县："))
+
+    def search_disease(self):
+        search_disease_info()
 
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
