@@ -70,7 +70,7 @@ def create_medical_record(medical_record_info):
                                         medical_record_info.payment_method
                                   ))
         conn.commit()
-        medical_record_id = get_medicalRecordId_by_patientId(medical_record_info.patient_info.id_card_number, conn, cursor)
+        medical_record_id = get_medicalRecordId_by_patientId(medical_record_info.patient_info.id_card_number)
         for surgery_info in medical_record_info.surgery_infos:
             create_surgery(medical_record_id, surgery_info, conn, cursor)
         for ward_info in medical_record_info.ward_infos:
@@ -247,7 +247,6 @@ def delete_record_by_recordID(recordID):
         cursor.execute("DELETE FROM MedicalRecord WHERE MedicalRecordNumber = %s", (recordID,))
         # 删除病人信息
         cursor.execute("DELETE FROM Patient WHERE IDCardNumber = %s", (patient_id_card_number,))
-
         conn.commit()
     except Error as e:
         print(f"The error '{e}' occurred when deleting the medical record and related information.")
@@ -363,3 +362,7 @@ def change_request_status_to_rejected(borrow_request_ids, username):
         return False
     break_connect(conn, cursor)
     return True
+
+
+if __name__=='__main__':
+    delete_record_by_recordID(15)

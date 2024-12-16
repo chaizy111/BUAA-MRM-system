@@ -133,6 +133,8 @@ class Ui_MainWindow(object):
         将查询结果显示在前端表格中
         :param results: list of tuples, 查询结果
         """
+        # 清空现有内容
+        self.columnView.clear()
 
         # 设置列标题
         column_headers = ["Year", "Month", "Day", "TotalIncome"]
