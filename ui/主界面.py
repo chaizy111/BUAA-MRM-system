@@ -17,6 +17,7 @@ class Ui_MainWindow1(object):
     def __init__(self):
         self.account = None
 
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(911, 718)
