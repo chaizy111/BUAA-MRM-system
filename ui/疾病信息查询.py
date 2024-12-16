@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 import sys
 
 from db.search_op import search_disease_info
+from intermediate_data_structure.search_info import SearchInfo
 
 
 class Ui_MainWindow2(object):
@@ -259,6 +260,13 @@ class Ui_MainWindow(object):
         self.checkBox.setText(_translate("MainWindow", "门诊诊断"))
         self.checkBox_2.setText(_translate("MainWindow", "出院主要诊断"))
         self.checkBox_3.setText(_translate("MainWindow", "病理诊断"))
+        self.lineEdit.setText("1")
+        self.lineEdit_4.setText("4")
+        self.lineEdit_5.setText("5")
+        self.lineEdit_20.setText("20")
+        self.lineEdit_17.setText("17")
+        self.lineEdit_19.setText("19")
+        self.lineEdit_18.setText("18")
 
     def openQueryDialog(self):
         """打开查询条件窗口"""
@@ -267,25 +275,21 @@ class Ui_MainWindow(object):
         self.ui_query.setupUi(self.queryDialog)
         self.queryDialog.show()
 
-        search_info = {
-                "medical_record_number": self.lineEdit.text(),  # 假设病历号是lineEdit控件
-                "patient_name": self.lineEdit_4.text(),  # 假设患者姓名是lineEdit_4控件
-                "gender": self.comboBox.currentText(),  # 假设性别是comboBox控件
-                "payment_method": self.comboBox.currentText(),  # 医疗付款方式，假设用comboBox控件
-                "birth_date": self.dateEdit.text(),  # 假设出生年月是dateEdit控件
-                "age": self.lineEdit_2.text(),  # 假设年龄是lineEdit_2控件
-                "admission_date_from": self.dateTimeEdit.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
-                "admission_date_to": self.dateTimeEdit_2.dateTime().toString('yyyy-MM-dd'),  # 入院时间结束
-                "discharge_date_from": self.dateTimeEdit_3.dateTime().toString('yyyy-MM-dd'),  # 出院时间开始
-                "discharge_date_to": self.dateTimeEdit_4.dateTime().toString('yyyy-MM-dd'),  # 出院时间结束
-                "admission_department": self.lineEdit_3.text(),  # 入院科室
-                "discharge_department": self.lineEdit_5.text(),  # 出院科室
-                "disease_name": self.lineEdit_6.text(),  # 疾病名称
-                "diagnosis_type": self.lineEdit_7.text(),  # 诊断类型
-                "outpatient_diagnosis": self.checkBox.isChecked(),  # 门诊诊断
-                "discharge_diagnosis": self.checkBox_2.isChecked(),  # 出院主要诊断
-                "pathological_diagnosis": self.checkBox_3.isChecked()  # 病理诊断
-            }
+        search_info = SearchInfo(
+            medical_record_number=self.lineEdit.text(),  # 假设病历号是lineEdit控件
+            patient_name=self.lineEdit_4.text(),  # 假设患者姓名是lineEdit_4控件
+            gender=self.lineEdit_5.text(),
+            payment_method=self.comboBox.currentText(),  # 医疗付款方式，假设用comboBox控件
+            disease_name=self.lineEdit_18.text(),
+            department=self.lineEdit_20.text(),
+
+            birth_from=self.dateTimeEdit.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
+            birth_to=self.dateTimeEdit_2.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
+            admission_time_from=self.dateTimeEdit_6.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
+            admission_time_to=self.dateTimeEdit_4.dateTime().toString('yyyy-MM-dd'),  # 入院时间结束
+            discharge_time_from=self.dateTimeEdit_5.dateTime().toString('yyyy-MM-dd'),  # 出院时间开始
+            discharge_time_to=self.dateTimeEdit_3.dateTime().toString('yyyy-MM-dd'),  # 出院时间结束
+        )
 
         # 调用查询函数，将字典传递给查询函数
         records = search_disease_info(search_info)
