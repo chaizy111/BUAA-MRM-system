@@ -868,10 +868,6 @@ class Ui_MainWindow1(object):
         item.setText(_translate("MainWindow", "入住日期"))
         item = self.tableWidget_15.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "离开日期"))
-
-
-
-        item.setText(_translate("MainWindow", "手术及操作人员"))
         self.label_470.setText(_translate("MainWindow", "1.综合医疗服务类："))
         self.label_471.setText(_translate("MainWindow", "(1)一般医疗服务费："))
         self.label_472.setText(_translate("MainWindow", "(2)一般治疗操作费："))
@@ -945,7 +941,6 @@ class Ui_MainWindow1(object):
             self.lineEdit_326.setText("/")  # 籍贯
             self.lineEdit_330.setText(medical_record_info.patient_info.ethnicity) #民族
             self.lineEdit_331.setText(medical_record_info.patient_info.marital_status)  # 婚姻
-            self.lineEdit_327.setText("中华人民共和国居民身份证") # 身份证件类别
             self.lineEdit_328.setText(medical_record_info.patient_info.id_card_number)  # 证件号码
             self.lineEdit_329.setText(medical_record_info.patient_info.occupation)       #职业
             self.lineEdit_332.setText(medical_record_info.patient_info.current_address)  # 现住址
@@ -1045,15 +1040,24 @@ class Ui_MainWindow1(object):
                 self.tableWidget_14.insertRow(row_position)  # 插入新的一行
 
                 # 填充表格的每一列
-                self.tableWidget_14.setItem(row_position, 0, QtWidgets.QTableWidgetItem("/"))  # 操作编码填 '/'
+                self.tableWidget_14.setItem(row_position, 0, QtWidgets.QTableWidgetItem(str(surgery_info.surgery_date)))  # 操作编码填 '/'
                 self.tableWidget_14.setItem(row_position, 1,
-                                            QtWidgets.QTableWidgetItem(str(surgery_info.surgery_date)))  # 手术日期
+                                            QtWidgets.QTableWidgetItem(str(surgery_info.surgery_name)))  # 手术日期
                 self.tableWidget_14.setItem(row_position, 2,
-                                            QtWidgets.QTableWidgetItem(surgery_info.surgery_name))  # 手术名称
+                                            QtWidgets.QTableWidgetItem(surgery_info.surgeon_name))  # 手术名称
                 self.tableWidget_14.setItem(row_position, 3,
-                                            QtWidgets.QTableWidgetItem(1))  # 手术级别
-                self.tableWidget_14.setItem(row_position, 4, QtWidgets.QTableWidgetItem(
-                    f"主刀: {surgery_info.surgeon_name}, 副刀: {surgery_info.assistant_surgeon_name}"))  # 手术及操作人员
+                                            QtWidgets.QTableWidgetItem(surgery_info.assistant_surgeon_name))  # 手术级别
+
+            for ward_info in medical_record_info.ward_infos:
+                row_position = self.tableWidget_15.rowCount()  # 获取当前行数
+                self.tableWidget_15.insertRow(row_position)
+
+                # 填充表格的每一列
+                self.tableWidget_15.setItem(row_position, 0, QtWidgets.QTableWidgetItem(str(ward_info.ward_name)))  # 住院日期
+                self.tableWidget_15.setItem(row_position, 1,
+                                            QtWidgets.QTableWidgetItem(str(ward_info.start_time)))
+                self.tableWidget_15.setItem(row_position, 2,
+                                            QtWidgets.QTableWidgetItem(str(ward_info.end_time)))
 
             '''
             # 填充诊断信息
