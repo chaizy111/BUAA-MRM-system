@@ -20,55 +20,6 @@ from ui.print_dialog import PrintDialog  # 假设打印窗口的类在 `print_di
 
 from PyQt5 import QtCore, QtWidgets
 
-
-class Ui_MainWindow1(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-
-        '''
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(520, 30, 75, 23))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(640, 30, 75, 23))
-        self.pushButton_2.setObjectName("pushButton_2")
-        '''
-
-
-        # 表格布局
-        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(50, 150, 700, 300))
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(9)
-        self.tableWidget.setHorizontalHeaderLabels([
-            "病历号", "患者姓名", "性别", "出生年月", "省市","区县",
-            "民族", "职业", "患者地址"
-        ])
-
-
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        self.retranslateUi(MainWindow)
-        #self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "结果"))
-        #self.pushButton.setText(_translate("MainWindow", "查询[&S]"))
-        #self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
-
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -270,7 +221,14 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout_7)
 
-
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(50, 350, 700, 200))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(9)
+        self.tableWidget.setHorizontalHeaderLabels([
+            "病历号", "患者姓名", "性别", "出生年月", "省市", "区县",
+            "民族", "职业", "患者地址"
+        ])
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -319,6 +277,23 @@ class Ui_MainWindow(object):
         self.label_20.setText(_translate("MainWindow", "——"))
         self.label_27.setText(_translate("MainWindow", "疾病名称："))
         self.label_26.setText(_translate("MainWindow", "住院天数："))
+        '''
+        self.lineEdit.setText("1")
+        self.lineEdit_4.setText("4")
+        self.lineEdit_5.setText("5")
+        self.lineEdit_6.setText("6")
+        self.lineEdit_9.setText("9")
+        self.lineEdit_10.setText("10")
+        self.lineEdit_11.setText("11")
+        self.lineEdit_12.setText("12")
+        self.lineEdit_13.setText("13")
+        self.lineEdit_14.setText("14")
+        self.lineEdit_15.setText("15")
+        self.lineEdit_16.setText("16")
+        self.lineEdit_17.setText("17")
+        self.lineEdit_19.setText("19")
+        self.lineEdit_18.setText("18")
+        '''
 
     def openPrintDialog(self):
         """打开打印窗口"""
@@ -326,11 +301,6 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
-        """打开查询条件窗口"""
-        self.queryDialog = QtWidgets.QMainWindow()  # 创建一个新的窗口实例
-        self.ui_query = Ui_MainWindow1()  # 创建查询条件窗口的UI实例
-        self.ui_query.setupUi(self.queryDialog)  # 初始化查询条件窗口的UI
-        self.queryDialog.show()  # 显示查询条件窗口
 
         search_info = SearchInfo(
             medical_record_number=self.lineEdit.text(),  # 病历号
@@ -340,11 +310,11 @@ class Ui_MainWindow(object):
             nationality=self.lineEdit_6.text(),  # 国籍
             ethnicity=self.lineEdit_9.text(),  # 民族
             occupation=self.lineEdit_10.text(),  # 职业
-            address=self.lineEdit_9.text(),  # 地址
-            phone=self.lineEdit_10.text(),  # 联系电话
-            contact_name=self.lineEdit_11.text(),  # 联系人
-            contact_address=self.lineEdit_12.text(),  # 联系人地址
-            contact_phone= self.lineEdit_13.text(),  # 联系人电话
+            address=self.lineEdit_11.text(),  # 地址
+            phone=self.lineEdit_12.text(),  # 联系电话
+            contact_name=self.lineEdit_14.text(),  # 联系人
+            contact_address=self.lineEdit_15.text(),  # 联系人地址
+            contact_phone= self.lineEdit_16.text(),  # 联系人电话
             birth_from= self.dateTimeEdit.date().toString("yyyy-MM-dd"), # 出生年月
             birth_to= self.dateTimeEdit_2.date().toString("yyyy-MM-dd"), #
             admission_time_from = self.dateTimeEdit_6.date().toString("yyyy-MM-dd"),
@@ -363,18 +333,24 @@ class Ui_MainWindow(object):
             return
 
         # 更新表格显示
-        self.update_table(results)
+        for i, result in enumerate(results):
+            rowPosition = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(rowPosition)
 
 
-    def update_table(self, results):
-        # 清空表格
-        self.ui.tableWidget.setRowCount(len(results))
+            self.tableWidget.setItem(rowPosition, 0, QtWidgets.QTableWidgetItem(str(result[0])))
+            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(result[1])))
+            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(result[2])))
+            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(result[3])))
+            self.tableWidget.setItem(rowPosition, 4, QtWidgets.QTableWidgetItem(str(result[4])))
+            self.tableWidget.setItem(rowPosition, 5, QtWidgets.QTableWidgetItem(str(result[5])))
+            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(result[6])))
+            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(result[7])))
+            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(result[8])))
 
-        # 填充查询结果
-        for row_num, row_data in enumerate(results):
-            self.ui.tableWidget.insertRow(row_num)
-            for col_num, col_data in enumerate(row_data):
-                self.ui.tableWidget.setItem(row_num, col_num, QtWidgets.QTableWidgetItem(str(col_data)))
+    
+
+
 
 
 if __name__ == '__main__':
