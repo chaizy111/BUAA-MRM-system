@@ -14,6 +14,7 @@ from db.login_op import check_permission
 from db.normal_op import create_borrow_request
 from intermediate_data_structure.br_info import BrInfo
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -95,8 +96,8 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.pushButton.clicked.connect(self.handle_borrow)
         self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        self.pushButton.clicked.connect(self.handle_borrow) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -113,39 +114,19 @@ class Ui_MainWindow(object):
         self.label_8.setText(_translate("MainWindow", "联系电话："))
 
     def handle_borrow(self):
-        try:
-            username, ok = QInputDialog.getText(
-                None, "输入账号", "请输入您的账号："
-            )
+        br_info = BrInfo (
+            medical_record_id = self.lineEdit.text(),
+            borrowed_by = self.lineEdit_3.text(),
+            unit_name = self.lineEdit_7.text(),
+            IDcard_num = self.lineEdit_9.text(),
+            borrow_reason = self.lineEdit_4.text(),
+            contact_phone = self.lineEdit_8.text()
+        )
 
-            if not ok or not username.strip():
-                QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-                )
-                return
-
-            # 检查权限
-            if not check_permission(username.strip(), "medical_record_borrow"):
-                QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限借阅病案！", QtWidgets.QMessageBox.Ok
-                )
-                return
-
-            br_info = BrInfo(
-                medical_record_id=self.lineEdit.text().strip(),
-                borrowed_by=self.lineEdit_3.text().strip(),
-                unit_name=self.lineEdit_7.text().strip(),
-                IDcard_num=self.lineEdit_9.text().strip(),
-                borrow_reason=self.lineEdit_4.text().strip(),
-                contact_phone=self.lineEdit_8.text().strip()
-            )
-
-            if create_borrow_request(br_info):
-                QMessageBox.information(None, "成功", "借阅请求已提交！")
-            else:
-                QMessageBox.critical(None, "失败", "借阅请求提交失败！")
-        except Exception as e:
-            print(e)
+        if create_borrow_request(br_info):
+            QMessageBox.information(None, "成功", "借阅请求已提交！")
+        else:
+            QMessageBox.critical(None, "失败", "借阅请求提交失败！")
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog
 import sys
