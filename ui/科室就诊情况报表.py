@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "疾病分类年龄段报表"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "科室就诊情况报表"))
         self.label.setText(_translate("MainWindow", "时间："))
         self.label_2.setText(_translate("MainWindow", "至"))
         self.pushButton.setText(_translate("MainWindow", "查询(&S)"))
@@ -86,23 +86,6 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def on_search_button_clicked(self):
-
-        username, ok = QInputDialog.getText(
-            None, "输入账号", "请输入您的账号："
-        )
-
-        if not ok or not username.strip():
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        # 检查权限
-        if not check_permission(username.strip(), "unit_visit_report"):
-            QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
-            )
-            return
 
         """查询按钮点击事件"""
         try:

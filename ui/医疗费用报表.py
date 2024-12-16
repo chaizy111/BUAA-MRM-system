@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog
 import sys
 
-from PyQt5.uic.properties import QtGui
+
 
 import db
 from db.login_op import check_permission
