@@ -12,10 +12,14 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
 
-from db.normal_op import get_pending_requests
+from db.normal_op import get_pending_requests, change_request_status_to_approved
 
 
 class Ui_MainWindow(object):
+
+    def __init__(self, account=None):
+        self.account = account  # 存储传递的 account 值
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(786, 518)
@@ -67,6 +71,11 @@ class Ui_MainWindow(object):
         self.tableWidget.setItem(3, 6, item)
 
         self.tableWidget.itemChanged.connect(self.handle_checkbox_change)
+
+        self.confirm_button = QtWidgets.QPushButton(self.centralwidget)
+        self.confirm_button.setText("确定")
+        self.confirm_button.setGeometry(QtCore.QRect(650, 440, 100, 40))  # 设置按钮位置
+        self.confirm_button.clicked.connect(self.confirm_approval)  # 绑定点击事件
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -144,7 +153,11 @@ class Ui_MainWindow(object):
         for col, value in enumerate(data):
             table_widget.setItem(0, col, QTableWidgetItem(value))
 
-        table_window.show()
+        #table_window.show()
+
+    def confirm_approval(self, borrow_request_ids):
+        change_request_status_to_approved(borrow_request_ids, self.account)
+
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)

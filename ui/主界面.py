@@ -14,6 +14,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow1(object):
+    def __init__(self):
+        self.account = None
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(911, 718)
@@ -191,6 +194,7 @@ class Ui_MainWindow1(object):
             "actione_2": "清除病案.py",
             "actionc": "病案借阅.py",
             "actiond_2": "病案归还.py",
+            "actionjie": "借阅审批.py",
 
             "actions": "病案检索.py",
             "actiong_2": "疾病信息查询.py",
@@ -198,8 +202,8 @@ class Ui_MainWindow1(object):
             "actiona_3": "患者信息查询.py",
             "actionh": "借阅信息查询.py",
             "actionm": "入院信息查询.py",
-            "actionchu": "出院信息查询",
-            "actionjie":"借阅审批",
+            "actionchu": "出院信息查询.py",
+
 
             "actiona": "医疗费用报表.py",
             "actionb_2": "科室就诊情况报表.py",
@@ -210,18 +214,19 @@ class Ui_MainWindow1(object):
         for action_name, script_name in actions.items():
             action = getattr(self, action_name, None)
             if action:
-                action.triggered.connect(lambda _, script=script_name: self.open_script(script))
+                action.triggered.connect(lambda _, script=script_name: self.open_script(script, self.account))
+                print(self.account)
 
             # 连接退出操作槽
         self.actione.triggered.connect(self.exit_application)
         #self.loginButton.clicked.connect(lambda: self.open_script("登录.py"))
 
-    def open_script(self, script):
+    def open_script(self, script, account):
 
         s_path = os.path.join(os.getcwd(), script)
         if os.path.exists(s_path):
             try:
-                subprocess.Popen([sys.executable, s_path])  # 打开新的窗口
+                subprocess.Popen([sys.executable, s_path, account])  # 打开新的窗口
             except Exception as e:
                 print(f"Error opening script: {e}")
         else:
@@ -233,7 +238,7 @@ class Ui_MainWindow1(object):
 
     def set_username(self, account):
         self.label_username.setText(f"欢迎，{account}")
-
+        self.account = account
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
