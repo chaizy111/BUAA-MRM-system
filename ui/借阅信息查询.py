@@ -242,10 +242,7 @@ class Ui_MainWindow(object):
             approver=approver
         )
 
-        # 将查询结果填充到表格中
-        self.populate_table(results)
-
-        self.tableWidget.setRowCount(0)
+        self.tableWidget.setRowCount(len(results))
         for row_data in results:
             row_number = self.tableWidget.rowCount()
             self.tableWidget.insertRow(row_number)

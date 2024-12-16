@@ -143,12 +143,16 @@ class Ui_MainWindow(object):
         # 获取输入的日期范围和科室
         admission_start_date = self.dateTimeEdit.date().toString("yyyy-MM-dd")
         admission_end_date = self.dateTimeEdit_2.date().toString("yyyy-MM-dd")
-        unit_name = self.lineEdit.text()
+        unit_name = None
+        if self.lineEdit_2.text():
+            unit_name = self.lineEdit_2.text()
+        medical_record_id = None
+        if self.lineEdit.text():
+            medical_record_id = self.lineEdit.text()
 
         try:
             # 调用数据库查询函数
-            admission_info = search_discharge_info( unit_name, admission_start_date, admission_end_date )
-
+            admission_info = search_discharge_info(medical_record_id, unit_name, admission_start_date, admission_end_date )
             # 更新表格显示
             self.update_table(admission_info)
         except Exception as e:
