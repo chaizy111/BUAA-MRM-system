@@ -1,27 +1,30 @@
 import pymysql
 from pymysql import Error
 
+
 #################################### 数据库操作 ##############################################
-def make_connect():     # 建立数据库连接
+def make_connect():  # 建立数据库连接
     conn = pymysql.connect(
         # host='localhost',		# 主机名（或IP地址）
         # password='2003',  # 你本地的数据库密码,请自行更改
-        host='110.42.33.194',		# 主机名（或IP地址）
+        host='110.42.33.194',  # 主机名（或IP地址）
         password='123456',  # 你本地的数据库密码,请自行更改
-        port=3306,				# 端口号，默认为3306
-        user='dba',			# 用户名
-        charset='utf8mb4'  		# 设置字符编码
+        port=3306,  # 端口号，默认为3306
+        user='dba',  # 用户名
+        charset='utf8mb4'  # 设置字符编码
     )
-    conn.select_db("medical_record_management") # 选择数据库
-    cursor = conn.cursor() # 创建游标对象
+    conn.select_db("medical_record_management")  # 选择数据库
+    cursor = conn.cursor()  # 创建游标对象
     # 获取mysql服务信息（测试连接，输出MySQL版本号）
     # print(conn.get_server_info())
     return conn, cursor
 
 
-def break_connect(conn, cursor): # 断开数据库连接
+def break_connect(conn, cursor):  # 断开数据库连接
     cursor.close()
     conn.close()
+
+
 ##############################################################################################
 
 #这个方法是患者查询使用的方法
@@ -48,6 +51,7 @@ def search_patients_by_info(search_info):
     break_connect(conn, cursor)
     return patients
 
+
 #这个方法是病案查询使用的方法
 def get_medical_records_by_info(search_info):
     conn, cursor = make_connect()
@@ -69,6 +73,7 @@ def get_medical_records_by_info(search_info):
         return []
     break_connect(conn, cursor)
     return medical_records
+
 
 def search_ids_by_info(search_info, conn, cursor):
     query = """
@@ -148,6 +153,7 @@ def search_ids_by_info(search_info, conn, cursor):
     records = cursor.fetchall()
     return records
 
+
 #使用的时候要使用多次，根据下边诊断类型来决定最后一个参数，先查所有入院诊断为该疾病的病案，再查所有出院诊断为该疾病的病案，最后查病理诊断为该疾病的病案，最后组合后返回
 def search_disease_info(medical_record_number=None, patient_name=None, gender=None,
                         admission_date_from=None, admission_date_to=None,
@@ -207,6 +213,7 @@ def search_disease_info(medical_record_number=None, patient_name=None, gender=No
         return []
     break_connect(conn, cursor)
     return records
+
 
 def search_surgery_info(medical_record_number=None, patient_name=None, patient_gender=None, payment_method=None,
                         admission_date_from=None, admission_date_to=None,
@@ -282,11 +289,12 @@ def search_surgery_info(medical_record_number=None, patient_name=None, patient_g
     break_connect(conn, cursor)
     return surgery_details
 
+
 def search_return_info(medical_record_number=None, payment_method=None,
-                                   patient_name=None, borrower_name=None,
-                                   borrower_phone=None, borrower_id_card_number=None,
-                                   department=None, borrow_reason=None,
-                                   start_time=None, end_time=None):
+                       patient_name=None, borrower_name=None,
+                       borrower_phone=None, borrower_id_card_number=None,
+                       department=None, borrow_reason=None,
+                       start_time=None, end_time=None):
     conn, cursor = make_connect()
     try:
         base_query = """
@@ -345,10 +353,11 @@ def search_return_info(medical_record_number=None, payment_method=None,
     break_connect(conn, cursor)
     return records
 
+
 def search_borrow_info(medical_record_number=None, payment_method=None, patient_name=None,
-                                   borrower_name=None, borrower_phone=None, borrower_id_card_number=None,
-                                   department=None, borrow_reason=None,
-                                   start_time=None, end_time=None, approver=None):
+                       borrower_name=None, borrower_phone=None, borrower_id_card_number=None,
+                       department=None, borrow_reason=None,
+                       start_time=None, end_time=None, approver=None):
     conn, cursor = make_connect()
     try:
         base_query = """
@@ -408,6 +417,7 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
     break_connect(conn, cursor)
     return records
 
+
 def search_admission_info(admission_start_date, admission_end_date, unit_name):
     conn, cursor = make_connect()
     try:
@@ -431,6 +441,7 @@ def search_admission_info(admission_start_date, admission_end_date, unit_name):
         return []
     break_connect(conn, cursor)
     return admission_info
+
 
 def search_discharge_info(medical_record_number=None, unit_name=None, start_date=None, end_date=None):
     conn, cursor = make_connect()
@@ -470,4 +481,3 @@ def search_discharge_info(medical_record_number=None, unit_name=None, start_date
         return []
     break_connect(conn, cursor)
     return results
-
