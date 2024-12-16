@@ -51,17 +51,22 @@ class LoginWindow(QtWidgets.QWidget):
 
         if login(account, password):
             QtWidgets.QMessageBox.information(self, "登录成功", f"欢迎登录，账号：{account}")
-            self.close()
+
 
 
             self.main_window1 = QtWidgets.QMainWindow()  # 创建主窗口实例
             self.ui1 = Ui_MainWindow1()  # 创建 Ui_MainWindow 类的实例
             self.ui1.setupUi(self.main_window1)  # 设置主界面的UI
+            self.ui1.set_username(account)  # 将用户名传入主界面
+            self.close()
             self.main_window1.resize(1600, 1200)
             self.main_window1.show()
 
+
+
         else:
             QtWidgets.QMessageBox.warning(self, "登录失败", "账号或密码错误！")
+
 class RegisterWindow(QtWidgets.QWidget):
     switch_to_login = QtCore.pyqtSignal()
 

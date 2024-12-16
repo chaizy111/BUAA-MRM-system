@@ -93,9 +93,16 @@ class Ui_MainWindow1(object):
         self.actiona_3.setObjectName("actiona_3")
         self.actionchu = QtWidgets.QAction(MainWindow)
         self.actionchu.setObjectName("actionchu")
-
+        self.actionjie = QtWidgets.QAction(MainWindow)
+        self.actionjie.setObjectName("actionjie")
         # 退出操作的菜单项
         self.actione.setText("退出(&Q)")  # 修改文本为"退出(&Q)"
+
+        self.label_username = QtWidgets.QLabel(self.centralwidget)
+        self.label_username.setGeometry(QtCore.QRect(350, 50, 300, 40))  # 位置和大小
+        self.label_username.setObjectName("label_username")
+        self.label_username.setText("用户名：")  # 初始显示的文本
+
         '''
         # 添加登录按钮
         self.loginButton = QtWidgets.QPushButton(self.centralwidget)
@@ -111,6 +118,7 @@ class Ui_MainWindow1(object):
         self.menu_H.addAction(self.actionc)
         self.menu_H.addAction(self.actiond_2)
         self.menu_H.addSeparator()
+        self.menu_H.addAction(self.actionjie)
         self.menu_S.addAction(self.actions)
         self.menu_S.addSeparator()
         self.menu_S.addAction(self.actiong_2)
@@ -174,6 +182,7 @@ class Ui_MainWindow1(object):
         self.actionw.setText(_translate("MainWindow", "基本数据维护"))
         self.actiona_3.setText(_translate("MainWindow", "患者信息查询"))
         self.actionchu.setText(_translate("MainWindow", "出院信息查询"))
+        self.actionjie.setText(_translate("MainWindow", "借阅审批"))
 
     def connection(self):
         actions = {
@@ -190,6 +199,7 @@ class Ui_MainWindow1(object):
             "actionh": "借阅信息查询.py",
             "actionm": "入院信息查询.py",
             "actionchu": "出院信息查询",
+            "actionjie":"借阅审批",
 
             "actiona": "医疗费用报表.py",
             "actionb_2": "科室就诊情况报表.py",
@@ -220,6 +230,9 @@ class Ui_MainWindow1(object):
     def exit_application(self):
         """槽函数，退出应用程序"""
         QtWidgets.QApplication.quit()  # 退出应用程序
+
+    def set_username(self, account):
+        self.label_username.setText(f"欢迎，{account}")
 
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
