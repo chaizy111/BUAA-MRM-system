@@ -15,9 +15,12 @@ from PyQt5.QtWidgets import QMessageBox, QInputDialog
 
 from db.init.init_table import create_cost_table
 from db.login_op import check_permission
-from db.normal_op import create_patient
+from db.normal_op import create_patient, create_medical_record
+from db.test import MedicalRecordInfo
+from intermediate_data_structure.contact_info import ContactInfo
 from intermediate_data_structure.cost_info import CostInfo
 from intermediate_data_structure.patient_info import PatientInfo
+from intermediate_data_structure.surgery_info import SurgeryInfo
 
 
 class Ui_MainWindow(object):
@@ -71,9 +74,14 @@ class Ui_MainWindow(object):
         self.label_412 = QtWidgets.QLabel(self.layoutWidget)
         self.label_412.setObjectName("label_412")
         self.horizontalLayout_137.addWidget(self.label_412)
-        self.lineEdit_322 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_322.setObjectName("lineEdit_322")
-        self.horizontalLayout_137.addWidget(self.lineEdit_322)
+        self.dateEdit = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit.setObjectName("dateEdit")
+        self.horizontalLayout_137.addWidget(self.dateEdit)
+        '''
+        self.dateEdit = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit.setObjectName("dateEdit")
+        self.horizontalLayout_2.addWidget(self.dateEdit)
+        '''
         self.label_413 = QtWidgets.QLabel(self.layoutWidget)
         self.label_413.setObjectName("label_413")
         self.horizontalLayout_137.addWidget(self.label_413)
@@ -266,15 +274,26 @@ class Ui_MainWindow(object):
         self.label_435 = QtWidgets.QLabel(self.layoutWidget)
         self.label_435.setObjectName("label_435")
         self.horizontalLayout_147.addWidget(self.label_435)
+
+        self.dateEdit_2 = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit_2.setObjectName("dateEdit_2")
+        self.horizontalLayout_147.addWidget(self.dateEdit_2)
+        '''
         self.lineEdit_344 = QtWidgets.QLineEdit(self.layoutWidget)
         self.lineEdit_344.setObjectName("lineEdit_344")
         self.horizontalLayout_147.addWidget(self.lineEdit_344)
+        '''
         self.label_439 = QtWidgets.QLabel(self.layoutWidget)
         self.label_439.setObjectName("label_439")
         self.horizontalLayout_147.addWidget(self.label_439)
+        self.dateEdit_3 = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit_3.setObjectName("dateEdit_3")
+        self.horizontalLayout_147.addWidget(self.dateEdit_3)
+        '''
         self.lineEdit_348 = QtWidgets.QLineEdit(self.layoutWidget)
         self.lineEdit_348.setObjectName("lineEdit_348")
         self.horizontalLayout_147.addWidget(self.lineEdit_348)
+        '''
         self.label_436 = QtWidgets.QLabel(self.layoutWidget)
         self.label_436.setObjectName("label_436")
         self.horizontalLayout_147.addWidget(self.label_436)
@@ -317,12 +336,14 @@ class Ui_MainWindow(object):
         self.comboBox_23.addItem("")
         self.comboBox_23.addItem("")
         self.comboBox_23.addItem("")
+        self.comboBox_23.addItem("")
         self.horizontalLayout_151.addWidget(self.comboBox_23)
         self.label_452 = QtWidgets.QLabel(self.layoutWidget)
         self.label_452.setObjectName("label_452")
         self.horizontalLayout_151.addWidget(self.label_452)
         self.comboBox_24 = QtWidgets.QComboBox(self.layoutWidget)
         self.comboBox_24.setObjectName("comboBox_24")
+        self.comboBox_24.addItem("")
         self.comboBox_24.addItem("")
         self.comboBox_24.addItem("")
         self.comboBox_24.addItem("")
@@ -686,16 +707,15 @@ class Ui_MainWindow(object):
 
         # 连接滚动条信号到槽函数
         self.verticalScrollBar.valueChanged.connect(self.scroll_frame)
-        self.pushButton.clicked.connect(self.save_patient_info)  # 绑定保存按钮的点击事件
-
+        self.pushButton.clicked.connect(self.save)  # 绑定保存按钮的点击事件
 
         self.retranslateUi(MainWindow)
-        self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        self.pushButton_2.clicked.connect(MainWindow.close)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "新建病案"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "病案底板"))
         self.label.setText(_translate("MainWindow", "病案首页"))
         self.label_410.setText(_translate("MainWindow", "姓名："))
         self.label_411.setText(_translate("MainWindow", "性别："))
@@ -710,7 +730,7 @@ class Ui_MainWindow(object):
         self.label_418.setText(_translate("MainWindow", "证件号码："))
         self.label_419.setText(_translate("MainWindow", "职业："))
         self.label_420.setText(_translate("MainWindow", "民族："))
-        self.label_421.setText(_translate("MainWindow", "婚姻："))
+        self.label_421.setText(_translate("MainWindow", "婚姻状况："))
         self.label_422.setText(_translate("MainWindow", "现住址："))
         self.label_423.setText(_translate("MainWindow", "电话："))
         self.label_424.setText(_translate("MainWindow", "户口地址："))
@@ -742,10 +762,12 @@ class Ui_MainWindow(object):
         self.comboBox_23.setItemText(2, _translate("MainWindow", "O"))
         self.comboBox_23.setItemText(3, _translate("MainWindow", "AB"))
         self.comboBox_23.setItemText(4, _translate("MainWindow", "不详"))
+        self.comboBox_23.setItemText(5, _translate("MainWindow", "未查"))
         self.label_452.setText(_translate("MainWindow", "Rh："))
         self.comboBox_24.setItemText(0, _translate("MainWindow", "阴"))
         self.comboBox_24.setItemText(1, _translate("MainWindow", "阳"))
         self.comboBox_24.setItemText(2, _translate("MainWindow", "不详"))
+        self.comboBox_24.setItemText(3, _translate("MainWindow", "未查"))
         self.label_459.setText(_translate("MainWindow", "主治医师："))
         item = self.tableWidget_14.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "操作编码"))
@@ -810,55 +832,127 @@ class Ui_MainWindow(object):
             """根据滚动条的值移动 frame 内容"""
             self.frame.move(self.frame.x(), 0 - value)  # 更新 Y 轴位置
 
-    def save_patient_info(self):
-
-            username, ok = QInputDialog.getText(
-                None, "输入账号", "请输入您的账号："
-            )
-
-            if not ok or not username.strip():
-                QtWidgets.QMessageBox.warning(
-                    None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-                )
-                return
-
-        # 检查权限
-            if not check_permission(username.strip(), "medical_record_create"):
-                QtWidgets.QMessageBox.critical(
-                    None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
-                )
-                return
+    def save(self):
             try:
                 # 按顺序提取用户输入信息
-                name = self.lineEdit_410.text()  # 姓名
+                name = self.lineEdit_321.text()  # 姓名
                 gender = "男" if self.checkBox_21.isChecked() else "女"  # 性别
-                birth_date = self.lineEdit_412.text()  # 出生日期
-                age = self.lineEdit_413.text()  # 年龄
-                nationality = self.lineEdit_414.text()  # 国籍
-                place_of_birth = self.lineEdit_415.text()  # 出生地
-                ethnicity = self.lineEdit_420.text()  # 民族
-                id_card_number = self.lineEdit_418.text()  # 身份证件号码
-                occupation = self.lineEdit_419.text()  # 职业
-                marital_status = self.lineEdit_421.text()  # 婚姻状态
-                current_address = self.lineEdit_422.text()  # 现住址
-                phone = self.lineEdit_423.text()  # 电话
-                household_address = self.lineEdit_424.text()  # 户口地址
-                workplace = self.lineEdit_425.text()  # 工作单位
-                workplace_address = self.lineEdit_426.text()  # 工作单位地址
-                workplace_phone = self.lineEdit_427.text()  # 工作单位电话
-                contact_name = self.lineEdit_428.text()  # 联系人姓名
-                relationship = self.lineEdit_429.text()  # 与患者关系
-                contact_address = self.lineEdit_430.text()  # 联系人地址
-                contact_phone = self.lineEdit_431.text()  # 联系人电话
+                birth_date = self.dateEdit.text()  # 出生日期
+                age = int(self.lineEdit_323.text())  # 年龄
+                nationality = self.lineEdit_324.text()  # 国籍
+                place_of_birth = self.lineEdit_325.text()  # 出生地
+                ethnicity = self.lineEdit_330.text()  # 民族
+                id_card_number = self.lineEdit_328.text()  # 身份证件号码
+                occupation = self.lineEdit_329.text()  # 职业
+                marital_status = self.lineEdit_331.text()  # 婚姻状态
+                current_address = self.lineEdit_332.text()  # 现住址
+                phone = self.lineEdit_333.text()  # 电话
+                household_address = self.lineEdit_334.text()  # 户口地址
+
+                # contact
+                name2 = self.lineEdit_338.text()
+                relationship = self.lineEdit_339.text()
+                address = self.lineEdit_340.text()
+                phone2 = self.lineEdit_341.text()
+
+                admission_date = self.dateEdit_2.date()
+                discharge_date = self.dateEdit_3.date()
+                doctor_name = self.lineEdit_364.text()
+                pathological_diagnosis_id = self.lineEdit_354.text()
+
+                # bloodtype
+                shi = self.comboBox_23.currentIndex() + 1
+                ge = self.comboBox_24.currentIndex() + 1
+                bloodtype = shi * 10 + ge
+
+                # cost
+                # 假设你的QLineEdit控件是从lineEdit_372到lineEdit_399的顺序，并且这些控件的顺序与费用种类一致
+
+                # 初始化一个空列表，准备存储 cost_infos
+                cost_infos = []
+
+                # 定义费用类型列表
+                kind_list = [
+                    "一般医疗服务费", "一般治疗操作费", "护理费", "其他费用", "病理诊断费", "实验室诊断费",
+                    "影像学诊断费", "临床诊断项目费", "非手术治疗项目费", "临床物理治疗费", "手术治疗费",
+                    "麻醉费", "手术费", "康复费", "中医治疗费", "西药费", "抗菌药物费用",
+                    "中成药费", "中草药费", "血费", "白蛋白类制品费", "球蛋白类制品费",
+                    "凝血因子类制品费", "细胞因子类制品费", "检查用一次性医用材料费",
+                    "治疗用一次性医用材料费", "手术用一次性医用材料费", "其他费"
+                ]
+
+                # 获取所有的QLineEdit控件（根据控件名称或其他方式）
+                line_edit_list = [
+                    self.lineEdit_372, self.lineEdit_373, self.lineEdit_374, self.lineEdit_375,
+                    self.lineEdit_376, self.lineEdit_377, self.lineEdit_378, self.lineEdit_379,
+                    self.lineEdit_380, self.lineEdit_381, self.lineEdit_382, self.lineEdit_383,
+                    self.lineEdit_384, self.lineEdit_385, self.lineEdit_386, self.lineEdit_387,
+                    self.lineEdit_388, self.lineEdit_389, self.lineEdit_390, self.lineEdit_391,
+                    self.lineEdit_392, self.lineEdit_393, self.lineEdit_394, self.lineEdit_395,
+                    self.lineEdit_396, self.lineEdit_397, self.lineEdit_398, self.lineEdit_399
+                ]
+
+                # 遍历每个QLineEdit，并将其内容存入cost_infos列表
+                for i, line_edit in enumerate(line_edit_list):
+                    # 获取当前QLineEdit的文本内容
+                    num_text = line_edit.text()
+
+                    # 如果文本内容不为空，转换为数字
+                    if num_text:
+                        try:
+                            num = float(num_text)  # 将文本转为浮动类型的数值
+                        except ValueError:
+                            num = 0  # 如果转换失败，赋默认值0
+
+                        # 创建CostInfo对象并添加到cost_infos列表中
+                        cost_info = CostInfo(kind_list[i], num)
+                        cost_infos.append(cost_info)
+
+                # surgery
+                # 获取表格的数据并填充到 surgery_infos 列表中
+                surgery_infos = []  # 用于存储填充的手术信息
+
+                # 遍历表格的每一行
+                for row in range(self.tableWidget_14.rowCount()):
+                    # 获取各列的值
+                    surgery_date = self.tableWidget_14.item(row, 1).text()  # 手术日期
+                    surgery_name = self.tableWidget_14.item(row, 2).text()  # 手术名称
+                    surgery_level = self.tableWidget_14.item(row, 3).text()  # 手术级别
+                    surgeon_name = self.tableWidget_14.item(row, 4).text()  # 手术及操作人员（包含主刀、副刀）
+
+                    # 提取主刀和副刀的姓名
+                    if "主刀:" in surgeon_name and "副刀:" in surgeon_name:
+                        surgeon_name, assistant_surgeon_name = surgeon_name.split("主刀:")[1].split("副刀:")
+                        surgeon_name = surgeon_name.strip()
+                        assistant_surgeon_name = assistant_surgeon_name.strip()
+                    else:
+                        surgeon_name = ""
+                        assistant_surgeon_name = ""
+
+                    # 创建手术信息对象并添加到列表
+                    surgery_info = SurgeryInfo(surgery_date, surgery_name, surgeon_name, assistant_surgeon_name)
+                    surgery_infos.append(surgery_info)
+
+                index = self.comboBox_25.currentIndex()
+                payment = self.comboBox_25.itemText(index)
+                '''
+                workplace = self.lineEdit_333.text()  # 工作单位
+                workplace_address = self.lineEdit_334.text()  # 工作单位地址
+                workplace_phone = self.lineEdit_335.text()  # 工作单位电话
+                contact_name = self.lineEdit_336.text()  # 联系人姓名
+                relationship = self.lineEdit_337.text()  # 与患者关系
+                contact_address = self.lineEdit_338.text()  # 联系人地址
+                contact_phone = self.lineEdit_339.text()  # 联系人电话
                 admission_pathway = self.comboBox_21.currentText()  # 入院途径
-                outpatient_diagnosis = self.lineEdit_433.text()  # 门(急)诊诊断
-                outpatient_code = self.lineEdit_434.text()  # 门(急)诊诊断编码
-                discharge_diagnosis = self.lineEdit_438.text()  # 出院诊断
-                discharge_code = self.lineEdit_440.text()  # 出院诊断编码
-                admission_date = self.lineEdit_435.text()  # 入院日期
-                discharge_date = self.lineEdit_439.text()  # 出院日期
-                department = self.lineEdit_436.text()  # 科别
-                ward = self.lineEdit_437.text()  # 病房
+                outpatient_diagnosis = self.lineEdit_340.text()  # 门(急)诊诊断
+                outpatient_code = self.lineEdit_341.text()  # 门(急)诊诊断编码
+                discharge_diagnosis = self.lineEdit_342.text()  # 出院诊断
+                discharge_code = self.lineEdit_343.text()  # 出院诊断编码
+                admission_date = self.lineEdit_344.text()  # 入院日期
+                discharge_date = self.lineEdit_345.text()  # 出院日期
+                department = self.lineEdit_346.text()  # 科别
+                ward = self.lineEdit_347.text()  # 病房
+                '''
 
                 # 创建 PatientInfo 对象
                 patient_info = PatientInfo(
@@ -874,47 +968,37 @@ class Ui_MainWindow(object):
                     marital_status=marital_status,
                     current_address=current_address,
                     phone=phone,
-                    household_address=household_address,
-                    workplace=workplace,
-                    workplace_address=workplace_address,
-                    workplace_phone=workplace_phone,
-                    contact_name=contact_name,
-                    relationship=relationship,
-                    contact_address=contact_address,
-                    contact_phone=contact_phone,
-                    admission_pathway=admission_pathway,
-                    outpatient_diagnosis=outpatient_diagnosis,
-                    outpatient_code=outpatient_code,
-                    discharge_diagnosis=discharge_diagnosis,
-                    discharge_code=discharge_code,
-                    admission_date=admission_date,
-                    discharge_date=discharge_date,
-                    department=department,
-                    ward=ward
+                    postal_code=None,
+                    household_address=household_address
                 )
 
-                # 保存 PatientInfo
-                create_patient(patient_info)
+                contact_info = ContactInfo(
+                    patient_id=None,
+                    name=name2,
+                    relationship=relationship,
+                    address=address,
+                    phone=phone2
+                )
 
-                # 提取费用信息
-                cost_info_list = []
-                # 按编号规律动态提取费用种类和金额
-                for i in range(471, 511, 2):  # 费用种类从 label_471 到 label_510，每两步一个费用种类
-                    kind_widget = getattr(self, f"lineEdit_{i}", None)  # 种类输入框编号与种类标签对应
-                    num_widget = getattr(self, f"lineEdit_{i + 1}", None)  # 金额输入框编号紧跟其后
+                medical_record_info = MedicalRecordInfo(
+                    patient_info=patient_info,
+                    contact_info=contact_info,
+                    admission_date=admission_date,
+                    discharge_date=discharge_date,
+                    unit_name=None,
+                    admission_diagnosis_id=None,
+                    discharge_diagnosis_id=None,
+                    pathological_diagnosis_id=pathological_diagnosis_id,
+                    blood_type=bloodtype,
+                    doctor_name=doctor_name,
+                    surgery_infos=surgery_infos,
+                    ward_infos=None,
+                    cost_infos=cost_infos,
+                    payment_method=payment
+                )
 
-                    if kind_widget and num_widget:
-                        kind = kind_widget.text()
-                        num = num_widget.text()
+                create_medical_record(medical_record_info)
 
-                        if kind and num:  # 确保种类和金额不为空
-                            cost_info_list.append(CostInfo(kind=kind, num=num))
-
-                # 保存费用信息
-                for cost_info in cost_info_list:
-                    create_cost_table(cost_info)
-
-                # 保存成功提示
                 QMessageBox.information(self, "成功", "病案和费用信息已成功保存！")
             except Exception as e:
                 QMessageBox.critical(self, "错误", f"保存失败: {str(e)}")
