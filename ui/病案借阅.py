@@ -96,6 +96,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        self.pushButton.clicked.connect(self.handle_borrow) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -112,31 +113,13 @@ class Ui_MainWindow(object):
         self.label_8.setText(_translate("MainWindow", "联系电话："))
 
     def handle_borrow(self):
-
-        username, ok = QInputDialog.getText(
-            None, "输入账号", "请输入您的账号："
-        )
-
-        if not ok or not username.strip():
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        # 检查权限
-        if not check_permission(username.strip(), "medical_record_borrow"):
-            QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限借阅病案！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
         br_info = {
-            'record_id': self.lineEdit.text().strip(),
-            'borrower_name': self.lineEdit_borrower.text().strip(),
-            'department': self.lineEdit_7.text().strip(),
-            'id_card': self.lineEdit_9.text().strip(),
-            'reason': self.lineEdit_4.text().strip(),
-            'contact': self.lineEdit_8.text().strip()
+            'record_id': self.lineEdit.text(),
+            'borrower_name': self.lineEdit_3.text(),
+            'department': self.lineEdit_7.text(),
+            'id_card': self.lineEdit_9.text(),
+            'reason': self.lineEdit_4.text(),
+            'contact': self.lineEdit_8.text()
         }
         if not all(br_info.values()):
             QMessageBox.warning(None, "警告", "请完整填写所有信息！")

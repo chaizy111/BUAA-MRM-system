@@ -54,30 +54,12 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "删除病案"))
         self.pushButton.setText(_translate("MainWindow", "作废[&S]"))
         self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
         self.label.setText(_translate("MainWindow", "病案号："))
 
     def on_delete_clicked(self):
-        """点击作废按钮后触发的逻辑"""
-        username, ok = QInputDialog.getText(
-            None, "输入账号", "请输入您的账号："
-        )
-
-        if not ok or not username.strip():
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        # 检查权限
-        if not check_permission(username.strip(), "medical_record_update"):
-            QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限删除病案！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
         recordID = self.lineEdit.text().strip()
         if not recordID:
             QMessageBox.warning(self.centralwidget, "输入错误", "请输入病案号！")

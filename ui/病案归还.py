@@ -97,23 +97,6 @@ class Ui_MainWindow(object):
 
     def handle_return(self):
 
-        username, ok = QInputDialog.getText(
-            None, "输入账号", "请输入您的账号："
-        )
-
-        if not ok or not username.strip():
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        # 检查权限
-        if not check_permission(username.strip(), "medical_record_return"):
-            QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限归还病案！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
         return_info = {
             'record_id': self.lineEdit.text().strip(),
             'borrower_name': self.lineEdit_3.text().strip(),

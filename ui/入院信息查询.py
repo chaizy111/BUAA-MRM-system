@@ -129,24 +129,6 @@ class Ui_MainWindow(object):
 
 
     def on_search_clicked(self):
-
-        username, ok = QInputDialog.getText(
-            None, "输入账号", "请输入您的账号："
-        )
-
-        if not ok or not username.strip():
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        # 检查权限
-        if not check_permission(username.strip(), "admission_info_search"):
-            QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限查询！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
         # 获取输入的日期范围和科室
         admission_start_date = self.dateTimeEdit.date().toString("yyyy-MM-dd")
         admission_end_date = self.dateTimeEdit_2.date().toString("yyyy-MM-dd")
