@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 import sys
 
-from db.search_op import search_disease_info
+from db.search_op import search_disease_info, search_return_info
 from intermediate_data_structure.search_info import SearchInfo
 
 
@@ -277,24 +277,22 @@ class Ui_MainWindow(object):
 
     def openQueryDialog(self):
 
-        search_info = SearchInfo(
-            medical_record_number=self.lineEdit.text(),  # 假设病历号是lineEdit控件
-            patient_name=self.lineEdit_4.text(),  # 假设患者姓名是lineEdit_4控件
-            gender=self.lineEdit_5.text(),
-            payment_method=self.comboBox.currentText(),  # 医疗付款方式，假设用comboBox控件
-            disease_name=self.lineEdit_18.text(),
-            department=self.lineEdit_20.text(),
+        search_info = {
+            "medical_record_number": self.lineEdit.text(),  # 假设病历号是lineEdit控件
+            "patient_name": self.lineEdit_4.text(),  # 假设患者姓名是lineEdit_4控件
+            "gender": self.lineEdit_5.text(),
+            "disease_name": self.lineEdit_18.text(),
+            "unit_name": self.lineEdit_20.text(),
+            "admission_date_from": self.dateTimeEdit_6.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
+            "admission_date_to": self.dateTimeEdit_4.dateTime().toString('yyyy-MM-dd'),  # 入院时间结束
+            "discharge_date_from": self.dateTimeEdit_5.dateTime().toString('yyyy-MM-dd'),  # 出院时间开始
+            "discharge_date_to": self.dateTimeEdit_3.dateTime().toString('yyyy-MM-dd'),  # 出院时间结束
+        }
 
-            birth_from=self.dateTimeEdit.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
-            birth_to=self.dateTimeEdit_2.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
-            admission_time_from=self.dateTimeEdit_6.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
-            admission_time_to=self.dateTimeEdit_4.dateTime().toString('yyyy-MM-dd'),  # 入院时间结束
-            discharge_time_from=self.dateTimeEdit_5.dateTime().toString('yyyy-MM-dd'),  # 出院时间开始
-            discharge_time_to=self.dateTimeEdit_3.dateTime().toString('yyyy-MM-dd'),  # 出院时间结束
-        )
+        search_info = {k: v for k, v in search_info.items() if len(v) > 0}
 
         # 调用查询函数，将字典传递给查询函数
-        records = search_disease_info(search_info)
+        records = search_disease_info(**search_info)
 
             # 清空现有表格内容
         self.tableWidget.setRowCount(0)
