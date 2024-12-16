@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from db.login_op import check_permission
 from db.normal_op import create_borrow_request
+from intermediate_data_structure.br_info import BrInfo
 
 
 class Ui_MainWindow(object):
@@ -113,17 +114,14 @@ class Ui_MainWindow(object):
         self.label_8.setText(_translate("MainWindow", "联系电话："))
 
     def handle_borrow(self):
-        br_info = {
-            'record_id': self.lineEdit.text(),
-            'borrower_name': self.lineEdit_3.text(),
-            'department': self.lineEdit_7.text(),
-            'id_card': self.lineEdit_9.text(),
-            'reason': self.lineEdit_4.text(),
-            'contact': self.lineEdit_8.text()
-        }
-        if not all(br_info.values()):
-            QMessageBox.warning(None, "警告", "请完整填写所有信息！")
-            return
+        br_info = BrInfo (
+            medical_record_id = self.lineEdit.text(),
+            borrowed_by = self.lineEdit_3.text(),
+            unit_name = self.lineEdit_7.text(),
+            IDcard_num = self.lineEdit_9.text(),
+            borrow_reason = self.lineEdit_4.text(),
+            contact_phone = self.lineEdit_8.text()
+        )
 
         if create_borrow_request(br_info):
             QMessageBox.information(None, "成功", "借阅请求已提交！")
