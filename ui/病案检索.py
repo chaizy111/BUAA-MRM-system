@@ -155,24 +155,20 @@ class Ui_MainWindow(object):
 
     def search_disease(self):
         diseases = search_disease_info()
-        self.tableWidget.setRowCount(0)
+        self.tableWidget.clear()
+        self.tableWidget.setColumnCount(8)
 
         # Populate the table with the fetched data
         for i, disease in enumerate(diseases):
-            rowPosition = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(rowPosition)
-
-
-            self.tableWidget.setItem(rowPosition, 0, QtWidgets.QTableWidgetItem(str(disease[0])))
-            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(disease[1])))
-            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(disease[2])))
-            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(disease[3])))
-            self.tableWidget.setItem(rowPosition, 4, QtWidgets.QTableWidgetItem(str(disease[4])))
-            self.tableWidget.setItem(rowPosition, 5, QtWidgets.QTableWidgetItem(str(disease[5])))
-            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(disease[6])))
-            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(disease[7])))
-            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(disease[8])))
-
+            self.tableWidget.insertRow(i)
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(disease[0])))
+            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(str(disease[1])))
+            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(str(disease[2])))
+            self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem(str(disease[3])))
+            self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(str(disease[4])))
+            self.tableWidget.setItem(i, 5, QtWidgets.QTableWidgetItem(str(disease[5])))
+            self.tableWidget.setItem(i, 6, QtWidgets.QTableWidgetItem(str(disease[6])))
+            self.tableWidget.setItem(i, 7, QtWidgets.QTableWidgetItem(str(disease[7])))
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys

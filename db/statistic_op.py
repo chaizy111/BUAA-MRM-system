@@ -1,7 +1,7 @@
 import pymysql
 from db.search_op import *
 from pymysql import Error
-import pandas as pd
+# import pandas as pd
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(

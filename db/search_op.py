@@ -141,7 +141,8 @@ def search_ids_by_info(search_info, conn, cursor):
         conditions.append("DATEDIFF(m.DischargeDate, m.AdmissionDate) BETWEEN %s AND %s")
         values.extend([search_info.days_from, search_info.days_to])
 
-    query += " AND " + " AND ".join(conditions)
+    if conditions:
+        query += " AND " + " AND ".join(conditions)
 
     cursor.execute(query, values)
     records = cursor.fetchall()
@@ -194,7 +195,8 @@ def search_disease_info(medical_record_number=None, patient_name=None, gender=No
         elif diagnosis_type == 'Pathological':
             conditions.append("m.PathologicalDiagnosisID IS NOT NULL")
 
-        query += " AND " + " AND ".join(conditions)
+        if conditions:
+            query += " AND " + " AND ".join(conditions)
 
         cursor.execute(query, values)
         records = cursor.fetchall()
