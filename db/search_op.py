@@ -406,7 +406,7 @@ def search_borrow_info(medical_record_number=None, payment_method=None, patient_
     break_connect(conn, cursor)
     return records
 
-def search_admission_info(admission_start_date, admission_end_date, unit_name=None):
+def search_admission_info(admission_start_date, admission_end_date, unit_name):
     conn, cursor = make_connect()
     try:
         query = """
@@ -414,9 +414,9 @@ def search_admission_info(admission_start_date, admission_end_date, unit_name=No
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
         JOIN Unit u ON m.UnitID = u.UnitID
-        WHERE m.AdmissionDate BETWEEN %s AND %s AND u.Name = %s
+        WHERE u.Name LIKE %s AND m.AdmissionDate BETWEEN %s AND %s 
         """
-        cursor.execute(query, (admission_start_date, admission_end_date, unit_name))
+        cursor.execute(query, (unit_name, admission_start_date, admission_end_date))
         admission_info = cursor.fetchall()
     except Error as e:
         conn.rollback()  # 回滚事务，以防部分删除操作成功
