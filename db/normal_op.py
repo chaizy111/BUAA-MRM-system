@@ -70,7 +70,6 @@ def create_medical_record(medical_record_info):
                                         medical_record_info.payment_method
                                   ))
         conn.commit()
-        break_connect(conn, cursor)
         medical_record_id = get_medicalRecordId_by_patientId(medical_record_info.patient_info.id_card_number, conn, cursor)
         for surgery_info in medical_record_info.surgery_infos:
             create_surgery(medical_record_id, surgery_info, conn, cursor)
