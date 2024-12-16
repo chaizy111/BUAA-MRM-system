@@ -16,3 +16,4 @@ class MedicalRecordInfo:
         self.ward_infos = ward_infos
         self.cost_infos = cost_infos
         self.payment_method = payment_method
+
