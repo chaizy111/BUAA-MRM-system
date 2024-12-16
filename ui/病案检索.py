@@ -10,7 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from db.search_op import search_disease_info
+from db.search_op import search_disease_info, get_medical_records_by_info
+from intermediate_data_structure.search_info import SearchInfo
 
 
 class Ui_MainWindow(object):
@@ -152,9 +153,30 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "患者姓名："))
         self.label_7.setText(_translate("MainWindow", "性别："))
         self.label_8.setText(_translate("MainWindow", "年龄："))
+        self.lineEdit.setText("1")
+        self.lineEdit_4.setText("4")
+        self.lineEdit_5.setText("5")
+        self.lineEdit_6.setText("6")
+        self.lineEdit_2.setText("2")
+        self.lineEdit_3.setText("3")
+        self.lineEdit_11.setText("11")
+        self.lineEdit_8.setText("8")
+        self.lineEdit_7.setText("7")
 
     def search_disease(self):
-        diseases = search_disease_info()
+        gender = self.lineEdit_6.text()
+        medical_record_number = self.lineEdit_2.text()
+        payment_method = self.lineEdit.text()
+        patient_name = self.lineEdit_5.text()
+        search_info = SearchInfo (
+            gender=gender,
+            medical_record_number = medical_record_number,
+            payment_method = payment_method,
+            patient_name = patient_name
+        )
+
+
+        diseases = get_medical_records_by_info(search_info)
         self.tableWidget.setRowCount(0)
 
         # Populate the table with the fetched data
