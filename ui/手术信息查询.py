@@ -36,24 +36,14 @@ class Ui_MainWindow1(object):
         self.pushButton_2.setObjectName("pushButton_2")
         '''
 
-        # 添加表格
-        self.tableWidget = QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(50, 120, 700, 400))
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(50, 350, 700, 200))
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(6)  # 设置列数
-        self.tableWidget.setHorizontalHeaderLabels(
-            ["病历号", "患者姓名", "性别", "手术时间", "手术名称", "医师"])  # 设置表头
+        self.tableWidget.setColumnCount(6)
+        self.tableWidget.setHorizontalHeaderLabels([
+            "病历号", "患者姓名", "性别", "手术日期", "手术名称", "医生名称"
 
-        # 示例数据填充
-        self.tableWidget.setRowCount(3)  # 设置行数
-        sample_data = [
-            ["001", "张三", "男", "2023-12-01", "阑尾切除术", "李医生"],
-            ["002", "李四", "女", "2023-12-02", "胆囊切除术", "王医生"],
-            ["003", "王五", "男", "2023-12-03", "心脏搭桥术", "张医生"],
-        ]
-        for row_idx, row_data in enumerate(sample_data):
-            for col_idx, value in enumerate(row_data):
-                self.tableWidget.setItem(row_idx, col_idx, QTableWidgetItem(value))
+        ])
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -273,11 +263,6 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
-        """打开查询条件窗口"""
-        self.queryDialog = QtWidgets.QMainWindow()  # 创建一个新的窗口实例
-        self.ui_query = Ui_MainWindow1()  # 创建查询条件窗口的UI实例
-        self.ui_query.setupUi(self.queryDialog)  # 初始化查询条件窗口的UI
-        self.queryDialog.show()  # 显示查询条件窗口
 
         search_info = {
             "medical_record_number": self.ui.lineEdit.text(),  # 病历号
@@ -309,13 +294,13 @@ class Ui_MainWindow(object):
 
     def update_table(self, results):
         # 清空表格
-        self.ui.tableWidget.setRowCount(0)
+        self.tableWidget.setRowCount(0)
 
         # 填充查询结果
         for row_num, row_data in enumerate(results):
-            self.ui.tableWidget.insertRow(row_num)
+            self.ableWidget.insertRow(row_num)
             for col_num, col_data in enumerate(row_data):
-                self.ui.tableWidget.setItem(row_num, col_num, QtWidgets.QTableWidgetItem(str(col_data)))
+                self.tableWidget.setItem(row_num, col_num, QtWidgets.QTableWidgetItem(str(col_data)))
 
 
 if __name__ == '__main__':

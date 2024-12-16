@@ -212,7 +212,14 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addWidget(self.checkBox_3)
         self.verticalLayout.addLayout(self.horizontalLayout_7)
 
-
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(50, 350, 700, 200))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(8)
+        self.tableWidget.setHorizontalHeaderLabels([
+            "病历号", "患者姓名", "性别", "出生年月", "科室名", "住院时长",
+             "疾病编码", "疾病名称"
+        ])
 
 
 
@@ -269,11 +276,6 @@ class Ui_MainWindow(object):
         self.lineEdit_18.setText("18")
 
     def openQueryDialog(self):
-        """打开查询条件窗口"""
-        self.queryDialog = QtWidgets.QMainWindow()
-        self.ui_query = Ui_MainWindow2()
-        self.ui_query.setupUi(self.queryDialog)
-        self.queryDialog.show()
 
         search_info = SearchInfo(
             medical_record_number=self.lineEdit.text(),  # 假设病历号是lineEdit控件
