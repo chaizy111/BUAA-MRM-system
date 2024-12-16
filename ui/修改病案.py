@@ -1060,7 +1060,6 @@ class Ui_MainWindow1(object):
                                             QtWidgets.QTableWidgetItem(str(ward_info.end_time)))
 
             '''
-
             self.label_433.setText(medical_record_info.get("admission_diagnosis", ""))  # 入院诊断
             self.label_434.setText(medical_record_info.get("admission_diagnosis_code", ""))  # 疾病编码
             self.label_438.setText(medical_record_info.get("discharge_diagnosis", ""))  # 出院诊断
