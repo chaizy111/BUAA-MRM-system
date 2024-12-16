@@ -11,9 +11,10 @@ import sys
 import os  # 用于运行外部脚本
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QInputDialog
+from pymysql import connect
 
 from db.login_op import check_permission
-from db.normal_op import delete_record_by_recordID, get_record_by_recordID
+from db.normal_op import delete_record_by_recordID, get_record_by_recordID, create_medical_record
 from db.search_op import search_patients_by_info
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -23,13 +24,111 @@ from db.init.init_table import create_cost_table
 from db.login_op import check_permission
 from db.normal_op import create_patient
 from intermediate_data_structure import medical_record_info
+from intermediate_data_structure.contact_info import ContactInfo
 from intermediate_data_structure.cost_info import CostInfo
+from intermediate_data_structure.medical_record_info import MedicalRecordInfo
 from intermediate_data_structure.patient_info import PatientInfo
+from intermediate_data_structure.surgery_info import SurgeryInfo
+
+global_variable = None
 
 
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(883, 650)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(400, 50, 75, 23))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setGeometry(QtCore.QRect(520, 50, 75, 23))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.widget = QtWidgets.QWidget(self.centralwidget)
+        self.widget.setGeometry(QtCore.QRect(60, 50, 187, 21))
+        self.widget.setObjectName("widget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label = QtWidgets.QLabel(self.widget)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
+        self.lineEdit = QtWidgets.QLineEdit(self.widget)
+        self.lineEdit.setObjectName("lineEdit")
+        self.horizontalLayout.addWidget(self.lineEdit)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        # 添加信号和槽
+        self.pushButton.clicked.connect(self.open_new_case)  # 点击“查找”按钮
+        self.pushButton_2.clicked.connect(MainWindow.close)  # 点击“关闭”按钮
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "修改病案"))
+        self.pushButton.setText(_translate("MainWindow", "查找[&S]"))
+        self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
+        self.label.setText(_translate("MainWindow", "病案号："))
+
+    def open_new_case(self):
+        search_info = self.lineEdit.text()  # 获取病案号
+        global_variable = search_info;
+        if not search_info:
+            QtWidgets.QMessageBox.warning(
+                None, "输入错误", "请输入病案号！", QtWidgets.QMessageBox.Ok
+            )
+            return
+
+        try:
+            # 获取病案信息
+            medical_record_info = get_record_by_recordID(search_info)
+
+            print("患者信息:", medical_record_info.patient_info)
+            print("联系方式:", medical_record_info.contact_info)
+            print("手术信息:", medical_record_info.surgery_infos)
+            print("住院信息:", medical_record_info.ward_infos)
+            print("费用信息:", medical_record_info.cost_infos)
+            print("入院日期:", medical_record_info.admission_date)
+            print("出院日期:", medical_record_info.discharge_date)
+            print("科室名称:", medical_record_info.unit_name)
+            print("入院诊断ID:", medical_record_info.admission_diagnosis_id)
+            print("出院诊断ID:", medical_record_info.discharge_diagnosis_id)
+            print("病理诊断ID:", medical_record_info.pathological_diagnosis_id)
+            print("主治医师:", medical_record_info.doctor_name)
+            print("血型:", medical_record_info.blood_type)
+            print("支付方式:", medical_record_info.payment_method)
+
+            if not medical_record_info:
+                QtWidgets.QMessageBox.warning(
+                    None, "未找到病案", "没有找到相关病案！", QtWidgets.QMessageBox.Ok
+                )
+                return
+
+
+
+            QtWidgets.QMessageBox.information(
+                None, "成功", "病案信息已加载！", QtWidgets.QMessageBox.Ok
+            )
+
+            self.case_base_window = QtWidgets.QMainWindow()
+            self.ui_case_base = Ui_MainWindow1()
+            self.ui_case_base.setupUi(self.case_base_window)
+            self.ui_case_base.fill_medical_record(medical_record_info)
+            self.case_base_window.show()
+
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(
+                None, "错误", f"发生错误：{str(e)}", QtWidgets.QMessageBox.Ok
+            )
 
 class Ui_MainWindow1(object):
-
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(989, 600)
@@ -80,9 +179,14 @@ class Ui_MainWindow1(object):
         self.label_412 = QtWidgets.QLabel(self.layoutWidget)
         self.label_412.setObjectName("label_412")
         self.horizontalLayout_137.addWidget(self.label_412)
-        self.lineEdit_322 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_322.setObjectName("lineEdit_322")
-        self.horizontalLayout_137.addWidget(self.lineEdit_322)
+        self.dateEdit = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit.setObjectName("dateEdit")
+        self.horizontalLayout_137.addWidget(self.dateEdit)
+        '''
+        self.dateEdit = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit.setObjectName("dateEdit")
+        self.horizontalLayout_2.addWidget(self.dateEdit)
+        '''
         self.label_413 = QtWidgets.QLabel(self.layoutWidget)
         self.label_413.setObjectName("label_413")
         self.horizontalLayout_137.addWidget(self.label_413)
@@ -117,12 +221,6 @@ class Ui_MainWindow1(object):
         self.verticalLayout_14.addLayout(self.horizontalLayout_139)
         self.horizontalLayout_140 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_140.setObjectName("horizontalLayout_140")
-        self.label_417 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_417.setObjectName("label_417")
-        self.horizontalLayout_140.addWidget(self.label_417)
-        self.lineEdit_327 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_327.setObjectName("lineEdit_327")
-        self.horizontalLayout_140.addWidget(self.lineEdit_327)
         self.label_418 = QtWidgets.QLabel(self.layoutWidget)
         self.label_418.setObjectName("label_418")
         self.horizontalLayout_140.addWidget(self.label_418)
@@ -182,24 +280,6 @@ class Ui_MainWindow1(object):
         self.verticalLayout_13.addLayout(self.horizontalLayout_143)
         self.horizontalLayout_144 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_144.setObjectName("horizontalLayout_144")
-        self.label_425 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_425.setObjectName("label_425")
-        self.horizontalLayout_144.addWidget(self.label_425)
-        self.lineEdit_335 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_335.setObjectName("lineEdit_335")
-        self.horizontalLayout_144.addWidget(self.lineEdit_335)
-        self.label_426 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_426.setObjectName("label_426")
-        self.horizontalLayout_144.addWidget(self.label_426)
-        self.lineEdit_336 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_336.setObjectName("lineEdit_336")
-        self.horizontalLayout_144.addWidget(self.lineEdit_336)
-        self.label_427 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_427.setObjectName("label_427")
-        self.horizontalLayout_144.addWidget(self.label_427)
-        self.lineEdit_337 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_337.setObjectName("lineEdit_337")
-        self.horizontalLayout_144.addWidget(self.lineEdit_337)
         self.verticalLayout_13.addLayout(self.horizontalLayout_144)
         self.horizontalLayout_145 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_145.setObjectName("horizontalLayout_145")
@@ -275,27 +355,32 @@ class Ui_MainWindow1(object):
         self.label_435 = QtWidgets.QLabel(self.layoutWidget)
         self.label_435.setObjectName("label_435")
         self.horizontalLayout_147.addWidget(self.label_435)
+
+        self.dateEdit_2 = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit_2.setObjectName("dateEdit_2")
+        self.horizontalLayout_147.addWidget(self.dateEdit_2)
+        '''
         self.lineEdit_344 = QtWidgets.QLineEdit(self.layoutWidget)
         self.lineEdit_344.setObjectName("lineEdit_344")
         self.horizontalLayout_147.addWidget(self.lineEdit_344)
+        '''
         self.label_439 = QtWidgets.QLabel(self.layoutWidget)
         self.label_439.setObjectName("label_439")
         self.horizontalLayout_147.addWidget(self.label_439)
+        self.dateEdit_3 = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit_3.setObjectName("dateEdit_3")
+        self.horizontalLayout_147.addWidget(self.dateEdit_3)
+        '''
         self.lineEdit_348 = QtWidgets.QLineEdit(self.layoutWidget)
         self.lineEdit_348.setObjectName("lineEdit_348")
         self.horizontalLayout_147.addWidget(self.lineEdit_348)
+        '''
         self.label_436 = QtWidgets.QLabel(self.layoutWidget)
         self.label_436.setObjectName("label_436")
         self.horizontalLayout_147.addWidget(self.label_436)
         self.lineEdit_345 = QtWidgets.QLineEdit(self.layoutWidget)
         self.lineEdit_345.setObjectName("lineEdit_345")
         self.horizontalLayout_147.addWidget(self.lineEdit_345)
-        self.label_437 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_437.setObjectName("label_437")
-        self.horizontalLayout_147.addWidget(self.label_437)
-        self.lineEdit_346 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_346.setObjectName("lineEdit_346")
-        self.horizontalLayout_147.addWidget(self.lineEdit_346)
         self.verticalLayout_13.addLayout(self.horizontalLayout_147)
         self.horizontalLayout_150 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_150.setObjectName("horizontalLayout_150")
@@ -326,12 +411,14 @@ class Ui_MainWindow1(object):
         self.comboBox_23.addItem("")
         self.comboBox_23.addItem("")
         self.comboBox_23.addItem("")
+        self.comboBox_23.addItem("")
         self.horizontalLayout_151.addWidget(self.comboBox_23)
         self.label_452 = QtWidgets.QLabel(self.layoutWidget)
         self.label_452.setObjectName("label_452")
         self.horizontalLayout_151.addWidget(self.label_452)
         self.comboBox_24 = QtWidgets.QComboBox(self.layoutWidget)
         self.comboBox_24.setObjectName("comboBox_24")
+        self.comboBox_24.addItem("")
         self.comboBox_24.addItem("")
         self.comboBox_24.addItem("")
         self.comboBox_24.addItem("")
@@ -352,14 +439,13 @@ class Ui_MainWindow1(object):
         self.verticalLayout_13.addLayout(self.horizontalLayout_153)
         self.tableWidget_14 = QtWidgets.QTableWidget(self.layoutWidget)
         self.tableWidget_14.setObjectName("tableWidget_14")
-        self.tableWidget_14.setColumnCount(5)
-        self.tableWidget_14.setRowCount(8)
+        self.tableWidget_14.setColumnCount(4)
+        self.tableWidget_14.setRowCount(5)
         item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_14.setColumnWidth(0, 150)
-        self.tableWidget_14.setColumnWidth(1, 150)
-        self.tableWidget_14.setColumnWidth(2, 150)
-        self.tableWidget_14.setColumnWidth(3, 150)
-        self.tableWidget_14.setColumnWidth(4, 172)
+        self.tableWidget_14.setColumnWidth(0, 185)
+        self.tableWidget_14.setColumnWidth(1, 185)
+        self.tableWidget_14.setColumnWidth(2, 185)
+        self.tableWidget_14.setColumnWidth(3, 185)
         self.tableWidget_14.setVerticalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget_14.setVerticalHeaderItem(1, item)
@@ -370,14 +456,6 @@ class Ui_MainWindow1(object):
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget_14.setVerticalHeaderItem(4, item)
         item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_14.setVerticalHeaderItem(5, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_14.setVerticalHeaderItem(6, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_14.setVerticalHeaderItem(7, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_14.setVerticalHeaderItem(8, item)
-        item = QtWidgets.QTableWidgetItem()
         self.tableWidget_14.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget_14.setHorizontalHeaderItem(1, item)
@@ -385,9 +463,31 @@ class Ui_MainWindow1(object):
         self.tableWidget_14.setHorizontalHeaderItem(2, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget_14.setHorizontalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_14.setHorizontalHeaderItem(4, item)
         self.verticalLayout_13.addWidget(self.tableWidget_14)
+
+        self.tableWidget_15 = QtWidgets.QTableWidget(self.layoutWidget)
+        self.tableWidget_15.setObjectName("tableWidget_15")
+        self.tableWidget_15.setColumnCount(3)
+        self.tableWidget_15.setRowCount(4)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_15.setColumnWidth(0, 250)
+        self.tableWidget_15.setColumnWidth(1, 250)
+        self.tableWidget_15.setColumnWidth(2, 250)
+        self.tableWidget_15.setVerticalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_15.setVerticalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_15.setVerticalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_15.setVerticalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_15.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_15.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_15.setHorizontalHeaderItem(2, item)
+        self.verticalLayout_13.addWidget(self.tableWidget_15)
+
         self.horizontalLayout_158 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_158.setObjectName("horizontalLayout_158")
         self.label_470 = QtWidgets.QLabel(self.layoutWidget)
@@ -695,11 +795,10 @@ class Ui_MainWindow1(object):
 
         # 连接滚动条信号到槽函数
         self.verticalScrollBar.valueChanged.connect(self.scroll_frame)
-        self.pushButton.clicked.connect(self.save_patient_info)  # 绑定保存按钮的点击事件
-
+        self.pushButton.clicked.connect(self.save)  # 绑定保存按钮的点击事件
 
         self.retranslateUi(MainWindow)
-        self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        self.pushButton_2.clicked.connect(MainWindow.close)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -715,17 +814,13 @@ class Ui_MainWindow1(object):
         self.label_414.setText(_translate("MainWindow", "国籍："))
         self.label_415.setText(_translate("MainWindow", "出生地："))
         self.label_416.setText(_translate("MainWindow", "籍贯："))
-        self.label_417.setText(_translate("MainWindow", "身份证件类别："))
         self.label_418.setText(_translate("MainWindow", "证件号码："))
         self.label_419.setText(_translate("MainWindow", "职业："))
         self.label_420.setText(_translate("MainWindow", "民族："))
-        self.label_421.setText(_translate("MainWindow", "婚姻："))
+        self.label_421.setText(_translate("MainWindow", "婚姻状况："))
         self.label_422.setText(_translate("MainWindow", "现住址："))
         self.label_423.setText(_translate("MainWindow", "电话："))
         self.label_424.setText(_translate("MainWindow", "户口地址："))
-        self.label_425.setText(_translate("MainWindow", "工作单位："))
-        self.label_426.setText(_translate("MainWindow", "地址："))
-        self.label_427.setText(_translate("MainWindow", "电话："))
         self.label_428.setText(_translate("MainWindow", "联系人姓名："))
         self.label_429.setText(_translate("MainWindow", "与患者关系："))
         self.label_430.setText(_translate("MainWindow", "地址："))
@@ -742,7 +837,7 @@ class Ui_MainWindow1(object):
         self.label_435.setText(_translate("MainWindow", "入院日期："))
         self.label_439.setText(_translate("MainWindow", "出院日期："))
         self.label_436.setText(_translate("MainWindow", "科别："))
-        self.label_437.setText(_translate("MainWindow", "病房："))
+        #self.label_437.setText(_translate("MainWindow", "病房："))
         self.label_445.setText(_translate("MainWindow", "病理诊断："))
         self.label_447.setText(_translate("MainWindow", "疾病编码："))
         self.label_450.setText(_translate("MainWindow", "血型："))
@@ -751,20 +846,31 @@ class Ui_MainWindow1(object):
         self.comboBox_23.setItemText(2, _translate("MainWindow", "O"))
         self.comboBox_23.setItemText(3, _translate("MainWindow", "AB"))
         self.comboBox_23.setItemText(4, _translate("MainWindow", "不详"))
+        self.comboBox_23.setItemText(5, _translate("MainWindow", "未查"))
         self.label_452.setText(_translate("MainWindow", "Rh："))
         self.comboBox_24.setItemText(0, _translate("MainWindow", "阴"))
         self.comboBox_24.setItemText(1, _translate("MainWindow", "阳"))
         self.comboBox_24.setItemText(2, _translate("MainWindow", "不详"))
+        self.comboBox_24.setItemText(3, _translate("MainWindow", "未查"))
         self.label_459.setText(_translate("MainWindow", "主治医师："))
         item = self.tableWidget_14.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "操作编码"))
-        item = self.tableWidget_14.horizontalHeaderItem(1)
         item.setText(_translate("MainWindow", "手术日期"))
+        item = self.tableWidget_14.horizontalHeaderItem(1)
+        item.setText(_translate("MainWindow", "手术名称"))
         item = self.tableWidget_14.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "手术级别"))
+        item.setText(_translate("MainWindow", "手术人员"))
         item = self.tableWidget_14.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "手术类型"))
-        item = self.tableWidget_14.horizontalHeaderItem(4)
+        item.setText(_translate("MainWindow", "辅助人员"))
+
+        item = self.tableWidget_15.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "病房号"))
+        item = self.tableWidget_15.horizontalHeaderItem(1)
+        item.setText(_translate("MainWindow", "入住日期"))
+        item = self.tableWidget_15.horizontalHeaderItem(2)
+        item.setText(_translate("MainWindow", "离开日期"))
+
+
+
         item.setText(_translate("MainWindow", "手术及操作人员"))
         self.label_470.setText(_translate("MainWindow", "1.综合医疗服务类："))
         self.label_471.setText(_translate("MainWindow", "(1)一般医疗服务费："))
@@ -820,41 +926,136 @@ class Ui_MainWindow1(object):
             self.frame.move(self.frame.x(), 0 - value)  # 更新 Y 轴位置
 
     def fill_medical_record(self, medical_record_info):
-        """
-        用于填充病案首页信息的方法。
-        :param medical_record_info: 包含病案信息的字典。
-        """
-        #lineEdit_342 medical_record_info.get("name", "")
         try:
-            # 填充患者基本信息
-            self.lineEdit_321.setText("333")  # 姓名
-            self.label_411.setText(medical_record_info.get("gender", ""))  # 性别
-            self.label_412.setText(medical_record_info.get("birth_date", ""))  # 出生日期
-            self.label_413.setText(str(medical_record_info.get("age", "")))  # 年龄
-            self.label_414.setText(medical_record_info.get("nationality", ""))  # 国籍
-            self.label_415.setText(medical_record_info.get("birthplace", ""))  # 出生地
-            self.label_416.setText(medical_record_info.get("native_place", ""))  # 籍贯
+            # patient_info
+            self.lineEdit_321.setText(medical_record_info.patient_info.name)  # 姓名
+            gender = medical_record_info.patient_info.gender
 
-            # 填充证件信息
-            self.label_417.setText(medical_record_info.get("id_type", ""))  # 身份证件类别
-            self.label_418.setText(medical_record_info.get("id_number", ""))  # 证件号码
+            if gender == "男":
+                self.checkBox_21.setChecked(True)  # 勾选 "男"
+                self.checkBox_22.setChecked(False)  # 取消勾选 "女"
+            elif gender == "女":
+                self.checkBox_21.setChecked(False)  # 取消勾选 "男"
+                self.checkBox_22.setChecked(True)  # 勾选 "女"
+            self.dateEdit.setDate(medical_record_info.patient_info.birth_date) # 出生日期
+            fage = f"{medical_record_info.patient_info.age}"
+            self.lineEdit_323.setText(fage)  # 年龄
+            self.lineEdit_324.setText(medical_record_info.patient_info.nationality)  # 国籍
+            self.lineEdit_325.setText(medical_record_info.patient_info.place_of_birth)  # 出生地
+            self.lineEdit_326.setText("/")  # 籍贯
+            self.lineEdit_330.setText(medical_record_info.patient_info.ethnicity) #民族
+            self.lineEdit_331.setText(medical_record_info.patient_info.marital_status)  # 婚姻
+            self.lineEdit_327.setText("中华人民共和国居民身份证") # 身份证件类别
+            self.lineEdit_328.setText(medical_record_info.patient_info.id_card_number)  # 证件号码
+            self.lineEdit_329.setText(medical_record_info.patient_info.occupation)       #职业
+            self.lineEdit_332.setText(medical_record_info.patient_info.current_address)  # 现住址
+            self.lineEdit_333.setText(medical_record_info.patient_info.phone)  # 电话
+            self.lineEdit_334.setText(medical_record_info.patient_info.household_address)  # 户口地址
 
-            # 填充联系方式
-            self.label_422.setText(medical_record_info.get("current_address", ""))  # 现住址
-            self.label_423.setText(medical_record_info.get("phone", ""))  # 电话
-            self.label_424.setText(medical_record_info.get("household_address", ""))  # 户口地址
 
-            # 填充工作信息
-            self.label_425.setText(medical_record_info.get("work_unit", ""))  # 工作单位
-            self.label_426.setText(medical_record_info.get("work_address", ""))  # 地址
-            self.label_427.setText(medical_record_info.get("work_phone", ""))  # 电话
+            # contact_info
+            self.lineEdit_338.setText(medical_record_info.contact_info.relationship)
+            self.lineEdit_339.setText(medical_record_info.contact_info.address)
+            self.lineEdit_340.setText(medical_record_info.contact_info.phone)
+            self.lineEdit_341.setText(medical_record_info.contact_info.name)
 
-            # 填充联系人信息
-            self.label_428.setText(medical_record_info.get("contact_name", ""))  # 联系人姓名
-            self.label_429.setText(medical_record_info.get("relationship", ""))  # 与患者关系
-            self.label_430.setText(medical_record_info.get("contact_address", ""))  # 地址
-            self.label_431.setText(medical_record_info.get("contact_phone", ""))  # 电话
+            #date
+            self.dateEdit_2.setDate(medical_record_info.admission_date)
+            self.dateEdit_3.setDate(medical_record_info.discharge_date)
 
+            self.lineEdit_364.setText(medical_record_info.doctor_name)
+            self.lineEdit_354.setText(medical_record_info.pathological_diagnosis_id)
+
+            #血型
+            blood_type = medical_record_info.blood_type
+            first_digit = blood_type // 10
+            second_digit = blood_type % 10
+            self.comboBox_23.setCurrentIndex(first_digit - 1)  # setCurrentIndex 的索引是从 0 开始的，所以减去 1
+            self.comboBox_24.setCurrentIndex(second_digit - 1)
+
+            #cost_info
+            for cost_info in medical_record_info.cost_infos:
+                # 强制转换 cost_info.kind 为字符串类型，确保比较时没有问题
+                kind = str(cost_info.kind)
+
+                if kind == "一般医疗服务费":
+                    self.lineEdit_372.setText(str(cost_info.num))
+                elif kind == "一般治疗操作费":
+                    self.lineEdit_373.setText(str(cost_info.num))
+                elif kind == "护理费":
+                    self.lineEdit_374.setText(str(cost_info.num))
+                elif kind == "其他费用":
+                    self.lineEdit_375.setText(str(cost_info.num))
+                elif kind == "病理诊断费":
+                    self.lineEdit_376.setText(str(cost_info.num))
+                elif kind == "实验室诊断费":
+                    self.lineEdit_377.setText(str(cost_info.num))
+                elif kind == "影像学诊断费":
+                    self.lineEdit_378.setText(str(cost_info.num))
+                elif kind == "临床诊断项目费":
+                    self.lineEdit_379.setText(str(cost_info.num))
+                elif kind == "非手术治疗项目费":
+                    self.lineEdit_380.setText(str(cost_info.num))
+                elif kind == "临床物理治疗费":
+                    self.lineEdit_381.setText(str(cost_info.num))
+                elif kind == "手术治疗费":
+                    self.lineEdit_382.setText(str(cost_info.num))
+                elif kind == "麻醉费":
+                    self.lineEdit_383.setText(str(cost_info.num))
+                elif kind == "手术费":
+                    self.lineEdit_384.setText(str(cost_info.num))
+                elif kind == "康复费":
+                    self.lineEdit_385.setText(str(cost_info.num))
+                elif kind == "中医治疗费":
+                    self.lineEdit_386.setText(str(cost_info.num))
+                elif kind == "西药费":
+                    self.lineEdit_387.setText(str(cost_info.num))
+                elif kind == "抗菌药物费用":
+                    self.lineEdit_388.setText(str(cost_info.num))
+                elif kind == "中成药费":
+                    self.lineEdit_389.setText(str(cost_info.num))
+                elif kind == "中草药费":
+                    self.lineEdit_390.setText(str(cost_info.num))
+                elif kind == "血费":
+                    self.lineEdit_391.setText(str(cost_info.num))
+                elif kind == "白蛋白类制品费":
+                    self.lineEdit_392.setText(str(cost_info.num))
+                elif kind == "球蛋白类制品费":
+                    self.lineEdit_393.setText(str(cost_info.num))
+                elif kind == "凝血因子类制品费":
+                    self.lineEdit_394.setText(str(cost_info.num))
+                elif kind == "细胞因子类制品费":
+                    self.lineEdit_395.setText(str(cost_info.num))
+                elif kind == "检查用一次性医用材料费":
+                    self.lineEdit_396.setText(str(cost_info.num))
+                elif kind == "治疗用一次性医用材料费":
+                    self.lineEdit_397.setText(str(cost_info.num))
+                elif kind == "手术用一次性医用材料费":
+                    self.lineEdit_398.setText(str(cost_info.num))
+                elif kind == "其他费":
+                    self.lineEdit_399.setText(str(cost_info.num))
+            #payment
+            payment = medical_record_info.payment_method
+            index = self.comboBox_25.findText(payment)
+            self.comboBox_25.setCurrentIndex(index)
+
+            # 填充手术信息到表格
+            for surgery_info in medical_record_info.surgery_infos:
+                row_position = self.tableWidget_14.rowCount()  # 获取当前行数
+                self.tableWidget_14.insertRow(row_position)  # 插入新的一行
+
+                # 填充表格的每一列
+                self.tableWidget_14.setItem(row_position, 0, QtWidgets.QTableWidgetItem("/"))  # 操作编码填 '/'
+                self.tableWidget_14.setItem(row_position, 1,
+                                            QtWidgets.QTableWidgetItem(str(surgery_info.surgery_date)))  # 手术日期
+                self.tableWidget_14.setItem(row_position, 2,
+                                            QtWidgets.QTableWidgetItem(surgery_info.surgery_name))  # 手术名称
+                self.tableWidget_14.setItem(row_position, 3,
+                                            QtWidgets.QTableWidgetItem(1))  # 手术级别
+                self.tableWidget_14.setItem(row_position, 4, QtWidgets.QTableWidgetItem(
+                    f"主刀: {surgery_info.surgeon_name}, 副刀: {surgery_info.assistant_surgeon_name}"))  # 手术及操作人员
+
+            '''
             # 填充诊断信息
             self.label_433.setText(medical_record_info.get("admission_diagnosis", ""))  # 入院诊断
             self.label_434.setText(medical_record_info.get("admission_diagnosis_code", ""))  # 疾病编码
@@ -890,29 +1091,117 @@ class Ui_MainWindow1(object):
                 self.tableWidget_14.setItem(row_position, 3,
                                             QtWidgets.QTableWidgetItem(surgery.get("operation_type", "")))
                 self.tableWidget_14.setItem(row_position, 4, QtWidgets.QTableWidgetItem(surgery.get("staff", "")))
+            '''
 
-            QtWidgets.QMessageBox.information(None, "成功", "病案首页信息已加载！", QtWidgets.QMessageBox.Ok)
+            #QtWidgets.QMessageBox.information(None, "成功", "病案首页信息已加载！", QtWidgets.QMessageBox.Ok)
         except Exception as e:
             QtWidgets.QMessageBox.critical(None, "错误", f"加载病案信息时发生错误：{str(e)}", QtWidgets.QMessageBox.Ok)
 
-    def save_patient_info(self):
+
+    def save(self):
+
             try:
-                # 按顺序提取用户输入信息
+                # patient
                 name = self.lineEdit_321.text()  # 姓名
                 gender = "男" if self.checkBox_21.isChecked() else "女"  # 性别
-                birth_date = self.lineEdit_322.text()  # 出生日期
-                age = self.lineEdit_323.text()  # 年龄
+                birth_date = self.dateEdit.text()  # 出生日期
+                age = int(self.lineEdit_323.text())  # 年龄
                 nationality = self.lineEdit_324.text()  # 国籍
                 place_of_birth = self.lineEdit_325.text()  # 出生地
                 ethnicity = self.lineEdit_330.text()  # 民族
                 id_card_number = self.lineEdit_328.text()  # 身份证件号码
-
                 occupation = self.lineEdit_329.text()  # 职业
                 marital_status = self.lineEdit_331.text()  # 婚姻状态
                 current_address = self.lineEdit_332.text()  # 现住址
                 phone = self.lineEdit_333.text()  # 电话
                 household_address = self.lineEdit_334.text()  # 户口地址
 
+                #contact
+                name2 = self.lineEdit_338.text()
+                relationship = self.lineEdit_339.text()
+                address = self.lineEdit_340.text()
+                phone2 = self.lineEdit_341.text()
+
+                admission_date = self.dateEdit_2.date()
+                discharge_date = self.dateEdit_3.date()
+                doctor_name = self.lineEdit_364.text()
+                pathological_diagnosis_id = self.lineEdit_354.text()
+
+                #bloodtype
+                shi = self.comboBox_23.currentIndex() + 1
+                ge = self.comboBox_24.currentIndex() + 1
+                bloodtype = shi*10 + ge
+
+                #cost
+                # 假设你的QLineEdit控件是从lineEdit_372到lineEdit_399的顺序，并且这些控件的顺序与费用种类一致
+
+                # 初始化一个空列表，准备存储 cost_infos
+                cost_infos = []
+
+                # 定义费用类型列表
+                kind_list = [
+                    "一般医疗服务费", "一般治疗操作费", "护理费", "其他费用", "病理诊断费", "实验室诊断费",
+                    "影像学诊断费", "临床诊断项目费", "非手术治疗项目费", "临床物理治疗费", "手术治疗费",
+                    "麻醉费", "手术费", "康复费", "中医治疗费", "西药费", "抗菌药物费用",
+                    "中成药费", "中草药费", "血费", "白蛋白类制品费", "球蛋白类制品费",
+                    "凝血因子类制品费", "细胞因子类制品费", "检查用一次性医用材料费",
+                    "治疗用一次性医用材料费", "手术用一次性医用材料费", "其他费"
+                ]
+
+                # 获取所有的QLineEdit控件（根据控件名称或其他方式）
+                line_edit_list = [
+                    self.lineEdit_372, self.lineEdit_373, self.lineEdit_374, self.lineEdit_375,
+                    self.lineEdit_376, self.lineEdit_377, self.lineEdit_378, self.lineEdit_379,
+                    self.lineEdit_380, self.lineEdit_381, self.lineEdit_382, self.lineEdit_383,
+                    self.lineEdit_384, self.lineEdit_385, self.lineEdit_386, self.lineEdit_387,
+                    self.lineEdit_388, self.lineEdit_389, self.lineEdit_390, self.lineEdit_391,
+                    self.lineEdit_392, self.lineEdit_393, self.lineEdit_394, self.lineEdit_395,
+                    self.lineEdit_396, self.lineEdit_397, self.lineEdit_398, self.lineEdit_399
+                ]
+
+                # 遍历每个QLineEdit，并将其内容存入cost_infos列表
+                for i, line_edit in enumerate(line_edit_list):
+                    # 获取当前QLineEdit的文本内容
+                    num_text = line_edit.text()
+
+                    # 如果文本内容不为空，转换为数字
+                    if num_text:
+                        try:
+                            num = float(num_text)  # 将文本转为浮动类型的数值
+                        except ValueError:
+                            num = 0  # 如果转换失败，赋默认值0
+
+                        # 创建CostInfo对象并添加到cost_infos列表中
+                        cost_info = CostInfo(kind_list[i], num)
+                        cost_infos.append(cost_info)
+
+                #surgery
+                # 获取表格的数据并填充到 surgery_infos 列表中
+                surgery_infos = []  # 用于存储填充的手术信息
+
+                # 遍历表格的每一行
+                for row in range(self.tableWidget_14.rowCount()):
+                    # 获取各列的值
+                    surgery_date = self.tableWidget_14.item(row, 1).text()  # 手术日期
+                    surgery_name = self.tableWidget_14.item(row, 2).text()  # 手术名称
+                    surgery_level = self.tableWidget_14.item(row, 3).text()  # 手术级别
+                    surgeon_name = self.tableWidget_14.item(row, 4).text()  # 手术及操作人员（包含主刀、副刀）
+
+                    # 提取主刀和副刀的姓名
+                    if "主刀:" in surgeon_name and "副刀:" in surgeon_name:
+                        surgeon_name, assistant_surgeon_name = surgeon_name.split("主刀:")[1].split("副刀:")
+                        surgeon_name = surgeon_name.strip()
+                        assistant_surgeon_name = assistant_surgeon_name.strip()
+                    else:
+                        surgeon_name = ""
+                        assistant_surgeon_name = ""
+
+                    # 创建手术信息对象并添加到列表
+                    surgery_info = SurgeryInfo(surgery_date, surgery_name, surgeon_name, assistant_surgeon_name)
+                    surgery_infos.append(surgery_info)
+
+                index = self.comboBox_25.currentIndex()
+                payment = self.comboBox_25.itemText(index)
                 '''
                 workplace = self.lineEdit_333.text()  # 工作单位
                 workplace_address = self.lineEdit_334.text()  # 工作单位地址
@@ -946,151 +1235,44 @@ class Ui_MainWindow1(object):
                     marital_status=marital_status,
                     current_address=current_address,
                     phone=phone,
+                    postal_code=None,
                     household_address=household_address
                 )
-                '''
-                                    workplace=workplace,
-                                    workplace_address=workplace_address,
-                                    workplace_phone=workplace_phone,
-                                    contact_name=contact_name,
-                                    relationship=relationship,
-                                    contact_address=contact_address,
-                                    contact_phone=contact_phone,
-                                    admission_pathway=admission_pathway,
-                                    outpatient_diagnosis=outpatient_diagnosis,
-                                    outpatient_code=outpatient_code,
-                                    discharge_diagnosis=discharge_diagnosis,
-                                    discharge_code=discharge_code,
-                                    admission_date=admission_date,
-                                    discharge_date=discharge_date,
-                                    department=department,
-                                    ward=ward
-                                    '''
 
-                # 保存 PatientInfo
-                create_patient(patient_info)
 
-                # 提取费用信息
-                cost_info_list = []
-                # 按编号规律动态提取费用种类和金额
-                for i in range(471, 511, 2):  # 费用种类从 label_471 到 label_510，每两步一个费用种类
-                    kind_widget = getattr(self, f"lineEdit_{i}", None)  # 种类输入框编号与种类标签对应
-                    num_widget = getattr(self, f"lineEdit_{i + 1}", None)  # 金额输入框编号紧跟其后
+                contact_info = ContactInfo(
+                    patient_id=None,
+                    name=name2,
+                    relationship=relationship,
+                    address=address,
+                    phone=phone2
+                )
 
-                    if kind_widget and num_widget:
-                        kind = kind_widget.text()
-                        num = num_widget.text()
 
-                        if kind and num:  # 确保种类和金额不为空
-                            cost_info_list.append(CostInfo(kind=kind, num=num))
+                medical_record_info = MedicalRecordInfo(
+                    patient_info=patient_info,
+                    contact_info=contact_info,
+                    admission_date=admission_date,
+                    discharge_date=discharge_date,
+                    unit_name=None,
+                    admission_diagnosis_id=None,
+                    discharge_diagnosis_id=None,
+                    pathological_diagnosis_id=pathological_diagnosis_id,
+                    blood_type=bloodtype,
+                    doctor_name=doctor_name,
+                    surgery_infos=surgery_infos,
+                    ward_infos=None,
+                    cost_infos=cost_infos,
+                    payment_method=payment
+                )
 
-                # 保存费用信息
-                for cost_info in cost_info_list:
-                    create_cost_table(cost_info)
+                create_medical_record(medical_record_info)
 
-                # 保存成功提示
                 QMessageBox.information(self, "成功", "病案和费用信息已成功保存！")
             except Exception as e:
                 QMessageBox.critical(self, "错误", f"保存失败: {str(e)}")
 
 
-
-
-
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(883, 650)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(400, 50, 75, 23))
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(520, 50, 75, 23))
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(60, 50, 187, 21))
-        self.widget.setObjectName("widget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.label = QtWidgets.QLabel(self.widget)
-        self.label.setObjectName("label")
-        self.horizontalLayout.addWidget(self.label)
-        self.lineEdit = QtWidgets.QLineEdit(self.widget)
-        self.lineEdit.setObjectName("lineEdit")
-        self.horizontalLayout.addWidget(self.lineEdit)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-        # 添加信号和槽
-        self.pushButton.clicked.connect(self.open_new_case)  # 点击“查找”按钮
-        self.pushButton_2.clicked.connect(MainWindow.close)  # 点击“关闭”按钮
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "修改病案"))
-        self.pushButton.setText(_translate("MainWindow", "查找[&S]"))
-        self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
-        self.label.setText(_translate("MainWindow", "病案号："))
-
-    def open_new_case(self):
-        search_info = self.lineEdit.text()  # 获取病案号
-        if not search_info:
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "请输入病案号！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        try:
-            # 获取病案信息
-            medical_record_info = get_record_by_recordID(search_info)
-
-            print("患者信息:", medical_record_info.patient_info)
-            print("联系方式:", medical_record_info.contact_info)
-            print("手术信息:", medical_record_info.surgery_infos)
-            print("住院信息:", medical_record_info.ward_infos)
-            print("费用信息:", medical_record_info.cost_infos)
-            print("入院日期:", medical_record_info.admission_date)
-            print("出院日期:", medical_record_info.discharge_date)
-            print("科室名称:", medical_record_info.unit_name)
-            print("入院诊断ID:", medical_record_info.admission_diagnosis_id)
-            print("出院诊断ID:", medical_record_info.discharge_diagnosis_id)
-            print("病理诊断ID:", medical_record_info.pathological_diagnosis_id)
-            print("主治医师:", medical_record_info.doctor_name)
-            print("血型:", medical_record_info.blood_type)
-            print("支付方式:", medical_record_info.payment_method)
-
-            if not medical_record_info:
-                QtWidgets.QMessageBox.warning(
-                    None, "未找到病案", "没有找到相关病案！", QtWidgets.QMessageBox.Ok
-                )
-                return
-
-
-            case_base_window = Ui_MainWindow1()
-            case_base_window.fill_medical_record(vars(medical_record_info))
-
-            QtWidgets.QMessageBox.information(
-                None, "成功", "病案信息已加载！", QtWidgets.QMessageBox.Ok
-            )
-
-            self.case_base_window = QtWidgets.QMainWindow()
-            self.ui_case_base = Ui_MainWindow1()
-            self.ui_case_base.setupUi(self.case_base_window)
-            self.case_base_window.show()
-
-
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(
-                None, "错误", f"发生错误：{str(e)}", QtWidgets.QMessageBox.Ok
-            )
 
 
 
