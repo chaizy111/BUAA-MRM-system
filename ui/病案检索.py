@@ -72,12 +72,6 @@ class Ui_MainWindow(object):
         self.lineEdit = QtWidgets.QLineEdit(self.layoutWidget1)
         self.lineEdit.setObjectName("lineEdit")
         self.horizontalLayout.addWidget(self.lineEdit)
-        self.label_5 = QtWidgets.QLabel(self.layoutWidget1)
-        self.label_5.setObjectName("label_5")
-        self.horizontalLayout.addWidget(self.label_5)
-        self.checkBox = QtWidgets.QCheckBox(self.layoutWidget1)
-        self.checkBox.setObjectName("checkBox")
-        self.horizontalLayout.addWidget(self.checkBox)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
@@ -117,19 +111,19 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.label_4 = QtWidgets.QLabel(self.layoutWidget1)
-        self.label_4.setObjectName("label_4")
-        self.horizontalLayout_2.addWidget(self.label_4)
-        self.lineEdit_9 = QtWidgets.QLineEdit(self.layoutWidget1)
-        self.lineEdit_9.setObjectName("lineEdit_9")
-        self.horizontalLayout_2.addWidget(self.lineEdit_9)
-        self.label_9 = QtWidgets.QLabel(self.layoutWidget1)
-        self.label_9.setObjectName("label_9")
-        self.horizontalLayout_2.addWidget(self.label_9)
-        self.lineEdit_10 = QtWidgets.QLineEdit(self.layoutWidget1)
-        self.lineEdit_10.setObjectName("lineEdit_10")
-        self.horizontalLayout_2.addWidget(self.lineEdit_10)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(10, 150, 760, 400))  # Adjust size accordingly
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(9)  # We have 9 columns based on the attributes
+
+        # Setting column headers
+        self.tableWidget.setHorizontalHeaderLabels([
+            "病历号", "患者姓名", "性别", "住院次数", "医疗付款方式",
+            "出院科室", "身份证号", "联系人姓名", "年龄"
+        ])
+
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
@@ -153,18 +147,31 @@ class Ui_MainWindow(object):
         self.label_11.setText(_translate("MainWindow", "身份证号："))
         self.label_12.setText(_translate("MainWindow", "联系人姓名："))
         self.label.setText(_translate("MainWindow", "医疗付款方式："))
-        self.label_5.setText(_translate("MainWindow", "状态："))
-        self.checkBox.setText(_translate("MainWindow", "在案"))
         self.label_2.setText(_translate("MainWindow", "病历号："))
         self.label_6.setText(_translate("MainWindow", "住院次数："))
         self.label_3.setText(_translate("MainWindow", "患者姓名："))
         self.label_7.setText(_translate("MainWindow", "性别："))
         self.label_8.setText(_translate("MainWindow", "年龄："))
-        self.label_4.setText(_translate("MainWindow", "省市："))
-        self.label_9.setText(_translate("MainWindow", "区县："))
 
     def search_disease(self):
-        search_disease_info()
+        diseases = search_disease_info()
+        self.tableWidget.setRowCount(0)
+
+        # Populate the table with the fetched data
+        for i, disease in enumerate(diseases):
+            rowPosition = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(rowPosition)
+
+
+            self.tableWidget.setItem(rowPosition, 0, QtWidgets.QTableWidgetItem(str(disease[0])))
+            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(disease[1])))
+            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(disease[2])))
+            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(disease[3])))
+            self.tableWidget.setItem(rowPosition, 4, QtWidgets.QTableWidgetItem(str(disease[4])))
+            self.tableWidget.setItem(rowPosition, 5, QtWidgets.QTableWidgetItem(str(disease[5])))
+            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(disease[6])))
+            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(disease[7])))
+            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(disease[8])))
 
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
