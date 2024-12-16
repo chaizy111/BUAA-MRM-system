@@ -16,6 +16,7 @@ from pymysql import connect
 from db.login_op import check_permission
 from db.normal_op import delete_record_by_recordID, get_record_by_recordID, create_medical_record
 from db.search_op import search_patients_by_info
+from db.assist_op import get_medicalRecordId_by_patientId
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QInputDialog
@@ -127,6 +128,7 @@ class Ui_MainWindow(object):
             )
 
 class Ui_MainWindow1(object):
+    id
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(989, 600)
@@ -921,6 +923,7 @@ class Ui_MainWindow1(object):
 
     def fill_medical_record(self, medical_record_info):
         try:
+            self.id = get_medicalRecordId_by_patientId(medical_record_info.patient_info.id_card_number)
             # patient_info
             self.lineEdit_321.setText(medical_record_info.patient_info.name)  # 姓名
             gender = medical_record_info.patient_info.gender
@@ -1103,6 +1106,8 @@ class Ui_MainWindow1(object):
     def save(self):
 
             try:
+                print(self.id)
+                print(delete_record_by_recordID(self.id))
                 # patient
                 name = self.lineEdit_321.text()  # 姓名
                 gender = "男" if self.checkBox_21.isChecked() else "女"  # 性别
@@ -1290,6 +1295,8 @@ class Ui_MainWindow1(object):
                     cost_infos=cost_infos,
                     payment_method=payment
                 )
+
+
 
                 success = create_medical_record(medical_record_info)
                 if success:  # 如果删除成功
