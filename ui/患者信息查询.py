@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
 
 from db.search_op import search_patients_by_info
+from intermediate_data_structure.search_info import SearchInfo
 from ui.print_dialog import PrintDialog  # 假设打印窗口的类在 `print_dialog.py` 中
 
 
@@ -331,27 +332,28 @@ class Ui_MainWindow(object):
         self.ui_query.setupUi(self.queryDialog)  # 初始化查询条件窗口的UI
         self.queryDialog.show()  # 显示查询条件窗口
 
-        search_info = {
-            "medical_record_number": self.ui.lineEdit.text(),  # 病历号
-            "name": self.ui.lineEdit_2.text(),  # 患者姓名
-            "gender": self.ui.comboBox.currentText(),  # 性别
-            "payment_method": self.ui.comboBox_2.currentText(),  # 医疗付款方式
-            "nationality": self.ui.lineEdit_6.text(),  # 国籍
-            "ethnicity": self.ui.lineEdit_7.text(),  # 民族
-            "occupation": self.ui.lineEdit_8.text(),  # 职业
-            "address": self.ui.lineEdit_9.text(),  # 地址
-            "phone_number": self.ui.lineEdit_10.text(),  # 联系电话
-            "postal_code": self.ui.lineEdit_11.text(),  # 患者邮编
-            "contact_person": self.ui.lineEdit_12.text(),  # 联系人
-            "contact_address": self.ui.lineEdit_13.text(),  # 联系人地址
-            "contact_phone": self.ui.lineEdit_14.text(),  # 联系人电话
-            "birth_date": self.ui.dateEdit.date().toString("yyyy-MM-dd"),  # 出生年月
-            "age": self.ui.spinBox.value(),  # 患者年龄
-            "admission_date": self.ui.dateEdit_2.date().toString("yyyy-MM-dd"),  # 入院时间
-            "discharge_date": self.ui.dateEdit_3.date().toString("yyyy-MM-dd"),  # 出院时间
-            "disease_name": self.ui.lineEdit_15.text(),  # 疾病名称
-            "hospital_stay_days": self.ui.spinBox_2.value()  # 住院天数
-        }
+        search_info = SearchInfo(
+            medical_record_number=self.lineEdit.text(),  # 病历号
+            patient_name=self.lineEdit_4.text(),  # 患者姓名
+            gender=self.lineEdit_5.text(),  # 性别
+            payment_method=self.comboBox.currentText(),  # 医疗付款方式
+            nationality=self.lineEdit_6.text(),  # 国籍
+            ethnicity=self.lineEdit_9.text(),  # 民族
+            occupation=self.lineEdit_10.text(),  # 职业
+            address=self.lineEdit_9.text(),  # 地址
+            phone=self.lineEdit_10.text(),  # 联系电话
+            contact_name=self.lineEdit_11.text(),  # 联系人
+            contact_address=self.lineEdit_12.text(),  # 联系人地址
+            contact_phone= self.lineEdit_13.text(),  # 联系人电话
+            birth_from= self.dateTimeEdit.date().toString("yyyy-MM-dd"), # 出生年月
+            birth_to= self.dateTimeEdit_2.date().toString("yyyy-MM-dd"), #
+            admission_time_from = self.dateTimeEdit_6.date().toString("yyyy-MM-dd"),
+            admission_time_to = self.dateTimeEdit_4.date().toString("yyyy-MM-dd"),
+            discharge_time_from = self.dateTimeEdit_5.date().toString("yyyy-MM-dd"),
+            discharge_time_to = self.dateTimeEdit_3.date().toString("yyyy-MM-dd"),
+            disease_name=self.lineEdit_19.text(),  # 疾病名称
+
+        )
 
         # 调用数据库查询函数
         try:
@@ -366,7 +368,7 @@ class Ui_MainWindow(object):
 
     def update_table(self, results):
         # 清空表格
-        self.ui.tableWidget.setRowCount(0)
+        self.ui.tableWidget.setRowCount(len(results))
 
         # 填充查询结果
         for row_num, row_data in enumerate(results):
