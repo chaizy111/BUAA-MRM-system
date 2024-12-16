@@ -229,7 +229,7 @@ def delete_record_by_recordID(recordID):
     conn, cursor = make_connect()
     try:
         cursor.execute("SELECT PatientIDCardNumber FROM MedicalRecord WHERE MedicalRecordNumber = %s", (recordID,))
-        patient_id_card_number = cursor.fetchone()[0]
+        patient_id_card_number = cursor.fetchone()
 
         # 删除借阅信息
         cursor.execute("DELETE FROM MedicalRecordBorrow WHERE MedicalRecordNumber = %s", (recordID,))

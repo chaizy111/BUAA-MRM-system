@@ -83,40 +83,40 @@ def search_ids_by_info(search_info, conn, cursor):
     conditions = []
     values = []
 
-    if search_info.gender:
+    if search_info.gender is not None:
         conditions.append("p.Gender = %s")
         values.append(search_info.gender)
-    if search_info.medical_record_number:
+    if search_info.medical_record_number is not None:
         conditions.append("m.MedicalRecordNumber = %s")
         values.append(search_info.medical_record_number)
-    if search_info.patient_name:
+    if search_info.patient_name is not None:
         conditions.append("p.Name LIKE %s")
         values.append(f"%{search_info.patient_name}%")
-    if search_info.payment_method:
+    if search_info.payment_method is not None:
         conditions.append("m.PayMentMethod LIKE %s")
         values.append(f"%{search_info.payment_method}%")
-    if search_info.nationality:
+    if search_info.nationality is not None:
         conditions.append("p.Nationality LIKE %s")
         values.append(f"%{search_info.nationality}%")
-    if search_info.ethnicity:
+    if search_info.ethnicity is not None:
         conditions.append("p.Ethnicity LIKE %s")
         values.append(f"%{search_info.ethnicity}%")
-    if search_info.occupation:
+    if search_info.occupation is not None:
         conditions.append("p.Occupation LIKE %s")
         values.append(f"%{search_info.occupation}%")
-    if search_info.address:
+    if search_info.address is not None:
         conditions.append("p.CurrentAddress LIKE %s")
         values.append(f"%{search_info.address}%")
-    if search_info.phone:
+    if search_info.phone is not None:
         conditions.append("p.Phone LIKE %s")
         values.append(f"%{search_info.phone}%")
-    if search_info.contact_name:
+    if search_info.contact_name is not None:
         conditions.append("c.Name LIKE %s")
         values.append(f"%{search_info.contact_name}%")
-    if search_info.contact_phone:
+    if search_info.contact_phone is not None:
         conditions.append("c.Phone LIKE %s")
         values.append(f"%{search_info.contact_phone}%")
-    if search_info.contact_address:
+    if search_info.contact_address is not None:
         conditions.append("c.Address LIKE %s")
         values.append(f"%{search_info.contact_address}%")
     if search_info.birth_from and search_info.birth_to:
@@ -128,13 +128,13 @@ def search_ids_by_info(search_info, conn, cursor):
     if search_info.discharge_time_from and search_info.discharge_time_to:
         conditions.append("m.DischargeDate BETWEEN %s AND %s")
         values.extend([search_info.discharge_time_from, search_info.discharge_time_to])
-    if search_info.department:
+    if search_info.department is not None:
         conditions.append("u.Name LIKE %s")
         values.append(f"%{search_info.department}%")
     if search_info.patient_age_from and search_info.patient_age_to:
         conditions.append("p.Age BETWEEN %s AND %s")
         values.extend([search_info.patient_age_from, search_info.patient_age_to])
-    if search_info.disease_name:
+    if search_info.disease_name is not None:
         conditions.append("d.Description LIKE %s")
         values.append(f"%{search_info.disease_name}%")
     if search_info.days_from and search_info.days_to:
@@ -166,13 +166,13 @@ def search_disease_info(medical_record_number=None, patient_name=None, gender=No
         conditions = []
         values = []
 
-        if medical_record_number:
+        if medical_record_number is not None:
             conditions.append("m.MedicalRecordNumber = %s")
             values.append(medical_record_number)
-        if patient_name:
+        if patient_name is not None:
             conditions.append("p.Name LIKE %s")
             values.append(f"%{patient_name}%")
-        if gender:
+        if gender is not None:
             conditions.append("p.Gender = %s")
             values.append(gender)
         if admission_date_from and admission_date_to:
@@ -181,10 +181,10 @@ def search_disease_info(medical_record_number=None, patient_name=None, gender=No
         if discharge_date_from and discharge_date_to:
             conditions.append("m.DischargeDate BETWEEN %s AND %s")
             values.extend([discharge_date_from, discharge_date_to])
-        if unit_name:
+        if unit_name is not None:
             conditions.append("u.Name LIKE %s")
             values.append(f"%{unit_name}%")
-        if disease_name:
+        if disease_name is not None:
             conditions.append("d.Description LIKE %s")
             values.append(f"%{disease_name}%")
         if diagnosis_type == 'Admission':
@@ -414,9 +414,13 @@ def search_admission_info(admission_start_date, admission_end_date, unit_name):
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
         JOIN Unit u ON m.UnitID = u.UnitID
-        WHERE u.Name LIKE %s AND m.AdmissionDate BETWEEN %s AND %s 
+        WHERE m.AdmissionDate BETWEEN %s AND %s 
         """
-        cursor.execute(query, (unit_name, admission_start_date, admission_end_date))
+        if unit_name:
+            query.join("AND u.Name = %s")
+            cursor.execute(query, (admission_start_date, admission_end_date, unit_name))
+        else:
+            cursor.execute(query, (admission_start_date, admission_end_date))
         admission_info = cursor.fetchall()
     except Error as e:
         conn.rollback()  # 回滚事务，以防部分删除操作成功
