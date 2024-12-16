@@ -845,10 +845,8 @@ class Ui_MainWindow(object):
                 address = self.lineEdit_340.text()
                 phone2 = self.lineEdit_341.text()
 
-                admission_date = self.dateEdit_2.date()
-                discharge_date = self.dateEdit_3.date()
                 doctor_name = self.lineEdit_364.text()
-                pathological_diagnosis_id = self.lineEdit_354.text()
+
 
                 # bloodtype
                 shi = self.comboBox_23.currentIndex() + 1
@@ -905,29 +903,52 @@ class Ui_MainWindow(object):
                 # 遍历表格的每一行
                 for row in range(self.tableWidget_14.rowCount()):
                     # 获取各列的值
-                    surgery_date = self.tableWidget_14.item(row, 0).text()  # 手术日期
-                    surgery_name = self.tableWidget_14.item(row, 1).text()  # 手术名称
-                    surgeon_name = self.tableWidget_14.item(row, 2).text()  # 手术级别
-                    assistant_surgeon_name = self.tableWidget_14.item(row, 3).text()  # 手术及操作人员（包含主刀、副刀）
-
+                    surgery_date = None
+                    surgery_name = None
+                    surgeon_name = None
+                    assistant_surgeon_name =None
+                    if self.tableWidget_14.item(row, 0):
+                        surgery_date = self.tableWidget_14.item(row, 0).text()  # 手术日期
+                    if self.tableWidget_14.item(row, 1):
+                        surgery_name = self.tableWidget_14.item(row, 1).text()  # 手术名称
+                    if self.tableWidget_14.item(row, 2):
+                        surgeon_name = self.tableWidget_14.item(row, 2).text()  # 手术级别
+                    if self.tableWidget_14.item(row, 3):
+                        assistant_surgeon_name = self.tableWidget_14.item(row, 3).text()  # 手术及操作人员（包含主刀、副刀）
                     # 创建手术信息对象并添加到列表
-                    surgery_info = SurgeryInfo(surgery_date, surgery_name, surgeon_name, assistant_surgeon_name)
-                    surgery_infos.append(surgery_info)
+                    if self.tableWidget_14.item(row, 0):
+                        surgery_info = SurgeryInfo(surgery_date, surgery_name, surgeon_name, assistant_surgeon_name)
+                        surgery_infos.append(surgery_info)
 
                 ward_infos = []
 
                 for row in range(self.tableWidget_15.rowCount()):
-                    ward_name = self.tableWidget_15.item(row,0).text()
-                    start_time = self.tableWidget_15.item(row,1).text()
-                    end_time = self.tableWidget_15.item(row,2).text()
-
-                    ward_info = WardInfo(ward_name, start_time, end_time)
-                    ward_infos.append(ward_info)
+                    ward_name = None
+                    start_time = None
+                    end_time = None
+                    if self.tableWidget_15.item(row,0):
+                        ward_name = self.tableWidget_15.item(row,0).text()
+                    if self.tableWidget_15.item(row,1):
+                        start_time = self.tableWidget_15.item(row,1).text()
+                    if self.tableWidget_15.item(row,2):
+                        end_time = self.tableWidget_15.item(row,2).text()
+                    if self.tableWidget_15.item(row, 0):
+                        ward_info = WardInfo(ward_name, start_time, end_time)
+                        ward_infos.append(ward_info)
 
                 index = self.comboBox_25.currentIndex()
                 payment = self.comboBox_25.itemText(index)
 
-                discharge_code = self.lineEdit_342.text()  # 出院诊断编码
+                admission_code = None
+                if self.lineEdit_343.text():
+                    admission_code = self.lineEdit_343.text()
+                discharge_code = None
+                if self.lineEdit_349.text():
+                    discharge_code = self.lineEdit_349.text()  # 出院诊断编码
+                pathological_diagnosis_id = None
+                if self.lineEdit_354.text():
+                    pathological_diagnosis_id = self.lineEdit_354.text()
+
                 admission_date = self.dateEdit_2.text()  # 入院日期
                 discharge_date = self.dateEdit_3.text()  # 出院日期
                 '''
@@ -979,8 +1000,8 @@ class Ui_MainWindow(object):
                     admission_date=admission_date,
                     discharge_date=discharge_date,
                     unit_name=discharge_code,
-                    admission_diagnosis_id=admission_date,
-                    discharge_diagnosis_id=discharge_date,
+                    admission_diagnosis_id=admission_code,
+                    discharge_diagnosis_id=discharge_code,
                     pathological_diagnosis_id=pathological_diagnosis_id,
                     blood_type=bloodtype,
                     doctor_name=doctor_name,
@@ -990,11 +1011,12 @@ class Ui_MainWindow(object):
                     payment_method=payment
                 )
 
-                create_medical_record(medical_record_info)
-
-                QMessageBox.information(self, "成功", "病案和费用信息已成功保存！")
+                success = create_medical_record(medical_record_info)
+                if success:  # 如果删除成功
+                    QMessageBox.information(self.centralwidget, "操作成功", "病案已成功建立！")
             except Exception as e:
-                QMessageBox.critical(self, "错误", f"保存失败: {str(e)}")
+                print(e)
+
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 import sys
