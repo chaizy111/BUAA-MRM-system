@@ -16,7 +16,7 @@ class MedicalRecordInfo:
             nationality="中国",
             place_of_birth="北京",
             ethnicity="汉",
-            id_card_number="123456789012345112",
+            id_card_number="123456789012345115",
             occupation="科员",
             marital_status="Married",
             current_address="123 Main St, Anytown, USA",
@@ -39,7 +39,7 @@ class MedicalRecordInfo:
         self.pathological_diagnosis_id = "A00.000"
         self.doctor_name = "唐洋"
         self.blood_type = "11"
-        self.payment_method = "Credit Card"
+        self.payment_method = "支付宝"
         self.surgery_infos = self.surgery_infos = [
             SurgeryInfo(
                 surgery_date="2024-01-10",
