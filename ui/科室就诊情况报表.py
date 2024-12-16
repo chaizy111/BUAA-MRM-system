@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessag
 import sys
 
 from db.login_op import check_permission
-from db.search_op import search_admission_info
+from db.statistic_op import get_diagnosisInUnit_statistic
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
 
@@ -90,7 +90,7 @@ class Ui_MainWindow(object):
         """查询按钮点击事件"""
         try:
             # 获取查询结果
-            results = search_admission_info()
+            results = get_diagnosisInUnit_statistic()
 
             # 清空表格
             self.tableWidget.setRowCount(0)

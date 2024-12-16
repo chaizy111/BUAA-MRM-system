@@ -1,6 +1,7 @@
 import pymysql
 from db.search_op import *
 from pymysql import Error
+import pandas as pd
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(
@@ -166,3 +167,20 @@ def get_departurePatient_statistic(start_date, end_date):
     break_connect(conn, cursor)
     return results, search_discharge_info(start_date=start_date, end_date=end_date)
 
+
+
+
+if __name__=='__main__':
+    df = pd.DataFrame(get_fee_statistic_by_year(), columns=['Year', 'TotalIncome'])
+
+    # 导出 DataFrame 到 Excel 文件
+    df.to_excel('fee_statistic_by_day.xlsx', index=False)
+
+    # 读取 Excel 文件
+    df = pd.read_excel('fee_statistic_by_day.xlsx')
+
+    # 将 DataFrame 转换为 HTML
+    html = df.to_html(index=False)
+
+    # 将 HTML 转换为 PDF
+    pdfkit.from_string(html).save('output.pdf')

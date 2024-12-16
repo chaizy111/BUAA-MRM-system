@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog
 import sys
 
-
+from PyQt5 import QtGui
 
 import db
 from db.login_op import check_permission
@@ -133,8 +133,6 @@ class Ui_MainWindow(object):
         将查询结果显示在前端表格中
         :param results: list of tuples, 查询结果
         """
-        # 清空现有内容
-        self.columnView.clear()
 
         # 设置列标题
         column_headers = ["Year", "Month", "Day", "TotalIncome"]
@@ -149,7 +147,8 @@ class Ui_MainWindow(object):
         model.setHorizontalHeaderLabels(column_headers)
 
         for row in results:
-            items = [QtGui.QStandardItem(str(cell)) for cell in row]
+            s = 't'.join([str(cell) for cell in row])
+            items = QtGui.QStandardItem(s)
             model.appendRow(items)
 
         self.columnView.setModel(model)
