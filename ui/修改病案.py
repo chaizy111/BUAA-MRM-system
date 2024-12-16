@@ -13,8 +13,988 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QInputDialog
 
 from db.login_op import check_permission
-from db.normal_op import delete_record_by_recordID
+from db.normal_op import delete_record_by_recordID, get_record_by_recordID
 from db.search_op import search_patients_by_info
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QInputDialog
+
+from db.init.init_table import create_cost_table
+from db.login_op import check_permission
+from db.normal_op import create_patient
+from intermediate_data_structure import medical_record_info
+from intermediate_data_structure.cost_info import CostInfo
+from intermediate_data_structure.patient_info import PatientInfo
+
+
+
+class Ui_MainWindow1(object):
+
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(989, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.frame = QtWidgets.QFrame(self.centralwidget)
+        self.frame.setGeometry(QtCore.QRect(20, 30, 811, 971))
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.label = QtWidgets.QLabel(self.frame)
+        self.label.setGeometry(QtCore.QRect(280, 10, 71, 21))
+        self.label.setMaximumSize(QtCore.QSize(71, 16777215))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(12)
+        self.label.setFont(font)
+        self.label.setOpenExternalLinks(False)
+        self.label.setObjectName("label")
+        self.layoutWidget = QtWidgets.QWidget(self.frame)
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 40, 779, 931))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.layoutWidget)
+        self.verticalLayout_13.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_13.setObjectName("verticalLayout_13")
+        self.line_5 = QtWidgets.QFrame(self.layoutWidget)
+        self.line_5.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_5.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_5.setObjectName("line_5")
+        self.verticalLayout_13.addWidget(self.line_5)
+        self.horizontalLayout_137 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_137.setObjectName("horizontalLayout_137")
+        self.label_410 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_410.setObjectName("label_410")
+        self.horizontalLayout_137.addWidget(self.label_410)
+        self.lineEdit_321 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_321.setObjectName("lineEdit_321")
+        self.horizontalLayout_137.addWidget(self.lineEdit_321)
+        self.label_411 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_411.setObjectName("label_411")
+        self.horizontalLayout_137.addWidget(self.label_411)
+        self.checkBox_21 = QtWidgets.QCheckBox(self.layoutWidget)
+        self.checkBox_21.setObjectName("checkBox_21")
+        self.horizontalLayout_137.addWidget(self.checkBox_21)
+        self.checkBox_22 = QtWidgets.QCheckBox(self.layoutWidget)
+        self.checkBox_22.setObjectName("checkBox_22")
+        self.horizontalLayout_137.addWidget(self.checkBox_22)
+        self.label_412 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_412.setObjectName("label_412")
+        self.horizontalLayout_137.addWidget(self.label_412)
+        self.lineEdit_322 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_322.setObjectName("lineEdit_322")
+        self.horizontalLayout_137.addWidget(self.lineEdit_322)
+        self.label_413 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_413.setObjectName("label_413")
+        self.horizontalLayout_137.addWidget(self.label_413)
+        self.lineEdit_323 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_323.setObjectName("lineEdit_323")
+        self.horizontalLayout_137.addWidget(self.lineEdit_323)
+        self.label_414 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_414.setObjectName("label_414")
+        self.horizontalLayout_137.addWidget(self.label_414)
+        self.lineEdit_324 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_324.setObjectName("lineEdit_324")
+        self.horizontalLayout_137.addWidget(self.lineEdit_324)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_137)
+        self.horizontalLayout_138 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_138.setObjectName("horizontalLayout_138")
+        self.verticalLayout_14 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_14.setObjectName("verticalLayout_14")
+        self.horizontalLayout_139 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_139.setObjectName("horizontalLayout_139")
+        self.label_415 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_415.setObjectName("label_415")
+        self.horizontalLayout_139.addWidget(self.label_415)
+        self.lineEdit_325 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_325.setObjectName("lineEdit_325")
+        self.horizontalLayout_139.addWidget(self.lineEdit_325)
+        self.label_416 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_416.setObjectName("label_416")
+        self.horizontalLayout_139.addWidget(self.label_416)
+        self.lineEdit_326 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_326.setObjectName("lineEdit_326")
+        self.horizontalLayout_139.addWidget(self.lineEdit_326)
+        self.verticalLayout_14.addLayout(self.horizontalLayout_139)
+        self.horizontalLayout_140 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_140.setObjectName("horizontalLayout_140")
+        self.label_417 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_417.setObjectName("label_417")
+        self.horizontalLayout_140.addWidget(self.label_417)
+        self.lineEdit_327 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_327.setObjectName("lineEdit_327")
+        self.horizontalLayout_140.addWidget(self.lineEdit_327)
+        self.label_418 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_418.setObjectName("label_418")
+        self.horizontalLayout_140.addWidget(self.label_418)
+        self.lineEdit_328 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_328.setObjectName("lineEdit_328")
+        self.horizontalLayout_140.addWidget(self.lineEdit_328)
+        self.label_419 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_419.setObjectName("label_419")
+        self.horizontalLayout_140.addWidget(self.label_419)
+        self.lineEdit_329 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_329.setObjectName("lineEdit_329")
+        self.horizontalLayout_140.addWidget(self.lineEdit_329)
+        self.verticalLayout_14.addLayout(self.horizontalLayout_140)
+        self.horizontalLayout_138.addLayout(self.verticalLayout_14)
+        self.verticalLayout_15 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_15.setObjectName("verticalLayout_15")
+        self.horizontalLayout_141 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_141.setObjectName("horizontalLayout_141")
+        self.label_420 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_420.setObjectName("label_420")
+        self.horizontalLayout_141.addWidget(self.label_420)
+        self.lineEdit_330 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_330.setObjectName("lineEdit_330")
+        self.horizontalLayout_141.addWidget(self.lineEdit_330)
+        self.verticalLayout_15.addLayout(self.horizontalLayout_141)
+        self.horizontalLayout_142 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_142.setObjectName("horizontalLayout_142")
+        self.label_421 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_421.setObjectName("label_421")
+        self.horizontalLayout_142.addWidget(self.label_421)
+        self.lineEdit_331 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_331.setObjectName("lineEdit_331")
+        self.horizontalLayout_142.addWidget(self.lineEdit_331)
+        self.verticalLayout_15.addLayout(self.horizontalLayout_142)
+        self.horizontalLayout_138.addLayout(self.verticalLayout_15)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_138)
+        self.horizontalLayout_143 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_143.setObjectName("horizontalLayout_143")
+        self.label_422 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_422.setObjectName("label_422")
+        self.horizontalLayout_143.addWidget(self.label_422)
+        self.lineEdit_332 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_332.setObjectName("lineEdit_332")
+        self.horizontalLayout_143.addWidget(self.lineEdit_332)
+        self.label_423 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_423.setObjectName("label_423")
+        self.horizontalLayout_143.addWidget(self.label_423)
+        self.lineEdit_333 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_333.setObjectName("lineEdit_333")
+        self.horizontalLayout_143.addWidget(self.lineEdit_333)
+        self.label_424 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_424.setObjectName("label_424")
+        self.horizontalLayout_143.addWidget(self.label_424)
+        self.lineEdit_334 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_334.setObjectName("lineEdit_334")
+        self.horizontalLayout_143.addWidget(self.lineEdit_334)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_143)
+        self.horizontalLayout_144 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_144.setObjectName("horizontalLayout_144")
+        self.label_425 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_425.setObjectName("label_425")
+        self.horizontalLayout_144.addWidget(self.label_425)
+        self.lineEdit_335 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_335.setObjectName("lineEdit_335")
+        self.horizontalLayout_144.addWidget(self.lineEdit_335)
+        self.label_426 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_426.setObjectName("label_426")
+        self.horizontalLayout_144.addWidget(self.label_426)
+        self.lineEdit_336 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_336.setObjectName("lineEdit_336")
+        self.horizontalLayout_144.addWidget(self.lineEdit_336)
+        self.label_427 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_427.setObjectName("label_427")
+        self.horizontalLayout_144.addWidget(self.label_427)
+        self.lineEdit_337 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_337.setObjectName("lineEdit_337")
+        self.horizontalLayout_144.addWidget(self.lineEdit_337)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_144)
+        self.horizontalLayout_145 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_145.setObjectName("horizontalLayout_145")
+        self.label_428 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_428.setObjectName("label_428")
+        self.horizontalLayout_145.addWidget(self.label_428)
+        self.lineEdit_338 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_338.setObjectName("lineEdit_338")
+        self.horizontalLayout_145.addWidget(self.lineEdit_338)
+        self.label_429 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_429.setObjectName("label_429")
+        self.horizontalLayout_145.addWidget(self.label_429)
+        self.lineEdit_339 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_339.setObjectName("lineEdit_339")
+        self.horizontalLayout_145.addWidget(self.lineEdit_339)
+        self.label_430 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_430.setObjectName("label_430")
+        self.horizontalLayout_145.addWidget(self.label_430)
+        self.lineEdit_340 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_340.setObjectName("lineEdit_340")
+        self.horizontalLayout_145.addWidget(self.lineEdit_340)
+        self.label_431 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_431.setObjectName("label_431")
+        self.horizontalLayout_145.addWidget(self.label_431)
+        self.lineEdit_341 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_341.setObjectName("lineEdit_341")
+        self.horizontalLayout_145.addWidget(self.lineEdit_341)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_145)
+        self.horizontalLayout_146 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_146.setObjectName("horizontalLayout_146")
+        self.label_432 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_432.setObjectName("label_432")
+        self.horizontalLayout_146.addWidget(self.label_432)
+        self.comboBox_21 = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBox_21.setObjectName("comboBox_21")
+        self.comboBox_21.addItem("")
+        self.comboBox_21.addItem("")
+        self.comboBox_21.addItem("")
+        self.comboBox_21.addItem("")
+        self.horizontalLayout_146.addWidget(self.comboBox_21)
+        self.label_433 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_433.setObjectName("label_433")
+        self.horizontalLayout_146.addWidget(self.label_433)
+        self.lineEdit_342 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_342.setObjectName("lineEdit_342")
+        self.horizontalLayout_146.addWidget(self.lineEdit_342)
+        self.label_434 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_434.setObjectName("label_434")
+        self.horizontalLayout_146.addWidget(self.label_434)
+        self.lineEdit_343 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_343.setObjectName("lineEdit_343")
+        self.horizontalLayout_146.addWidget(self.lineEdit_343)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_146)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label_438 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_438.setObjectName("label_438")
+        self.horizontalLayout.addWidget(self.label_438)
+        self.lineEdit_347 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_347.setObjectName("lineEdit_347")
+        self.horizontalLayout.addWidget(self.lineEdit_347)
+        self.label_440 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_440.setObjectName("label_440")
+        self.horizontalLayout.addWidget(self.label_440)
+        self.lineEdit_349 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_349.setObjectName("lineEdit_349")
+        self.horizontalLayout.addWidget(self.lineEdit_349)
+        spacerItem = QtWidgets.QSpacerItem(278, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.verticalLayout_13.addLayout(self.horizontalLayout)
+        self.horizontalLayout_147 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_147.setObjectName("horizontalLayout_147")
+        self.label_435 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_435.setObjectName("label_435")
+        self.horizontalLayout_147.addWidget(self.label_435)
+        self.lineEdit_344 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_344.setObjectName("lineEdit_344")
+        self.horizontalLayout_147.addWidget(self.lineEdit_344)
+        self.label_439 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_439.setObjectName("label_439")
+        self.horizontalLayout_147.addWidget(self.label_439)
+        self.lineEdit_348 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_348.setObjectName("lineEdit_348")
+        self.horizontalLayout_147.addWidget(self.lineEdit_348)
+        self.label_436 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_436.setObjectName("label_436")
+        self.horizontalLayout_147.addWidget(self.label_436)
+        self.lineEdit_345 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_345.setObjectName("lineEdit_345")
+        self.horizontalLayout_147.addWidget(self.lineEdit_345)
+        self.label_437 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_437.setObjectName("label_437")
+        self.horizontalLayout_147.addWidget(self.label_437)
+        self.lineEdit_346 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_346.setObjectName("lineEdit_346")
+        self.horizontalLayout_147.addWidget(self.lineEdit_346)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_147)
+        self.horizontalLayout_150 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_150.setObjectName("horizontalLayout_150")
+        self.label_445 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_445.setObjectName("label_445")
+        self.horizontalLayout_150.addWidget(self.label_445)
+        self.lineEdit_354 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_354.setObjectName("lineEdit_354")
+        self.horizontalLayout_150.addWidget(self.lineEdit_354)
+        self.label_447 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_447.setObjectName("label_447")
+        self.horizontalLayout_150.addWidget(self.label_447)
+        self.lineEdit_356 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_356.setObjectName("lineEdit_356")
+        self.horizontalLayout_150.addWidget(self.lineEdit_356)
+        spacerItem1 = QtWidgets.QSpacerItem(278, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_150.addItem(spacerItem1)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_150)
+        self.horizontalLayout_151 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_151.setObjectName("horizontalLayout_151")
+        self.label_450 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_450.setObjectName("label_450")
+        self.horizontalLayout_151.addWidget(self.label_450)
+        self.comboBox_23 = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBox_23.setObjectName("comboBox_23")
+        self.comboBox_23.addItem("")
+        self.comboBox_23.addItem("")
+        self.comboBox_23.addItem("")
+        self.comboBox_23.addItem("")
+        self.comboBox_23.addItem("")
+        self.horizontalLayout_151.addWidget(self.comboBox_23)
+        self.label_452 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_452.setObjectName("label_452")
+        self.horizontalLayout_151.addWidget(self.label_452)
+        self.comboBox_24 = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBox_24.setObjectName("comboBox_24")
+        self.comboBox_24.addItem("")
+        self.comboBox_24.addItem("")
+        self.comboBox_24.addItem("")
+        self.horizontalLayout_151.addWidget(self.comboBox_24)
+        spacerItem2 = QtWidgets.QSpacerItem(528, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_151.addItem(spacerItem2)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_151)
+        self.horizontalLayout_153 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_153.setObjectName("horizontalLayout_153")
+        self.label_459 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_459.setObjectName("label_459")
+        self.horizontalLayout_153.addWidget(self.label_459)
+        self.lineEdit_364 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_364.setObjectName("lineEdit_364")
+        self.horizontalLayout_153.addWidget(self.lineEdit_364)
+        spacerItem3 = QtWidgets.QSpacerItem(528, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_153.addItem(spacerItem3)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_153)
+        self.tableWidget_14 = QtWidgets.QTableWidget(self.layoutWidget)
+        self.tableWidget_14.setObjectName("tableWidget_14")
+        self.tableWidget_14.setColumnCount(5)
+        self.tableWidget_14.setRowCount(8)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setColumnWidth(0, 150)
+        self.tableWidget_14.setColumnWidth(1, 150)
+        self.tableWidget_14.setColumnWidth(2, 150)
+        self.tableWidget_14.setColumnWidth(3, 150)
+        self.tableWidget_14.setColumnWidth(4, 172)
+        self.tableWidget_14.setVerticalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(4, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(5, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(6, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(7, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setVerticalHeaderItem(8, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setHorizontalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_14.setHorizontalHeaderItem(4, item)
+        self.verticalLayout_13.addWidget(self.tableWidget_14)
+        self.horizontalLayout_158 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_158.setObjectName("horizontalLayout_158")
+        self.label_470 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_470.setObjectName("label_470")
+        self.horizontalLayout_158.addWidget(self.label_470)
+        self.label_471 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_471.setObjectName("label_471")
+        self.horizontalLayout_158.addWidget(self.label_471)
+        self.lineEdit_372 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_372.setObjectName("lineEdit_372")
+        self.horizontalLayout_158.addWidget(self.lineEdit_372)
+        self.label_472 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_472.setObjectName("label_472")
+        self.horizontalLayout_158.addWidget(self.label_472)
+        self.lineEdit_373 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_373.setObjectName("lineEdit_373")
+        self.horizontalLayout_158.addWidget(self.lineEdit_373)
+        self.label_473 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_473.setObjectName("label_473")
+        self.horizontalLayout_158.addWidget(self.label_473)
+        self.lineEdit_374 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_374.setText("")
+        self.lineEdit_374.setObjectName("lineEdit_374")
+        self.horizontalLayout_158.addWidget(self.lineEdit_374)
+        self.label_474 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_474.setObjectName("label_474")
+        self.horizontalLayout_158.addWidget(self.label_474)
+        self.lineEdit_375 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_375.setText("")
+        self.lineEdit_375.setObjectName("lineEdit_375")
+        self.horizontalLayout_158.addWidget(self.lineEdit_375)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_158)
+        self.horizontalLayout_159 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_159.setObjectName("horizontalLayout_159")
+        self.label_475 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_475.setObjectName("label_475")
+        self.horizontalLayout_159.addWidget(self.label_475)
+        self.label_476 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_476.setObjectName("label_476")
+        self.horizontalLayout_159.addWidget(self.label_476)
+        self.lineEdit_376 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_376.setObjectName("lineEdit_376")
+        self.horizontalLayout_159.addWidget(self.lineEdit_376)
+        self.label_477 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_477.setObjectName("label_477")
+        self.horizontalLayout_159.addWidget(self.label_477)
+        self.lineEdit_377 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_377.setObjectName("lineEdit_377")
+        self.horizontalLayout_159.addWidget(self.lineEdit_377)
+        self.label_478 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_478.setObjectName("label_478")
+        self.horizontalLayout_159.addWidget(self.label_478)
+        self.lineEdit_378 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_378.setText("")
+        self.lineEdit_378.setObjectName("lineEdit_378")
+        self.horizontalLayout_159.addWidget(self.lineEdit_378)
+        self.label_479 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_479.setObjectName("label_479")
+        self.horizontalLayout_159.addWidget(self.label_479)
+        self.lineEdit_379 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_379.setText("")
+        self.lineEdit_379.setObjectName("lineEdit_379")
+        self.horizontalLayout_159.addWidget(self.lineEdit_379)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_159)
+        self.horizontalLayout_160 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_160.setObjectName("horizontalLayout_160")
+        self.label_480 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_480.setObjectName("label_480")
+        self.horizontalLayout_160.addWidget(self.label_480)
+        self.label_481 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_481.setObjectName("label_481")
+        self.horizontalLayout_160.addWidget(self.label_481)
+        self.lineEdit_380 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_380.setObjectName("lineEdit_380")
+        self.horizontalLayout_160.addWidget(self.lineEdit_380)
+        self.label_482 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_482.setObjectName("label_482")
+        self.horizontalLayout_160.addWidget(self.label_482)
+        self.lineEdit_381 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_381.setText("")
+        self.lineEdit_381.setObjectName("lineEdit_381")
+        self.horizontalLayout_160.addWidget(self.lineEdit_381)
+        self.label_483 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_483.setObjectName("label_483")
+        self.horizontalLayout_160.addWidget(self.label_483)
+        self.label_484 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_484.setObjectName("label_484")
+        self.horizontalLayout_160.addWidget(self.label_484)
+        self.lineEdit_382 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_382.setObjectName("lineEdit_382")
+        self.horizontalLayout_160.addWidget(self.lineEdit_382)
+        self.label_485 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_485.setObjectName("label_485")
+        self.horizontalLayout_160.addWidget(self.label_485)
+        self.lineEdit_383 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_383.setText("")
+        self.lineEdit_383.setObjectName("lineEdit_383")
+        self.horizontalLayout_160.addWidget(self.lineEdit_383)
+        self.label_486 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_486.setObjectName("label_486")
+        self.horizontalLayout_160.addWidget(self.label_486)
+        self.lineEdit_384 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_384.setText("")
+        self.lineEdit_384.setObjectName("lineEdit_384")
+        self.horizontalLayout_160.addWidget(self.lineEdit_384)
+        self.label_487 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_487.setObjectName("label_487")
+        self.horizontalLayout_160.addWidget(self.label_487)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_160)
+        self.horizontalLayout_161 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_161.setObjectName("horizontalLayout_161")
+        self.label_488 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_488.setObjectName("label_488")
+        self.horizontalLayout_161.addWidget(self.label_488)
+        self.label_489 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_489.setObjectName("label_489")
+        self.horizontalLayout_161.addWidget(self.label_489)
+        self.lineEdit_385 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_385.setObjectName("lineEdit_385")
+        self.horizontalLayout_161.addWidget(self.lineEdit_385)
+        spacerItem4 = QtWidgets.QSpacerItem(718, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_161.addItem(spacerItem4)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_161)
+        self.horizontalLayout_162 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_162.setObjectName("horizontalLayout_162")
+        self.label_490 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_490.setObjectName("label_490")
+        self.horizontalLayout_162.addWidget(self.label_490)
+        self.label_491 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_491.setObjectName("label_491")
+        self.horizontalLayout_162.addWidget(self.label_491)
+        self.lineEdit_386 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_386.setObjectName("lineEdit_386")
+        self.horizontalLayout_162.addWidget(self.lineEdit_386)
+        spacerItem5 = QtWidgets.QSpacerItem(718, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_162.addItem(spacerItem5)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_162)
+        self.horizontalLayout_163 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_163.setObjectName("horizontalLayout_163")
+        self.label_492 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_492.setObjectName("label_492")
+        self.horizontalLayout_163.addWidget(self.label_492)
+        self.label_493 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_493.setObjectName("label_493")
+        self.horizontalLayout_163.addWidget(self.label_493)
+        self.lineEdit_387 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_387.setObjectName("lineEdit_387")
+        self.horizontalLayout_163.addWidget(self.lineEdit_387)
+        self.label_494 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_494.setObjectName("label_494")
+        self.horizontalLayout_163.addWidget(self.label_494)
+        self.lineEdit_388 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_388.setText("")
+        self.lineEdit_388.setObjectName("lineEdit_388")
+        self.horizontalLayout_163.addWidget(self.lineEdit_388)
+        self.label_495 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_495.setObjectName("label_495")
+        self.horizontalLayout_163.addWidget(self.label_495)
+        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_163.addItem(spacerItem6)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_163)
+        self.horizontalLayout_164 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_164.setObjectName("horizontalLayout_164")
+        self.label_496 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_496.setObjectName("label_496")
+        self.horizontalLayout_164.addWidget(self.label_496)
+        self.label_497 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_497.setObjectName("label_497")
+        self.horizontalLayout_164.addWidget(self.label_497)
+        self.lineEdit_389 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_389.setObjectName("lineEdit_389")
+        self.horizontalLayout_164.addWidget(self.lineEdit_389)
+        self.label_498 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_498.setObjectName("label_498")
+        self.horizontalLayout_164.addWidget(self.label_498)
+        self.lineEdit_390 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_390.setObjectName("lineEdit_390")
+        self.horizontalLayout_164.addWidget(self.lineEdit_390)
+        spacerItem7 = QtWidgets.QSpacerItem(718, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_164.addItem(spacerItem7)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_164)
+        self.horizontalLayout_165 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_165.setObjectName("horizontalLayout_165")
+        self.label_499 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_499.setObjectName("label_499")
+        self.horizontalLayout_165.addWidget(self.label_499)
+        self.label_500 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_500.setObjectName("label_500")
+        self.horizontalLayout_165.addWidget(self.label_500)
+        self.lineEdit_391 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_391.setObjectName("lineEdit_391")
+        self.horizontalLayout_165.addWidget(self.lineEdit_391)
+        self.label_501 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_501.setObjectName("label_501")
+        self.horizontalLayout_165.addWidget(self.label_501)
+        self.lineEdit_392 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_392.setObjectName("lineEdit_392")
+        self.horizontalLayout_165.addWidget(self.lineEdit_392)
+        self.label_502 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_502.setObjectName("label_502")
+        self.horizontalLayout_165.addWidget(self.label_502)
+        self.lineEdit_393 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_393.setText("")
+        self.lineEdit_393.setObjectName("lineEdit_393")
+        self.horizontalLayout_165.addWidget(self.lineEdit_393)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_165)
+        self.horizontalLayout_166 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_166.setObjectName("horizontalLayout_166")
+        spacerItem8 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_166.addItem(spacerItem8)
+        self.label_503 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_503.setObjectName("label_503")
+        self.horizontalLayout_166.addWidget(self.label_503)
+        self.lineEdit_394 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_394.setObjectName("lineEdit_394")
+        self.horizontalLayout_166.addWidget(self.lineEdit_394)
+        self.label_504 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_504.setObjectName("label_504")
+        self.horizontalLayout_166.addWidget(self.label_504)
+        self.lineEdit_395 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_395.setObjectName("lineEdit_395")
+        self.horizontalLayout_166.addWidget(self.lineEdit_395)
+        spacerItem9 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_166.addItem(spacerItem9)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_166)
+        self.horizontalLayout_167 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_167.setObjectName("horizontalLayout_167")
+        self.label_505 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_505.setObjectName("label_505")
+        self.horizontalLayout_167.addWidget(self.label_505)
+        self.label_506 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_506.setObjectName("label_506")
+        self.horizontalLayout_167.addWidget(self.label_506)
+        self.lineEdit_396 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_396.setObjectName("lineEdit_396")
+        self.horizontalLayout_167.addWidget(self.lineEdit_396)
+        self.label_507 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_507.setObjectName("label_507")
+        self.horizontalLayout_167.addWidget(self.label_507)
+        self.lineEdit_397 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_397.setObjectName("lineEdit_397")
+        self.horizontalLayout_167.addWidget(self.lineEdit_397)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_167)
+        self.horizontalLayout_168 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_168.setObjectName("horizontalLayout_168")
+        self.label_508 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_508.setObjectName("label_508")
+        self.horizontalLayout_168.addWidget(self.label_508)
+        self.lineEdit_398 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_398.setObjectName("lineEdit_398")
+        self.horizontalLayout_168.addWidget(self.lineEdit_398)
+        spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_168.addItem(spacerItem10)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_168)
+        self.horizontalLayout_169 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_169.setObjectName("horizontalLayout_169")
+        self.label_509 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_509.setObjectName("label_509")
+        self.horizontalLayout_169.addWidget(self.label_509)
+        self.lineEdit_399 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_399.setObjectName("lineEdit_399")
+        self.horizontalLayout_169.addWidget(self.lineEdit_399)
+        self.label_510 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_510.setObjectName("label_510")
+        self.horizontalLayout_169.addWidget(self.label_510)
+        self.lineEdit_400 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_400.setObjectName("lineEdit_400")
+        self.horizontalLayout_169.addWidget(self.lineEdit_400)
+        spacerItem11 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_169.addItem(spacerItem11)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_169)
+        self.horizontalLayout_170 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_170.setObjectName("horizontalLayout_170")
+        self.label_511 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_511.setObjectName("label_511")
+        self.horizontalLayout_170.addWidget(self.label_511)
+        self.comboBox_25 = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBox_25.setObjectName("comboBox_25")
+        self.comboBox_25.addItem("")
+        self.comboBox_25.addItem("")
+        self.comboBox_25.addItem("")
+        self.comboBox_25.addItem("")
+        self.horizontalLayout_170.addWidget(self.comboBox_25)
+        spacerItem12 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_170.addItem(spacerItem12)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_170)
+        self.verticalScrollBar = QtWidgets.QScrollBar(self.centralwidget)
+        self.verticalScrollBar.setGeometry(QtCore.QRect(830, 40, 16, 500))
+        self.verticalScrollBar.setOrientation(QtCore.Qt.Vertical)
+        self.verticalScrollBar.setObjectName("verticalScrollBar")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(880, 70, 75, 23))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setGeometry(QtCore.QRect(880, 150, 75, 23))
+        self.pushButton_2.setObjectName("pushButton_2")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.verticalScrollBar.setMinimum(0)
+        self.verticalScrollBar.setMaximum(self.frame.height() - 481)  # 内容高度 - 可见高度
+        self.verticalScrollBar.setValue(0)
+
+        # 连接滚动条信号到槽函数
+        self.verticalScrollBar.valueChanged.connect(self.scroll_frame)
+        self.pushButton.clicked.connect(self.save_patient_info)  # 绑定保存按钮的点击事件
+
+
+        self.retranslateUi(MainWindow)
+        self.pushButton_2.clicked.connect(MainWindow.close) # type: ignore
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "病案底板"))
+        self.label.setText(_translate("MainWindow", "病案首页"))
+        self.label_410.setText(_translate("MainWindow", "姓名："))
+        self.label_411.setText(_translate("MainWindow", "性别："))
+        self.checkBox_21.setText(_translate("MainWindow", "男"))
+        self.checkBox_22.setText(_translate("MainWindow", "女"))
+        self.label_412.setText(_translate("MainWindow", "出生日期："))
+        self.label_413.setText(_translate("MainWindow", "年龄："))
+        self.label_414.setText(_translate("MainWindow", "国籍："))
+        self.label_415.setText(_translate("MainWindow", "出生地："))
+        self.label_416.setText(_translate("MainWindow", "籍贯："))
+        self.label_417.setText(_translate("MainWindow", "身份证件类别："))
+        self.label_418.setText(_translate("MainWindow", "证件号码："))
+        self.label_419.setText(_translate("MainWindow", "职业："))
+        self.label_420.setText(_translate("MainWindow", "民族："))
+        self.label_421.setText(_translate("MainWindow", "婚姻："))
+        self.label_422.setText(_translate("MainWindow", "现住址："))
+        self.label_423.setText(_translate("MainWindow", "电话："))
+        self.label_424.setText(_translate("MainWindow", "户口地址："))
+        self.label_425.setText(_translate("MainWindow", "工作单位："))
+        self.label_426.setText(_translate("MainWindow", "地址："))
+        self.label_427.setText(_translate("MainWindow", "电话："))
+        self.label_428.setText(_translate("MainWindow", "联系人姓名："))
+        self.label_429.setText(_translate("MainWindow", "与患者关系："))
+        self.label_430.setText(_translate("MainWindow", "地址："))
+        self.label_431.setText(_translate("MainWindow", "电话："))
+        self.label_432.setText(_translate("MainWindow", "入院途径："))
+        self.comboBox_21.setItemText(0, _translate("MainWindow", "门诊"))
+        self.comboBox_21.setItemText(1, _translate("MainWindow", "急诊"))
+        self.comboBox_21.setItemText(2, _translate("MainWindow", "其他医疗机构转入"))
+        self.comboBox_21.setItemText(3, _translate("MainWindow", "其他"))
+        self.label_433.setText(_translate("MainWindow", "门(急)诊诊断："))
+        self.label_434.setText(_translate("MainWindow", "疾病编码："))
+        self.label_438.setText(_translate("MainWindow", "出院诊断："))
+        self.label_440.setText(_translate("MainWindow", "疾病编码："))
+        self.label_435.setText(_translate("MainWindow", "入院日期："))
+        self.label_439.setText(_translate("MainWindow", "出院日期："))
+        self.label_436.setText(_translate("MainWindow", "科别："))
+        self.label_437.setText(_translate("MainWindow", "病房："))
+        self.label_445.setText(_translate("MainWindow", "病理诊断："))
+        self.label_447.setText(_translate("MainWindow", "疾病编码："))
+        self.label_450.setText(_translate("MainWindow", "血型："))
+        self.comboBox_23.setItemText(0, _translate("MainWindow", "A"))
+        self.comboBox_23.setItemText(1, _translate("MainWindow", "B"))
+        self.comboBox_23.setItemText(2, _translate("MainWindow", "O"))
+        self.comboBox_23.setItemText(3, _translate("MainWindow", "AB"))
+        self.comboBox_23.setItemText(4, _translate("MainWindow", "不详"))
+        self.label_452.setText(_translate("MainWindow", "Rh："))
+        self.comboBox_24.setItemText(0, _translate("MainWindow", "阴"))
+        self.comboBox_24.setItemText(1, _translate("MainWindow", "阳"))
+        self.comboBox_24.setItemText(2, _translate("MainWindow", "不详"))
+        self.label_459.setText(_translate("MainWindow", "主治医师："))
+        item = self.tableWidget_14.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "操作编码"))
+        item = self.tableWidget_14.horizontalHeaderItem(1)
+        item.setText(_translate("MainWindow", "手术日期"))
+        item = self.tableWidget_14.horizontalHeaderItem(2)
+        item.setText(_translate("MainWindow", "手术级别"))
+        item = self.tableWidget_14.horizontalHeaderItem(3)
+        item.setText(_translate("MainWindow", "手术类型"))
+        item = self.tableWidget_14.horizontalHeaderItem(4)
+        item.setText(_translate("MainWindow", "手术及操作人员"))
+        self.label_470.setText(_translate("MainWindow", "1.综合医疗服务类："))
+        self.label_471.setText(_translate("MainWindow", "(1)一般医疗服务费："))
+        self.label_472.setText(_translate("MainWindow", "(2)一般治疗操作费："))
+        self.label_473.setText(_translate("MainWindow", "(3)护理费："))
+        self.label_474.setText(_translate("MainWindow", "(4)其他费用："))
+        self.label_475.setText(_translate("MainWindow", "2.诊断类："))
+        self.label_476.setText(_translate("MainWindow", "(5)病理诊断费："))
+        self.label_477.setText(_translate("MainWindow", "(6)实验室诊断费："))
+        self.label_478.setText(_translate("MainWindow", "(7)影像学诊断费："))
+        self.label_479.setText(_translate("MainWindow", "(8)临床诊断项目费："))
+        self.label_480.setText(_translate("MainWindow", "3.治疗类："))
+        self.label_481.setText(_translate("MainWindow", "(9)非手术治疗项目费："))
+        self.label_482.setText(_translate("MainWindow", "(临床物理治疗费："))
+        self.label_483.setText(_translate("MainWindow", ")"))
+        self.label_484.setText(_translate("MainWindow", "(10)手术治疗费："))
+        self.label_485.setText(_translate("MainWindow", "(麻醉费："))
+        self.label_486.setText(_translate("MainWindow", "手术费："))
+        self.label_487.setText(_translate("MainWindow", ")"))
+        self.label_488.setText(_translate("MainWindow", "4.康复类："))
+        self.label_489.setText(_translate("MainWindow", "(11)康复费："))
+        self.label_490.setText(_translate("MainWindow", "5.中医类："))
+        self.label_491.setText(_translate("MainWindow", "(12)中医治疗费："))
+        self.label_492.setText(_translate("MainWindow", "6.西药类："))
+        self.label_493.setText(_translate("MainWindow", "(13)西药费："))
+        self.label_494.setText(_translate("MainWindow", "(抗菌药物费用："))
+        self.label_495.setText(_translate("MainWindow", ")"))
+        self.label_496.setText(_translate("MainWindow", "7.中药类："))
+        self.label_497.setText(_translate("MainWindow", "(14)中成药费："))
+        self.label_498.setText(_translate("MainWindow", "(15)中草药费"))
+        self.label_499.setText(_translate("MainWindow", "8.血液和血液制品类："))
+        self.label_500.setText(_translate("MainWindow", "(16)血费："))
+        self.label_501.setText(_translate("MainWindow", "(17)白蛋白类制品费："))
+        self.label_502.setText(_translate("MainWindow", "(18)球蛋白类制品费："))
+        self.label_503.setText(_translate("MainWindow", "(19)凝血因子类制品费："))
+        self.label_504.setText(_translate("MainWindow", "(20)细胞因子类制品费："))
+        self.label_505.setText(_translate("MainWindow", "9.耗材类："))
+        self.label_506.setText(_translate("MainWindow", "(21)检查用一次性医用材料费："))
+        self.label_507.setText(_translate("MainWindow", "((22)治疗用一次性医用材料费："))
+        self.label_508.setText(_translate("MainWindow", "(23)手术用一次性医用材料费："))
+        self.label_509.setText(_translate("MainWindow", "10.其他类："))
+        self.label_510.setText(_translate("MainWindow", "(24)其他费："))
+        self.label_511.setText(_translate("MainWindow", "支付方式："))
+        self.comboBox_25.setItemText(0, _translate("MainWindow", "微信"))
+        self.comboBox_25.setItemText(1, _translate("MainWindow", "支付宝"))
+        self.comboBox_25.setItemText(2, _translate("MainWindow", "现金"))
+        self.comboBox_25.setItemText(3, _translate("MainWindow", "其他"))
+        self.pushButton.setText(_translate("MainWindow", "保存[&S]"))
+        self.pushButton_2.setText(_translate("MainWindow", "关闭[&E]"))
+
+    def scroll_frame(self, value):
+            """根据滚动条的值移动 frame 内容"""
+            self.frame.move(self.frame.x(), 0 - value)  # 更新 Y 轴位置
+
+    def fill_medical_record(self, medical_record_info):
+        """
+        用于填充病案首页信息的方法。
+        :param medical_record_info: 包含病案信息的字典。
+        """
+        #lineEdit_342 medical_record_info.get("name", "")
+        try:
+            # 填充患者基本信息
+            self.lineEdit_321.setText("333")  # 姓名
+            self.label_411.setText(medical_record_info.get("gender", ""))  # 性别
+            self.label_412.setText(medical_record_info.get("birth_date", ""))  # 出生日期
+            self.label_413.setText(str(medical_record_info.get("age", "")))  # 年龄
+            self.label_414.setText(medical_record_info.get("nationality", ""))  # 国籍
+            self.label_415.setText(medical_record_info.get("birthplace", ""))  # 出生地
+            self.label_416.setText(medical_record_info.get("native_place", ""))  # 籍贯
+
+            # 填充证件信息
+            self.label_417.setText(medical_record_info.get("id_type", ""))  # 身份证件类别
+            self.label_418.setText(medical_record_info.get("id_number", ""))  # 证件号码
+
+            # 填充联系方式
+            self.label_422.setText(medical_record_info.get("current_address", ""))  # 现住址
+            self.label_423.setText(medical_record_info.get("phone", ""))  # 电话
+            self.label_424.setText(medical_record_info.get("household_address", ""))  # 户口地址
+
+            # 填充工作信息
+            self.label_425.setText(medical_record_info.get("work_unit", ""))  # 工作单位
+            self.label_426.setText(medical_record_info.get("work_address", ""))  # 地址
+            self.label_427.setText(medical_record_info.get("work_phone", ""))  # 电话
+
+            # 填充联系人信息
+            self.label_428.setText(medical_record_info.get("contact_name", ""))  # 联系人姓名
+            self.label_429.setText(medical_record_info.get("relationship", ""))  # 与患者关系
+            self.label_430.setText(medical_record_info.get("contact_address", ""))  # 地址
+            self.label_431.setText(medical_record_info.get("contact_phone", ""))  # 电话
+
+            # 填充诊断信息
+            self.label_433.setText(medical_record_info.get("admission_diagnosis", ""))  # 入院诊断
+            self.label_434.setText(medical_record_info.get("admission_diagnosis_code", ""))  # 疾病编码
+            self.label_438.setText(medical_record_info.get("discharge_diagnosis", ""))  # 出院诊断
+            self.label_440.setText(medical_record_info.get("discharge_diagnosis_code", ""))  # 疾病编码
+            self.label_445.setText(medical_record_info.get("pathological_diagnosis", ""))  # 病理诊断
+            self.label_447.setText(medical_record_info.get("pathological_diagnosis_code", ""))  # 疾病编码
+
+            # 填充住院信息
+            self.label_435.setText(medical_record_info.get("admission_date", ""))  # 入院日期
+            self.label_439.setText(medical_record_info.get("discharge_date", ""))  # 出院日期
+            self.label_436.setText(medical_record_info.get("department", ""))  # 科别
+            self.label_437.setText(medical_record_info.get("ward", ""))  # 病房
+
+            # 填充血型信息
+            self.comboBox_23.setCurrentText(medical_record_info.get("blood_type", "不详"))  # 血型
+            self.comboBox_24.setCurrentText(medical_record_info.get("rh", "不详"))  # Rh
+
+            # 填充支付方式
+            self.comboBox_25.setCurrentText(medical_record_info.get("payment_method", "其他"))  # 支付方式
+
+            # 填充手术信息到表格
+            self.tableWidget_14.setRowCount(0)  # 清空表格
+            for surgery in medical_record_info.get("surgeries", []):
+                row_position = self.tableWidget_14.rowCount()
+                self.tableWidget_14.insertRow(row_position)
+                self.tableWidget_14.setItem(row_position, 0,
+                                            QtWidgets.QTableWidgetItem(surgery.get("operation_code", "")))
+                self.tableWidget_14.setItem(row_position, 1,
+                                            QtWidgets.QTableWidgetItem(surgery.get("operation_date", "")))
+                self.tableWidget_14.setItem(row_position, 2,
+                                            QtWidgets.QTableWidgetItem(surgery.get("operation_level", "")))
+                self.tableWidget_14.setItem(row_position, 3,
+                                            QtWidgets.QTableWidgetItem(surgery.get("operation_type", "")))
+                self.tableWidget_14.setItem(row_position, 4, QtWidgets.QTableWidgetItem(surgery.get("staff", "")))
+
+            QtWidgets.QMessageBox.information(None, "成功", "病案首页信息已加载！", QtWidgets.QMessageBox.Ok)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(None, "错误", f"加载病案信息时发生错误：{str(e)}", QtWidgets.QMessageBox.Ok)
+
+    def save_patient_info(self):
+            try:
+                # 按顺序提取用户输入信息
+                name = self.lineEdit_321.text()  # 姓名
+                gender = "男" if self.checkBox_21.isChecked() else "女"  # 性别
+                birth_date = self.lineEdit_322.text()  # 出生日期
+                age = self.lineEdit_323.text()  # 年龄
+                nationality = self.lineEdit_324.text()  # 国籍
+                place_of_birth = self.lineEdit_325.text()  # 出生地
+                ethnicity = self.lineEdit_330.text()  # 民族
+                id_card_number = self.lineEdit_328.text()  # 身份证件号码
+
+                occupation = self.lineEdit_329.text()  # 职业
+                marital_status = self.lineEdit_331.text()  # 婚姻状态
+                current_address = self.lineEdit_332.text()  # 现住址
+                phone = self.lineEdit_333.text()  # 电话
+                household_address = self.lineEdit_334.text()  # 户口地址
+
+                '''
+                workplace = self.lineEdit_333.text()  # 工作单位
+                workplace_address = self.lineEdit_334.text()  # 工作单位地址
+                workplace_phone = self.lineEdit_335.text()  # 工作单位电话
+                contact_name = self.lineEdit_336.text()  # 联系人姓名
+                relationship = self.lineEdit_337.text()  # 与患者关系
+                contact_address = self.lineEdit_338.text()  # 联系人地址
+                contact_phone = self.lineEdit_339.text()  # 联系人电话
+                admission_pathway = self.comboBox_21.currentText()  # 入院途径
+                outpatient_diagnosis = self.lineEdit_340.text()  # 门(急)诊诊断
+                outpatient_code = self.lineEdit_341.text()  # 门(急)诊诊断编码
+                discharge_diagnosis = self.lineEdit_342.text()  # 出院诊断
+                discharge_code = self.lineEdit_343.text()  # 出院诊断编码
+                admission_date = self.lineEdit_344.text()  # 入院日期
+                discharge_date = self.lineEdit_345.text()  # 出院日期
+                department = self.lineEdit_346.text()  # 科别
+                ward = self.lineEdit_347.text()  # 病房
+                '''
+
+                # 创建 PatientInfo 对象
+                patient_info = PatientInfo(
+                    name=name,
+                    gender=gender,
+                    birth_date=birth_date,
+                    age=age,
+                    nationality=nationality,
+                    place_of_birth=place_of_birth,
+                    ethnicity=ethnicity,
+                    id_card_number=id_card_number,
+                    occupation=occupation,
+                    marital_status=marital_status,
+                    current_address=current_address,
+                    phone=phone,
+                    household_address=household_address
+                )
+                '''
+                                    workplace=workplace,
+                                    workplace_address=workplace_address,
+                                    workplace_phone=workplace_phone,
+                                    contact_name=contact_name,
+                                    relationship=relationship,
+                                    contact_address=contact_address,
+                                    contact_phone=contact_phone,
+                                    admission_pathway=admission_pathway,
+                                    outpatient_diagnosis=outpatient_diagnosis,
+                                    outpatient_code=outpatient_code,
+                                    discharge_diagnosis=discharge_diagnosis,
+                                    discharge_code=discharge_code,
+                                    admission_date=admission_date,
+                                    discharge_date=discharge_date,
+                                    department=department,
+                                    ward=ward
+                                    '''
+
+                # 保存 PatientInfo
+                create_patient(patient_info)
+
+                # 提取费用信息
+                cost_info_list = []
+                # 按编号规律动态提取费用种类和金额
+                for i in range(471, 511, 2):  # 费用种类从 label_471 到 label_510，每两步一个费用种类
+                    kind_widget = getattr(self, f"lineEdit_{i}", None)  # 种类输入框编号与种类标签对应
+                    num_widget = getattr(self, f"lineEdit_{i + 1}", None)  # 金额输入框编号紧跟其后
+
+                    if kind_widget and num_widget:
+                        kind = kind_widget.text()
+                        num = num_widget.text()
+
+                        if kind and num:  # 确保种类和金额不为空
+                            cost_info_list.append(CostInfo(kind=kind, num=num))
+
+                # 保存费用信息
+                for cost_info in cost_info_list:
+                    create_cost_table(cost_info)
+
+                # 保存成功提示
+                QMessageBox.information(self, "成功", "病案和费用信息已成功保存！")
+            except Exception as e:
+                QMessageBox.critical(self, "错误", f"保存失败: {str(e)}")
+
+
+
 
 
 class Ui_MainWindow(object):
@@ -61,24 +1041,6 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "病案号："))
 
     def open_new_case(self):
-
-        username, ok = QInputDialog.getText(
-            None, "输入账号", "请输入您的账号："
-        )
-
-        if not ok or not username.strip():
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        # 检查权限
-        if not check_permission(username.strip(), "medical_record_update"):
-            QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
         search_info = self.lineEdit.text()  # 获取病案号
         if not search_info:
             QtWidgets.QMessageBox.warning(
@@ -86,25 +1048,48 @@ class Ui_MainWindow(object):
             )
             return
 
-        # 查找病案
-        result = search_patients_by_info(search_info)
-        if result:
-            # 找到病案，删除原有病案
-            delete_record_by_recordID(search_info)
-            QtWidgets.QMessageBox.information(
-                None, "成功", "原有病案已删除！现在打开新建病案。", QtWidgets.QMessageBox.Ok
-            )
-            # 打开新建病案脚本
-            script_path = os.path.join(os.getcwd(), "新建病案.py")
-            if os.path.exists(script_path):
-                os.system(f'python "{script_path}"')  # 运行脚本
-            else:
-                QtWidgets.QMessageBox.critical(
-                    None, "错误", "新建病案.py 文件未找到！", QtWidgets.QMessageBox.Ok
+        try:
+            # 获取病案信息
+            medical_record_info = get_record_by_recordID(search_info)
+
+            print("患者信息:", medical_record_info.patient_info)
+            print("联系方式:", medical_record_info.contact_info)
+            print("手术信息:", medical_record_info.surgery_infos)
+            print("住院信息:", medical_record_info.ward_infos)
+            print("费用信息:", medical_record_info.cost_infos)
+            print("入院日期:", medical_record_info.admission_date)
+            print("出院日期:", medical_record_info.discharge_date)
+            print("科室名称:", medical_record_info.unit_name)
+            print("入院诊断ID:", medical_record_info.admission_diagnosis_id)
+            print("出院诊断ID:", medical_record_info.discharge_diagnosis_id)
+            print("病理诊断ID:", medical_record_info.pathological_diagnosis_id)
+            print("主治医师:", medical_record_info.doctor_name)
+            print("血型:", medical_record_info.blood_type)
+            print("支付方式:", medical_record_info.payment_method)
+
+            if not medical_record_info:
+                QtWidgets.QMessageBox.warning(
+                    None, "未找到病案", "没有找到相关病案！", QtWidgets.QMessageBox.Ok
                 )
-        else:
-            QtWidgets.QMessageBox.warning(
-                None, "未找到病案", "没有找到相关病案！", QtWidgets.QMessageBox.Ok
+                return
+
+
+            case_base_window = Ui_MainWindow1()
+            case_base_window.fill_medical_record(vars(medical_record_info))
+
+            QtWidgets.QMessageBox.information(
+                None, "成功", "病案信息已加载！", QtWidgets.QMessageBox.Ok
+            )
+
+            self.case_base_window = QtWidgets.QMainWindow()
+            self.ui_case_base = Ui_MainWindow1()
+            self.ui_case_base.setupUi(self.case_base_window)
+            self.case_base_window.show()
+
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(
+                None, "错误", f"发生错误：{str(e)}", QtWidgets.QMessageBox.Ok
             )
 
 
