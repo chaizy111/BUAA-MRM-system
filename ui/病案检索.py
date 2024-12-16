@@ -10,8 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from db.search_op import search_disease_info, get_medical_records_by_info
-from intermediate_data_structure.search_info import SearchInfo
+from db.search_op import search_disease_info
 
 
 class Ui_MainWindow(object):
@@ -153,48 +152,23 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "患者姓名："))
         self.label_7.setText(_translate("MainWindow", "性别："))
         self.label_8.setText(_translate("MainWindow", "年龄："))
-        self.lineEdit.setText("1")
-        self.lineEdit_4.setText("4")
-        self.lineEdit_5.setText("5")
-        self.lineEdit_6.setText("6")
-        self.lineEdit_2.setText("2")
-        self.lineEdit_3.setText("3")
-        self.lineEdit_11.setText("11")
-        self.lineEdit_8.setText("8")
-        self.lineEdit_7.setText("7")
 
     def search_disease(self):
-        gender = self.lineEdit_6.text()
-        medical_record_number = self.lineEdit_2.text()
-        payment_method = self.lineEdit.text()
-        patient_name = self.lineEdit_5.text()
-        search_info = SearchInfo (
-            gender=gender,
-            medical_record_number = medical_record_number,
-            payment_method = payment_method,
-            patient_name = patient_name
-        )
-
-
-        diseases = get_medical_records_by_info(search_info)
-        self.tableWidget.setRowCount(0)
+        diseases = search_disease_info()
+        self.tableWidget.clear()
+        self.tableWidget.setColumnCount(8)
 
         # Populate the table with the fetched data
         for i, disease in enumerate(diseases):
-            rowPosition = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(rowPosition)
-
-
-            self.tableWidget.setItem(rowPosition, 0, QtWidgets.QTableWidgetItem(str(disease[0])))
-            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(disease[1])))
-            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(disease[2])))
-            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(disease[3])))
-            self.tableWidget.setItem(rowPosition, 4, QtWidgets.QTableWidgetItem(str(disease[4])))
-            self.tableWidget.setItem(rowPosition, 5, QtWidgets.QTableWidgetItem(str(disease[5])))
-            self.tableWidget.setItem(rowPosition, 1, QtWidgets.QTableWidgetItem(str(disease[6])))
-            self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(disease[7])))
-            self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(disease[8])))
-
+            self.tableWidget.insertRow(i)
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(str(disease[0])))
+            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(str(disease[1])))
+            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(str(disease[2])))
+            self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem(str(disease[3])))
+            self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(str(disease[4])))
+            self.tableWidget.setItem(i, 5, QtWidgets.QTableWidgetItem(str(disease[5])))
+            self.tableWidget.setItem(i, 6, QtWidgets.QTableWidgetItem(str(disease[6])))
+            self.tableWidget.setItem(i, 7, QtWidgets.QTableWidgetItem(str(disease[7])))
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys

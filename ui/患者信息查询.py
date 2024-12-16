@@ -301,7 +301,6 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
-
         search_info = SearchInfo(
             medical_record_number=self.lineEdit.text(),  # 病历号
             patient_name=self.lineEdit_4.text(),  # 患者姓名
@@ -348,8 +347,15 @@ class Ui_MainWindow(object):
             self.tableWidget.setItem(rowPosition, 2, QtWidgets.QTableWidgetItem(str(result[7])))
             self.tableWidget.setItem(rowPosition, 3, QtWidgets.QTableWidgetItem(str(result[8])))
 
-    
+    def update_table(self, results):
+        # 清空表格
+        self.ui.tableWidget.setRowCount(len(results))
 
+        # 填充查询结果
+        for row_num, row_data in enumerate(results):
+            self.ui.tableWidget.insertRow(row_num)
+            for col_num, col_data in enumerate(row_data):
+                self.ui.tableWidget.setItem(row_num, col_num, QtWidgets.QTableWidgetItem(str(col_data)))
 
 
 
