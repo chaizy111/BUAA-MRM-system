@@ -17,8 +17,11 @@ from db.normal_op import get_pending_requests, change_request_status_to_approved
 
 class Ui_MainWindow(object):
 
+    borrow_request_ids=[]
+
     def __init__(self, account=None):
         self.account = account  # 存储传递的 account 值
+
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -135,8 +138,9 @@ class Ui_MainWindow(object):
             self.create_new_table([request_id, number, date, byperson, id_card_number, phone])
 
             # 记录已选择的借阅请求id
-            borrow_request_ids = [request_id]
-            QMessageBox.information(self.centralwidget, "借阅请求已选中", f"选中的借阅请求Id: {borrow_request_ids}")
+            self.borrow_request_ids.append(request_id)
+
+            QMessageBox.information(self.centralwidget, "借阅请求已选中", f"选中的借阅请求Id: {request_id}")
 
     def create_new_table(self, data):
         """新建一个表格展示选择的借阅请求"""
@@ -155,8 +159,8 @@ class Ui_MainWindow(object):
 
         #table_window.show()
 
-    def confirm_approval(self, borrow_request_ids):
-        change_request_status_to_approved(borrow_request_ids, self.account)
+    def confirm_approval(self):
+        change_request_status_to_approved(self.borrow_request_ids, self.account)
 
 
 if __name__ == '__main__':
