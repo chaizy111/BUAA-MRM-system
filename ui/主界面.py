@@ -12,6 +12,8 @@ import subprocess
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from db.login_op import check_permission
+
 
 class Ui_MainWindow1(object):
     def __init__(self):
@@ -215,12 +217,23 @@ class Ui_MainWindow1(object):
         for action_name, script_name in actions.items():
             action = getattr(self, action_name, None)
             if action:
-                action.triggered.connect(lambda _, script=script_name: self.open_script(script, self.account))
-                print(self.account)
+                #print(script_name)
+                action.triggered.connect(lambda _, script=script_name: self.check_permission_and_open(script))
+                #action.triggered.connect(lambda _, script=script_name, function=action_name: self.check_permission_and_open(script,function))
+
 
             # 连接退出操作槽
         self.actione.triggered.connect(self.exit_application)
         #self.loginButton.clicked.connect(lambda: self.open_script("登录.py"))
+
+    def check_permission_and_open(self, script):
+        # 假设check_permission是你自己的权限检查函数
+        function = check_permission(self.account, script)
+        print(function)
+        if check_permission(self.account, script):
+            self.open_script(script, self.account)
+        else:
+            QtWidgets.QMessageBox.warning(self.centralwidget, "权限不足", f"您没有权限访问 {script} 页面。")
 
     def open_script(self, script, account):
 
@@ -254,3 +267,12 @@ if __name__ == '__main__':
     ui.setupUi(mainWindow)
     mainWindow.show()
     sys.exit(app.exec_())
+
+
+
+''' def confirm_approval(self, borrow_request_ids):
+        permission = check_permission(account, "借阅审批")
+        if permission:
+            change_request_status_to_approved(borrow_request_ids, self.account)
+        else:
+         QMessageBox.information(self.centralwidget, "无权操作", "您无权进行��阅审批")'''
