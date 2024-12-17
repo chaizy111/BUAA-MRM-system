@@ -58,16 +58,16 @@ def get_medical_records_by_info(search_info):
     try:
         result = search_ids_by_info(search_info, conn, cursor)
         records = []
+        medical_records = []
         for r in result:
             records.append(r[0])
-        record_ids = ''
         if records:
             record_ids = ', '.join(map(str, records))
-        query = f"""
-        SELECT * FROM MedicalRecord WHERE MedicalRecordNumber IN ({record_ids})
-        """
-        cursor.execute(query)
-        medical_records = cursor.fetchall()
+            query = f"""
+            SELECT * FROM MedicalRecord WHERE MedicalRecordNumber IN ({record_ids})
+            """
+            cursor.execute(query)
+            medical_records = cursor.fetchall()
     except Error as e:
         conn.rollback()  # 回滚事务，以防部分删除操作成功
         print(f"The error '{e}' occurred when medical record info.")
