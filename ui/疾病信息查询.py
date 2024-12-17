@@ -5,7 +5,7 @@ import sys
 
 from db.search_op import search_disease_info, search_return_info
 from intermediate_data_structure.search_info import SearchInfo
-
+from ui.print_dialog import PrintDialog
 
 class Ui_MainWindow2(object):
 
@@ -235,6 +235,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.pushButton_4.clicked.connect(MainWindow.close)
         self.pushButton.clicked.connect(self.openQueryDialog)
+        self.pushButton_2.clicked.connect(self.openPrintDialog)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -267,13 +268,17 @@ class Ui_MainWindow(object):
         self.checkBox.setText(_translate("MainWindow", "门诊诊断"))
         self.checkBox_2.setText(_translate("MainWindow", "出院主要诊断"))
         self.checkBox_3.setText(_translate("MainWindow", "病理诊断"))
-        self.lineEdit.setText("1")
+        '''self.lineEdit.setText("1")
         self.lineEdit_4.setText("4")
         self.lineEdit_5.setText("5")
         self.lineEdit_20.setText("20")
         self.lineEdit_17.setText("17")
         self.lineEdit_19.setText("19")
-        self.lineEdit_18.setText("18")
+        self.lineEdit_18.setText("18")'''
+    def openPrintDialog(self):
+        """打开打印窗口"""
+        self.printDialog = PrintDialog()  # 创建打印窗口实例
+        self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
 

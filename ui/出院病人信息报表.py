@@ -48,15 +48,15 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
-        self.dateTimeEdit = QtWidgets.QDateTimeEdit(self.horizontalLayoutWidget)
-        self.dateTimeEdit.setObjectName("dateTimeEdit")
-        self.horizontalLayout.addWidget(self.dateTimeEdit)
+        self.dateEdit = QtWidgets.QDateEdit(self.horizontalLayoutWidget)
+        self.dateEdit.setObjectName("dateEdit")
+        self.horizontalLayout.addWidget(self.dateEdit)
         self.label_2 = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout.addWidget(self.label_2)
-        self.dateTimeEdit_2 = QtWidgets.QDateTimeEdit(self.horizontalLayoutWidget)
-        self.dateTimeEdit_2.setObjectName("dateTimeEdit_2")
-        self.horizontalLayout.addWidget(self.dateTimeEdit_2)
+        self.dateEdit_2 = QtWidgets.QDateEdit(self.horizontalLayoutWidget)
+        self.dateEdit_2.setObjectName("dateEdit_2")
+        self.horizontalLayout.addWidget(self.dateEdit_2)
 
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(20, 120, 760, 400))  # Adjust the size of the table
@@ -90,13 +90,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "时间："))
         self.label_2.setText(_translate("MainWindow", "至"))
 
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "出院病人信息报表"))
-        self.pushButton.setText(_translate("MainWindow", "查询(&S)"))
-        self.pushButton_2.setText(_translate("MainWindow", "打印(&P)"))
-        self.pushButton_3.setText(_translate("MainWindow", "导出(&D)"))
-        self.pushButton_4.setText(_translate("MainWindow", "退出(&E)"))
+
 
     def openPrintDialog(self):
         """打开打印窗口"""
@@ -104,10 +98,11 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
-        start_date = self.dateTimeEdit.text().toString("yyyy-MM-dd")
-        end_date = self.dateTimeEdit_2.text().toString("yyyy-MM-dd")
-        results, date = get_departurePatient_statistic(start_date, end_date)
 
+        start_date = self.dateEdit.date().toString("yyyy-MM-dd")
+        end_date = self.dateEdit_2.date().toString("yyyy-MM-dd")
+
+        results, date = get_departurePatient_statistic(start_date, end_date)
         self.tableWidget.setRowCount(0)
 
         # Assuming `results` is a list of tuples (total_time, avg_time, admission_time, discharge_time)

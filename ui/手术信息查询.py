@@ -47,13 +47,8 @@ class Ui_MainWindow(object):
         self.pushButton_4.setObjectName("pushButton_4")
         self.horizontalLayout_2.addWidget(self.pushButton_4)
 
-        self.frame = QtWidgets.QFrame(self.centralwidget)
-        self.frame.setGeometry(QtCore.QRect(50, 90, 701, 281))
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame.setObjectName("frame")
-        self.layoutWidget = QtWidgets.QWidget(self.frame)
-        self.layoutWidget.setGeometry(QtCore.QRect(0, 40, 694, 210))
+        self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
+        self.layoutWidget.setGeometry(QtCore.QRect(40, 80, 704, 210))
         self.layoutWidget.setObjectName("layoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -89,27 +84,6 @@ class Ui_MainWindow(object):
         self.comboBox.addItem("")
         self.horizontalLayout.addWidget(self.comboBox)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        self.label_18 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_18.setObjectName("label_18")
-        self.horizontalLayout_5.addWidget(self.label_18)
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_2.setObjectName("lineEdit_2")
-        self.horizontalLayout_5.addWidget(self.lineEdit_2)
-        self.label_24 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_24.setObjectName("label_24")
-        self.horizontalLayout_5.addWidget(self.label_24)
-        self.lineEdit_17 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_17.setText("")
-        self.lineEdit_17.setObjectName("lineEdit_17")
-        self.horizontalLayout_5.addWidget(self.lineEdit_17)
-        self.label_25 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_25.setObjectName("label_25")
-        self.horizontalLayout_5.addWidget(self.label_25)
-        spacerItem = QtWidgets.QSpacerItem(168, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_5.addItem(spacerItem)
-        self.verticalLayout.addLayout(self.horizontalLayout_5)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.label_21 = QtWidgets.QLabel(self.layoutWidget)
@@ -151,25 +125,54 @@ class Ui_MainWindow(object):
         self.lineEdit_19 = QtWidgets.QLineEdit(self.layoutWidget)
         self.lineEdit_19.setObjectName("lineEdit_19")
         self.horizontalLayout_7.addWidget(self.lineEdit_19)
-        self.label_26 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_26.setObjectName("label_26")
-        self.horizontalLayout_7.addWidget(self.label_26)
-        self.lineEdit_18 = QtWidgets.QLineEdit(self.layoutWidget)
-        self.lineEdit_18.setObjectName("lineEdit_18")
-        self.horizontalLayout_7.addWidget(self.lineEdit_18)
+        self.label_25 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_25.setObjectName("label_25")
+        self.horizontalLayout_7.addWidget(self.label_25)
+        self.lineEdit_21 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_21.setObjectName("lineEdit_21")
+        self.horizontalLayout_7.addWidget(self.lineEdit_21)
+        self.label_32 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_32.setObjectName("label_32")
+        self.horizontalLayout_7.addWidget(self.label_32)
+        self.lineEdit_24 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_24.setObjectName("lineEdit_24")
+        self.horizontalLayout_7.addWidget(self.lineEdit_24)
+        self.verticalLayout.addLayout(self.horizontalLayout_7)
+        self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
+        self.label_31 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_31.setObjectName("label_31")
+        self.horizontalLayout_8.addWidget(self.label_31)
+        self.lineEdit_23 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_23.setObjectName("lineEdit_23")
+        self.horizontalLayout_8.addWidget(self.lineEdit_23)
+        self.label_30 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_30.setObjectName("label_30")
+        self.horizontalLayout_8.addWidget(self.label_30)
+        self.dateEdit = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit.setObjectName("dateEdit")
+        self.horizontalLayout_8.addWidget(self.dateEdit)
+        self.label_24 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_24.setObjectName("label_24")
+        self.horizontalLayout_8.addWidget(self.label_24)
+        self.dateEdit_2 = QtWidgets.QDateEdit(self.layoutWidget)
+        self.dateEdit_2.setObjectName("dateEdit_2")
+        self.horizontalLayout_8.addWidget(self.dateEdit_2)
         self.label_28 = QtWidgets.QLabel(self.layoutWidget)
         self.label_28.setObjectName("label_28")
-        self.horizontalLayout_7.addWidget(self.label_28)
-        self.checkBox = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBox.setObjectName("checkBox")
-        self.horizontalLayout_7.addWidget(self.checkBox)
-        self.checkBox_2 = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.horizontalLayout_7.addWidget(self.checkBox_2)
-        self.checkBox_3 = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBox_3.setObjectName("checkBox_3")
-        self.horizontalLayout_7.addWidget(self.checkBox_3)
-        self.verticalLayout.addLayout(self.horizontalLayout_7)
+        self.horizontalLayout_8.addWidget(self.label_28)
+        self.lineEdit_22 = QtWidgets.QLineEdit(self.layoutWidget)
+        self.lineEdit_22.setObjectName("lineEdit_22")
+        self.horizontalLayout_8.addWidget(self.lineEdit_22)
+        self.verticalLayout.addLayout(self.horizontalLayout_8)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
 
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(50, 350, 700, 200))
@@ -207,20 +210,18 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(1, _translate("MainWindow", "支付宝"))
         self.comboBox.setItemText(2, _translate("MainWindow", "现金"))
         self.comboBox.setItemText(3, _translate("MainWindow", "其他"))
-        self.label_18.setText(_translate("MainWindow", "疾病名称："))
-        self.label_24.setText(_translate("MainWindow", "患者年龄"))
-        self.label_25.setText(_translate("MainWindow", "岁"))
         self.label_21.setText(_translate("MainWindow", "入院时间："))
         self.label_22.setText(_translate("MainWindow", "——"))
         self.label_23.setText(_translate("MainWindow", "出院时间："))
         self.label_20.setText(_translate("MainWindow", "——"))
         self.label_29.setText(_translate("MainWindow", "科室："))
         self.label_27.setText(_translate("MainWindow", "住院天数："))
-        self.label_26.setText(_translate("MainWindow", "疾病名称："))
-        self.label_28.setText(_translate("MainWindow", "诊断类型："))
-        self.checkBox.setText(_translate("MainWindow", "门诊诊断"))
-        self.checkBox_2.setText(_translate("MainWindow", "出院主要诊断"))
-        self.checkBox_3.setText(_translate("MainWindow", "病理诊断"))
+        self.label_25.setText(_translate("MainWindow", "——"))
+        self.label_32.setText(_translate("MainWindow", "年龄："))
+        self.label_31.setText(_translate("MainWindow", "手术名称："))
+        self.label_30.setText(_translate("MainWindow", "手术日期："))
+        self.label_24.setText(_translate("MainWindow", "——"))
+        self.label_28.setText(_translate("MainWindow", "医生姓名："))
         '''self.lineEdit.setText("1")
         self.lineEdit_4.setText("4")
         self.lineEdit_5.setText("5")
@@ -237,41 +238,42 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
-        medical_record_number = self.lineEdit.text()
-        patient_name = self.lineEdit_4.text()
-        gender = self.lineEdit_5.text()
-        payment_method = self.comboBox.currentText()
-        admission_date_from = self.dateTimeEdit_6.date()
-        admission_date_to = self.dateTimeEdit_4.date()
 
-        search_info = SearchInfo(
-            medical_record_number = medical_record_number,
-            patient_name=patient_name,
-            gender=gender,
-            payment_method=payment_method,
-        )
+        index = self.comboBox.currentIndex()
+        payment = self.comboBox.itemText(index)
+
+        search_info = {
+            "medical_record_number": self.lineEdit.text(),
+            "patient_name": self.lineEdit_4.text(),
+            "patient_gender": self.lineEdit_5.text(),
+            "payment_method": payment,
+            "admission_date_from": self.dateTimeEdit_6.dateTime().toString('yyyy-MM-dd'),  # 入院时间开始
+            "admission_date_to": self.dateTimeEdit_4.dateTime().toString('yyyy-MM-dd'),  # 入院时间结束
+            "discharge_date_from": self.dateTimeEdit_5.dateTime().toString('yyyy-MM-dd'),  # 出院时间开始
+            "discharge_date_to": self.dateTimeEdit_3.dateTime().toString('yyyy-MM-dd'),  # 出院时间结束
+            "unit_name": self.lineEdit_20.text(),
+            "days_from": self.lineEdit_19.text(),
+            "days_to": self.lineEdit_21.text(),
+            "surgery_name": self.lineEdit_23.text(),
+            "surgery_date_from": self.dateEdit.date().toString('yyyy-MM-dd'),
+            "surgery_date_to": self.dateEdit_2.date().toString('yyyy-MM-dd'),
+            "surgeon_name": self.lineEdit_22.text(),
+
+        }
 
 
+        search_info = {k: v for k, v in search_info.items() if len(v) > 0}
 
-        # 调用数据库查询函数
-        try:
-            results = search_surgery_info(search_info)
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "查询失败", f"数据库查询失败：{str(e)}")
-            return
+        records = search_surgery_info(**search_info)
 
-        # 更新表格显示
-        self.update_table(results)
-
-    def update_table(self, results):
-        # 清空表格
+        # 清空现有表格内容
         self.tableWidget.setRowCount(0)
 
-        # 填充查询结果
-        for row_num, row_data in enumerate(results):
-            self.tableWidget.insertRow(row_num)
-            for col_num, col_data in enumerate(row_data):
-                self.tableWidget.setItem(row_num, col_num, QtWidgets.QTableWidgetItem(str(col_data)))
+        # 将查询结果插入到表格中
+        for row_number, record in enumerate(records):
+            self.tableWidget.insertRow(row_number)
+            for column_number, data in enumerate(record):
+                self.tableWidget.setItem(row_number, column_number, QTableWidgetItem(str(data)))
 
 
 if __name__ == '__main__':

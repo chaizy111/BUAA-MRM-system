@@ -176,6 +176,19 @@ class Ui_MainWindow(object):
         patient_name = self.lineEdit_5.text()
         gender = self.lineEdit_6.text()
 
+        if gender == '':
+            gender = None
+        if admission_department == '' :
+            admission_department = None
+        if contact_person == '' :
+            contact_person = None
+        if payment_method == '':
+            payment_method = None
+        if record_number == '' :
+            record_number = None
+        if patient_name == '':
+            patient_name = None
+
         search_info = SearchInfo(
             department=admission_department,
             contact_name=contact_person,
@@ -184,7 +197,9 @@ class Ui_MainWindow(object):
             patient_name=patient_name,
             gender=gender
         )
+
         diseases = get_medical_records_by_info(search_info)
+
 
         self.tableWidget.setRowCount(len(diseases))
         for row_idx, row_data in enumerate(diseases):
