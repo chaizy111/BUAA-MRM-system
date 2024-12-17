@@ -60,7 +60,9 @@ def get_medical_records_by_info(search_info):
         records = []
         for r in result:
             records.append(r[0])
-        record_ids = ', '.join(map(str, records))
+        record_ids = ''
+        if records:
+            record_ids = ', '.join(map(str, records))
         query = f"""
         SELECT * FROM MedicalRecord WHERE MedicalRecordNumber IN ({record_ids})
         """
@@ -448,14 +450,13 @@ def search_discharge_info(medical_record_number=None, unit_name=None, start_date
     try:
         query = """
         SELECT 
-            m.MedicalRecordNumber, p.Name, p.Gender, u.Name, c.Amount, 
+            m.MedicalRecordNumber, p.Name, p.Gender, u.Name, SUM(c.Amount) AS TotalAmount,  
             m.AdmissionDate, m.DischargeDate, DATEDIFF(m.DischargeDate, m.AdmissionDate) AS hospitalization_days
         FROM MedicalRecord m
         JOIN Patient p ON m.PatientIDCardNumber = p.IDCardNumber
         JOIN Unit u ON m.UnitID = u.UnitID
         LEFT JOIN Cost c ON m.MedicalRecordNumber = c.MedicalRecordID
-        WHERE 1=1
-        """
+        WHERE 1=1"""
         conditions = []
         values = []
 
@@ -472,6 +473,7 @@ def search_discharge_info(medical_record_number=None, unit_name=None, start_date
         if conditions:
             query += " AND " + " AND ".join(conditions)
 
+        query += "GROUP BY m.MedicalRecordNumber, p.Name, p.Gender, u.Name, m.AdmissionDate, m.DischargeDate"
         cursor.execute(query, values)
         results = cursor.fetchall()
     except Error as e:

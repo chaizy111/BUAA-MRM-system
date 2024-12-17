@@ -1,7 +1,9 @@
 import pymysql
 from db.search_op import *
 from pymysql import Error
-# import pandas as pd
+import pandas as pd
+import xlwt, xlrd
+from xlutils.copy import copy
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(
@@ -167,20 +169,142 @@ def get_departurePatient_statistic(start_date, end_date):
     break_connect(conn, cursor)
     return results, search_discharge_info(start_date=start_date, end_date=end_date)
 
+def get_pdf_fee_statistic_by_year():
+    data = get_fee_statistic_by_year()
+    from xlwt import Workbook
+    # 创建工作簿
+    wb = Workbook()
+    # 添加工作表
+    ws = wb.add_sheet('Sheet1')
+    titles = ['Year', 'TotalIncome']
+    for index, title in enumerate(titles):
+        ws.write(0, index, title)
+    # 写入数据
+    for row in range(len(data)):
+        # print(row)
+        for col in range(len(data[row])):
+            ws.write(row + 1, col, data[row][col])
+    # 保存为 .xls 格式
+    wb.save('result/fee_statistic_by_year.xls')
 
+    xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_year.xls')
+    workbook = copy(xlsx_handler)
+    sheet = workbook.get_sheet(0)
+    workbook.save('result/fee_statistic_by_year.pdf')
 
+def get_pdf_fee_statistic_by_month():
+    data = get_fee_statistic_by_month()
+    from xlwt import Workbook
+    # 创建工作簿
+    wb = Workbook()
+    # 添加工作表
+    ws = wb.add_sheet('Sheet1')
+    titles = ['Year','Month', 'TotalIncome']
+    for index, title in enumerate(titles):
+        ws.write(0, index, title)
+    # 写入数据
+    for row in range(len(data)):
+        # print(row)
+        for col in range(len(data[row])):
+            ws.write(row + 1, col, data[row][col])
+    # 保存为 .xls 格式
+    wb.save('result/fee_statistic_by_month.xls')
 
-if __name__=='__main__':
-    df = pd.DataFrame(get_fee_statistic_by_year(), columns=['Year', 'TotalIncome'])
+    xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_month.xls')
+    workbook = copy(xlsx_handler)
+    sheet = workbook.get_sheet(0)
+    workbook.save('result/fee_statistic_by_month.pdf')
 
-    # 导出 DataFrame 到 Excel 文件
-    df.to_excel('fee_statistic_by_day.xlsx', index=False)
+def get_pdf_fee_statistic_by_day():
+    data = get_fee_statistic_by_day()
+    from xlwt import Workbook
+    # 创建工作簿
+    wb = Workbook()
+    # 添加工作表
+    ws = wb.add_sheet('Sheet1')
+    titles = ['Year', 'month', 'day' ,'TotalIncome']
+    for index, title in enumerate(titles):
+        ws.write(0, index, title)
+    # 写入数据
+    for row in range(len(data)):
+        # print(row)
+        for col in range(len(data[row])):
+            ws.write(row + 1, col, data[row][col])
+    # 保存为 .xls 格式
+    wb.save('result/fee_statistic_by_day.xls')
 
-    # 读取 Excel 文件
-    df = pd.read_excel('fee_statistic_by_day.xlsx')
+    xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_day.xls')
+    workbook = copy(xlsx_handler)
+    sheet = workbook.get_sheet(0)
+    workbook.save('result/fee_statistic_by_day.pdf')
 
-    # 将 DataFrame 转换为 HTML
-    html = df.to_html(index=False)
+def get_pdf_disease_statistic():
+    data = get_disease_statistic()
+    from xlwt import Workbook
+    # 创建工作簿
+    wb = Workbook()
+    # 添加工作表
+    ws = wb.add_sheet('Sheet1')
+    titles = ['疾病名', '疾病编号', '0-7岁患病人数', '8-18岁患病人数', '19-30岁患病人数', '31-45岁患病人数', '46-60岁患病人数', '61-75岁患病人数', '75岁以上患病人数']
+    for index, title in enumerate(titles):
+        ws.write(0, index, title)
+    # 写入数据
+    for row in range(len(data)):
+        # print(row)
+        for col in range(len(data[row])):
+            ws.write(row + 1, col, data[row][col])
+    # 保存为 .xls 格式
+    wb.save('result/disease_statistic.xls')
 
-    # 将 HTML 转换为 PDF
-    pdfkit.from_string(html).save('output.pdf')
+    xlsx_handler = xlrd.open_workbook('result/disease_statistic.xls')
+    workbook = copy(xlsx_handler)
+    sheet = workbook.get_sheet(0)
+    workbook.save('result/disease_statistic.pdf')
+
+def get_pdf_diagnosisInUnit_statistic():
+    data = get_diagnosisInUnit_statistic()
+    from xlwt import Workbook
+    # 创建工作簿
+    wb = Workbook()
+    # 添加工作表
+    ws = wb.add_sheet('Sheet1')
+    titles = ['科室', '科室号', '就诊总人数', '0-7岁就诊人数', '8-18岁就诊人数', '19-30岁就诊人数', '31-45岁就诊人数', '46-60岁就诊人数', '61-75岁就诊人数', '75岁以上就诊人数']
+    for index, title in enumerate(titles):
+        ws.write(0, index, title)
+    # 写入数据
+    for row in range(len(data)):
+        # print(row)
+        for col in range(len(data[row])):
+            ws.write(row + 1, col, data[row][col])
+    # 保存为 .xls 格式
+    wb.save('result/diagnosisInUnit_statistic.xls')
+
+    xlsx_handler = xlrd.open_workbook('result/diagnosisInUnit_statistic.xls')
+    workbook = copy(xlsx_handler)
+    sheet = workbook.get_sheet(0)
+    workbook.save('result/diagnosisInUnit_statistic.pdf')
+
+def get_pdf_departurePatient_statistic(start_time, end_time):
+    result, data = get_departurePatient_statistic(start_time, end_time)
+    from xlwt import Workbook
+    # 创建工作簿
+    wb = Workbook()
+    # 添加工作表
+    ws = wb.add_sheet('Sheet1')
+    titles = ['住院总人数', '平均时间', '病历号', '患者姓名', '性别', '科室名', '支付金额', '入院时间', '出院时间', '住院时长']
+    for index, title in enumerate(titles):
+        ws.write(0, index, title)
+    # 写入数据
+    for row in range(len(data)):
+        ws.write(row + 1, 0, str(result[0][0]))
+        ws.write(row + 1, 1, str(result[0][1]))
+        # print(row)
+        for col in range(len(data[row])):
+            ws.write(row + 1, col+2, data[row][col])
+    # 保存为 .xls 格式
+    wb.save('result/departurePatient_statistic.xls')
+
+    xlsx_handler = xlrd.open_workbook('result/departurePatient_statistic.xls')
+    workbook = copy(xlsx_handler)
+    sheet = workbook.get_sheet(0)
+    workbook.save('result/departurePatient_statistic.pdf')
