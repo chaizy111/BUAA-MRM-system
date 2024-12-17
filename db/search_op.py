@@ -33,16 +33,18 @@ def search_patients_by_info(search_info):
     try:
         result = search_ids_by_info(search_info, conn, cursor)
         records = []
+        patients = []
         for r in result:
             records.append(r[0])
-        record_ids = ', '.join(map(str, records))
-        query = f"""
-        SELECT * FROM Patient p
-        JOIN MedicalRecord m ON m.PatientIDCardNumber = p.IDCardNumber 
-        WHERE m.MedicalRecordNumber IN ({record_ids})
-        """
-        cursor.execute(query)
-        patients = cursor.fetchall()
+        if records:
+            record_ids = ', '.join(map(str, records))
+            query = f"""
+            SELECT * FROM Patient p
+            JOIN MedicalRecord m ON m.PatientIDCardNumber = p.IDCardNumber 
+            WHERE m.MedicalRecordNumber IN ({record_ids})
+            """
+            cursor.execute(query)
+            patients = cursor.fetchall()
     except Error as e:
         conn.rollback()  # 回滚事务，以防部分删除操作成功
         print(f"The error '{e}' occurred when get patient info.")
@@ -91,10 +93,10 @@ def search_ids_by_info(search_info, conn, cursor):
     values = []
 
     if search_info.gender is not None:
-        conditions.append("p.Gender = %s")
+        conditions.append("p.Gender LIKE %s")
         values.append(search_info.gender)
     if search_info.medical_record_number is not None:
-        conditions.append("m.MedicalRecordNumber = %s")
+        conditions.append("m.MedicalRecordNumber LIKE %s")
         values.append(search_info.medical_record_number)
     if search_info.patient_name is not None:
         conditions.append("p.Name LIKE %s")
