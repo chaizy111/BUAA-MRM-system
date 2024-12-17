@@ -155,7 +155,7 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "患者姓名："))
         self.label_7.setText(_translate("MainWindow", "性别："))
         self.label_8.setText(_translate("MainWindow", "年龄："))
-        self.lineEdit.setText("1")
+        '''self.lineEdit.setText("1")
         self.lineEdit_4.setText("4")
         self.lineEdit_5.setText("5")
         self.lineEdit_6.setText("6")
@@ -165,18 +165,16 @@ class Ui_MainWindow(object):
         self.lineEdit_4.setText("4")
         self.lineEdit_11.setText("11")
         self.lineEdit_7.setText("7")
-        self.lineEdit_8.setText("8")
+        self.lineEdit_8.setText("8")'''
 
     def search_disease(self):
-        admission_department = self.lineEdit_4.text(),
-        id_number = self.lineEdit_8.text(),
-        contact_person = self.lineEdit_11.text(),
-        payment_method = self.lineEdit.text(),
-        record_number = self.lineEdit_2.text(),
-        admission_count = self.lineEdit_3.text(),
-        patient_name = self.lineEdit_5.text(),
-        gender = self.lineEdit_6.text(),
-        age = self.lineEdit_8.text()
+
+        admission_department = self.lineEdit_4.text()
+        contact_person = self.lineEdit_11.text()
+        payment_method = self.lineEdit.text()
+        record_number = self.lineEdit_2.text()
+        patient_name = self.lineEdit_5.text()
+        gender = self.lineEdit_6.text()
 
         search_info = SearchInfo(
             department=admission_department,
