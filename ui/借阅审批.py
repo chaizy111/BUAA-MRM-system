@@ -161,6 +161,7 @@ class Ui_MainWindow(object):
 
     def confirm_approval(self):
         change_request_status_to_approved(self.borrow_request_ids, self.account)
+        QApplication.quit()
 
 
 if __name__ == '__main__':

@@ -110,6 +110,7 @@ class Ui_MainWindow(object):
 
         if create_return_request(return_info):
             QMessageBox.information(None, "成功", "病案归还记录已保存！")
+            QApplication.quit()
         else:
             QMessageBox.critical(None, "失败", "病案归还记录保存失败！")
 

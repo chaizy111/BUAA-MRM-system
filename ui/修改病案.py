@@ -122,6 +122,7 @@ class Ui_MainWindow(object):
             self.case_base_window.show()
 
 
+
         except Exception as e:
             QtWidgets.QMessageBox.critical(
                 None, "错误", f"发生错误：{str(e)}", QtWidgets.QMessageBox.Ok
@@ -803,7 +804,7 @@ class Ui_MainWindow1(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "病案底板"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "修改病案"))
         self.label.setText(_translate("MainWindow", "病案首页"))
         self.label_410.setText(_translate("MainWindow", "姓名："))
         self.label_411.setText(_translate("MainWindow", "性别："))
@@ -1301,6 +1302,7 @@ class Ui_MainWindow1(object):
                 success = create_medical_record(medical_record_info)
                 if success:  # 如果删除成功
                     QMessageBox.information(self.centralwidget, "操作成功", "病案已成功建立！")
+                    QApplication.quit()
             except Exception as e:
                 print(e)
 

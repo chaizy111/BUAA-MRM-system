@@ -62,7 +62,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setGeometry(QtCore.QRect(20, 120, 760, 400))  # Adjust the size of the table
         self.tableWidget.setColumnCount(10)  # 4 columns for the data
         self.tableWidget.setHorizontalHeaderLabels(["住院总时间", "平均时间", "病历号", "患者姓名",
-            "性别","名字","数量","入院时间","出院时间","住院时长" ])
+            "性别","科室名","支付金额","入院时间","出院时间","住院时长" ])
         self.tableWidget.setObjectName("tableWidget")
 
         MainWindow.setCentralWidget(self.centralwidget)

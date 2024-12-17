@@ -68,6 +68,7 @@ class Ui_MainWindow(object):
         success = delete_record_by_recordID(recordID)  # 调用删除记录的函数
         if success:  # 如果删除成功
             QMessageBox.information(self.centralwidget, "操作成功", "病案号已成功删除！")
+            QApplication.quit()
         else:  # 如果删除失败
             QMessageBox.critical(self.centralwidget, "操作失败", "删除病案号失败，请重试。")
 

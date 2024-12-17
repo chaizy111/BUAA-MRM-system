@@ -125,6 +125,7 @@ class Ui_MainWindow(object):
 
         if create_borrow_request(br_info):
             QMessageBox.information(None, "成功", "借阅请求已提交！")
+            QApplication.quit()
         else:
             QMessageBox.critical(None, "失败", "借阅请求提交失败！")
 
