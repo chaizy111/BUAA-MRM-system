@@ -97,7 +97,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "外部原因分类年报表"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "医疗费用报表"))
         self.label.setText(_translate("MainWindow", "时间："))
         self.label_2.setText(_translate("MainWindow", "至"))
         self.pushButton_year.setText(_translate("MainWindow", "年报表(&Y)"))
