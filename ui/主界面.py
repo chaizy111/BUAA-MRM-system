@@ -216,6 +216,7 @@ class Ui_MainWindow1(object):
 
         for action_name, script_name in actions.items():
             action = getattr(self, action_name, None)
+            print(script_name)
             if action:
                 #print(script_name)
                 action.triggered.connect(lambda _, script=script_name: self.check_permission_and_open(script))
@@ -236,8 +237,9 @@ class Ui_MainWindow1(object):
             QtWidgets.QMessageBox.warning(self.centralwidget, "权限不足", f"您没有权限访问 {script} 页面。")
 
     def open_script(self, script, account):
-
-        s_path = os.path.join(os.getcwd(), script)
+        print(os.getcwd())
+        temp = os.path.join(os.getcwd(), "ui")
+        s_path = os.path.join(temp , script)
         if os.path.exists(s_path):
             try:
                 subprocess.Popen([sys.executable, s_path, account])  # 打开新的窗口
