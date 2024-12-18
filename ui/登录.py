@@ -177,6 +177,7 @@ class RegisterWindow(QtWidgets.QWidget):
 
         if success:
             QtWidgets.QMessageBox.information(self, "注册成功", "您的账号已成功注册！")
+            self.switch_to_login.emit()
         else:
             QtWidgets.QMessageBox.warning(self, "注册失败", "注册失败，可能是信息填写有误或账号已存在！")
 
