@@ -2,8 +2,10 @@ import pymysql
 from db.search_op import *
 from pymysql import Error
 import pandas as pd
-import xlwt, xlrd
-from xlutils.copy import copy
+# import xlwt, xlrd
+# from xlutils.copy import copy
+from spire.xls import *
+from spire.xls.common import *
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(
@@ -171,9 +173,9 @@ def get_departurePatient_statistic(start_date, end_date):
 
 def get_pdf_fee_statistic_by_year():
     data = get_fee_statistic_by_year()
-    from xlwt import Workbook
+    from xlwt import Workbook as Wb
     # 创建工作簿
-    wb = Workbook()
+    wb = Wb()
     # 添加工作表
     ws = wb.add_sheet('Sheet1')
     titles = ['Year', 'TotalIncome']
@@ -187,16 +189,20 @@ def get_pdf_fee_statistic_by_year():
     # 保存为 .xls 格式
     wb.save('result/fee_statistic_by_year.xls')
 
-    xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_year.xls')
-    workbook = copy(xlsx_handler)
-    sheet = workbook.get_sheet(0)
-    workbook.save('result/fee_statistic_by_year.pdf')
+    workbook = Workbook()
+    workbook.LoadFromFile('result/fee_statistic_by_year.xls')
+    workbook.SaveToFile('result/fee_statistic_by_year.pdf', FileFormat.PDF)
+    workbook.Dispose()
+    # xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_year.xls')
+    # workbook = copy(xlsx_handler)
+    # sheet = workbook.get_sheet(0)
+    # workbook.save('result/fee_statistic_by_year.pdf')
 
 def get_pdf_fee_statistic_by_month():
     data = get_fee_statistic_by_month()
-    from xlwt import Workbook
+    from xlwt import Workbook as Wb
     # 创建工作簿
-    wb = Workbook()
+    wb = Wb()
     # 添加工作表
     ws = wb.add_sheet('Sheet1')
     titles = ['Year','Month', 'TotalIncome']
@@ -210,16 +216,20 @@ def get_pdf_fee_statistic_by_month():
     # 保存为 .xls 格式
     wb.save('result/fee_statistic_by_month.xls')
 
-    xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_month.xls')
-    workbook = copy(xlsx_handler)
-    sheet = workbook.get_sheet(0)
-    workbook.save('result/fee_statistic_by_month.pdf')
+    workbook = Workbook()
+    workbook.LoadFromFile('result/fee_statistic_by_month.xls')
+    workbook.SaveToFile('result/fee_statistic_by_month.pdf', FileFormat.PDF)
+    workbook.Dispose()
+    # xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_month.xls')
+    # workbook = copy(xlsx_handler)
+    # sheet = workbook.get_sheet(0)
+    # workbook.save('result/fee_statistic_by_month.pdf')
 
 def get_pdf_fee_statistic_by_day():
     data = get_fee_statistic_by_day()
-    from xlwt import Workbook
+    from xlwt import Workbook as Wb
     # 创建工作簿
-    wb = Workbook()
+    wb = Wb()
     # 添加工作表
     ws = wb.add_sheet('Sheet1')
     titles = ['Year', 'month', 'day' ,'TotalIncome']
@@ -233,16 +243,20 @@ def get_pdf_fee_statistic_by_day():
     # 保存为 .xls 格式
     wb.save('result/fee_statistic_by_day.xls')
 
-    xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_day.xls')
-    workbook = copy(xlsx_handler)
-    sheet = workbook.get_sheet(0)
-    workbook.save('result/fee_statistic_by_day.pdf')
+    workbook = Workbook()
+    workbook.LoadFromFile('result/fee_statistic_by_day.xls')
+    workbook.SaveToFile('result/fee_statistic_by_day.pdf', FileFormat.PDF)
+    workbook.Dispose()
+    # xlsx_handler = xlrd.open_workbook('result/fee_statistic_by_day.xls')
+    # workbook = copy(xlsx_handler)
+    # sheet = workbook.get_sheet(0)
+    # workbook.save('result/fee_statistic_by_day.pdf')
 
 def get_pdf_disease_statistic():
     data = get_disease_statistic()
-    from xlwt import Workbook
+    from xlwt import Workbook as Wb
     # 创建工作簿
-    wb = Workbook()
+    wb = Wb()
     # 添加工作表
     ws = wb.add_sheet('Sheet1')
     titles = ['疾病名', '疾病编号', '0-7岁患病人数', '8-18岁患病人数', '19-30岁患病人数', '31-45岁患病人数', '46-60岁患病人数', '61-75岁患病人数', '75岁以上患病人数']
@@ -256,16 +270,20 @@ def get_pdf_disease_statistic():
     # 保存为 .xls 格式
     wb.save('result/disease_statistic.xls')
 
-    xlsx_handler = xlrd.open_workbook('result/disease_statistic.xls')
-    workbook = copy(xlsx_handler)
-    sheet = workbook.get_sheet(0)
-    workbook.save('result/disease_statistic.pdf')
+    workbook = Workbook()
+    workbook.LoadFromFile('result/disease_statistic.xls')
+    workbook.SaveToFile('result/disease_statistic.pdf', FileFormat.PDF)
+    workbook.Dispose()
+    # xlsx_handler = xlrd.open_workbook('result/disease_statistic.xls')
+    # workbook = copy(xlsx_handler)
+    # sheet = workbook.get_sheet(0)
+    # workbook.save('result/disease_statistic.pdf')
 
 def get_pdf_diagnosisInUnit_statistic():
     data = get_diagnosisInUnit_statistic()
-    from xlwt import Workbook
+    from xlwt import Workbook as Wb
     # 创建工作簿
-    wb = Workbook()
+    wb = Wb()
     # 添加工作表
     ws = wb.add_sheet('Sheet1')
     titles = ['科室', '科室号', '就诊总人数', '0-7岁就诊人数', '8-18岁就诊人数', '19-30岁就诊人数', '31-45岁就诊人数', '46-60岁就诊人数', '61-75岁就诊人数', '75岁以上就诊人数']
@@ -278,17 +296,36 @@ def get_pdf_diagnosisInUnit_statistic():
             ws.write(row + 1, col, data[row][col])
     # 保存为 .xls 格式
     wb.save('result/diagnosisInUnit_statistic.xls')
-
-    xlsx_handler = xlrd.open_workbook('result/diagnosisInUnit_statistic.xls')
-    workbook = copy(xlsx_handler)
-    sheet = workbook.get_sheet(0)
-    workbook.save('result/diagnosisInUnit_statistic.pdf')
+    workbook = Workbook()
+    workbook.LoadFromFile('result/diagnosisInUnit_statistic.xls')
+    workbook.SaveToFile('result/diagnosisInUnit_statistic.pdf', FileFormat.PDF)
+    workbook.Dispose()
+    # from xlwt import Workbook
+    # # 创建工作簿
+    # wb = Workbook()
+    # # 添加工作表
+    # ws = wb.add_sheet('Sheet1')
+    # titles = ['科室', '科室号', '就诊总人数', '0-7岁就诊人数', '8-18岁就诊人数', '19-30岁就诊人数', '31-45岁就诊人数', '46-60岁就诊人数', '61-75岁就诊人数', '75岁以上就诊人数']
+    # for index, title in enumerate(titles):
+    #     ws.write(0, index, title)
+    # # 写入数据
+    # for row in range(len(data)):
+    #     # print(row)
+    #     for col in range(len(data[row])):
+    #         ws.write(row + 1, col, data[row][col])
+    # # 保存为 .xls 格式
+    # wb.save('result/diagnosisInUnit_statistic.xls')
+    #
+    # xlsx_handler = xlrd.open_workbook('result/diagnosisInUnit_statistic.xls')
+    # workbook = copy(xlsx_handler)
+    # sheet = workbook.get_sheet(0)
+    # workbook.save(sheet, 'result/diagnosisInUnit_statistic.pdf')
 
 def get_pdf_departurePatient_statistic(start_time, end_time):
     result, data = get_departurePatient_statistic(start_time, end_time)
-    from xlwt import Workbook
+    from xlwt import Workbook as Wb
     # 创建工作簿
-    wb = Workbook()
+    wb = Wb()
     # 添加工作表
     ws = wb.add_sheet('Sheet1')
     titles = ['住院总人数', '平均时间', '病历号', '患者姓名', '性别', '科室名', '支付金额', '入院时间', '出院时间', '住院时长']
@@ -304,7 +341,19 @@ def get_pdf_departurePatient_statistic(start_time, end_time):
     # 保存为 .xls 格式
     wb.save('result/departurePatient_statistic.xls')
 
-    xlsx_handler = xlrd.open_workbook('result/departurePatient_statistic.xls')
-    workbook = copy(xlsx_handler)
-    sheet = workbook.get_sheet(0)
-    workbook.save('result/departurePatient_statistic.pdf')
+    workbook = Workbook()
+    workbook.LoadFromFile('result/departurePatient_statistic.xls')
+    workbook.SaveToFile('result/departurePatient_statistic.pdf', FileFormat.PDF)
+    workbook.Dispose()
+    # xlsx_handler = xlrd.open_workbook('result/departurePatient_statistic.xls')
+    # workbook = copy(xlsx_handler)
+    # sheet = workbook.get_sheet(0)
+    # workbook.save(sheet, 'result/departurePatient_statistic.pdf')
+
+if __name__=='__main__':
+    get_pdf_fee_statistic_by_day()
+    get_pdf_fee_statistic_by_month()
+    get_pdf_fee_statistic_by_year()
+    get_pdf_disease_statistic()
+    get_pdf_diagnosisInUnit_statistic()
+    get_pdf_departurePatient_statistic("2024-01-01", "2025-01-01")
