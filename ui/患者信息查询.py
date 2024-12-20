@@ -301,28 +301,104 @@ class Ui_MainWindow(object):
         self.printDialog.show()  # 显示打印窗口
 
     def openQueryDialog(self):
-        search_info = SearchInfo(
-            medical_record_number=self.lineEdit.text(),  # 病历号
-            patient_name=self.lineEdit_4.text(),  # 患者姓名
-            gender=self.lineEdit_5.text(),  # 性别
-            payment_method=self.comboBox.currentText(),  # 医疗付款方式
-            nationality=self.lineEdit_6.text(),  # 国籍
-            ethnicity=self.lineEdit_9.text(),  # 民族
-            occupation=self.lineEdit_10.text(),  # 职业
-            address=self.lineEdit_11.text(),  # 地址
-            phone=self.lineEdit_12.text(),  # 联系电话
-            contact_name=self.lineEdit_14.text(),  # 联系人
-            contact_address=self.lineEdit_15.text(),  # 联系人地址
-            contact_phone= self.lineEdit_16.text(),  # 联系人电话
-            birth_from= self.dateTimeEdit.date().toString("yyyy-MM-dd"), # 出生年月
-            birth_to= self.dateTimeEdit_2.date().toString("yyyy-MM-dd"), #
-            admission_time_from = self.dateTimeEdit_6.date().toString("yyyy-MM-dd"),
-            admission_time_to = self.dateTimeEdit_4.date().toString("yyyy-MM-dd"),
-            discharge_time_from = self.dateTimeEdit_5.date().toString("yyyy-MM-dd"),
-            discharge_time_to = self.dateTimeEdit_3.date().toString("yyyy-MM-dd"),
-            disease_name=self.lineEdit_19.text(),  # 疾病名称
+        medical_record_number = None
+        if self.lineEdit.text():
+            medical_record_number = self.lineEdit.text()
 
+        patient_name = None
+        if self.lineEdit_4.text():
+            patient_name = self.lineEdit_4.text()
+
+        gender = None
+        if self.lineEdit_5.text():
+            gender = self.lineEdit_5.text()
+
+        payment_method = None
+        if self.comboBox.currentText():
+            payment_method = self.comboBox.currentText()
+
+        nationality = None
+        if self.lineEdit_6.text():
+            nationality = self.lineEdit_6.text()
+
+        ethnicity = None
+        if self.lineEdit_9.text():
+            ethnicity = self.lineEdit_9.text()
+
+        occupation = None
+        if self.lineEdit_10.text():
+            occupation = self.lineEdit_10.text()
+
+        address = None
+        if self.lineEdit_11.text():
+            address = self.lineEdit_11.text()
+
+        phone = None
+        if self.lineEdit_12.text():
+            phone = self.lineEdit_12.text()
+
+        contact_name = None
+        if self.lineEdit_14.text():
+            contact_name = self.lineEdit_14.text()
+
+        contact_address = None
+        if self.lineEdit_15.text():
+            contact_address = self.lineEdit_15.text()
+
+        contact_phone = None
+        if self.lineEdit_16.text():
+            contact_phone = self.lineEdit_16.text()
+
+        birth_from = None
+        if self.dateTimeEdit.date().isValid():
+            birth_from = self.dateTimeEdit.date().toString("yyyy-MM-dd")
+
+        birth_to = None
+        if self.dateTimeEdit_2.date().isValid():
+            birth_to = self.dateTimeEdit_2.date().toString("yyyy-MM-dd")
+
+        admission_time_from = None
+        if self.dateTimeEdit_6.date().isValid():
+            admission_time_from = self.dateTimeEdit_6.date().toString("yyyy-MM-dd")
+
+        admission_time_to = None
+        if self.dateTimeEdit_4.date().isValid():
+            admission_time_to = self.dateTimeEdit_4.date().toString("yyyy-MM-dd")
+
+        discharge_time_from = None
+        if self.dateTimeEdit_5.date().isValid():
+            discharge_time_from = self.dateTimeEdit_5.date().toString("yyyy-MM-dd")
+
+        discharge_time_to = None
+        if self.dateTimeEdit_3.date().isValid():
+            discharge_time_to = self.dateTimeEdit_3.date().toString("yyyy-MM-dd")
+
+        disease_name = None
+        if self.lineEdit_19.text():
+            disease_name = self.lineEdit_19.text()
+
+        search_info = SearchInfo(
+            medical_record_number=medical_record_number,
+            patient_name=patient_name,
+            gender=gender,
+            payment_method=payment_method,
+            nationality=nationality,
+            ethnicity=ethnicity,
+            occupation=occupation,
+            address=address,
+            phone=phone,
+            contact_name=contact_name,
+            contact_address=contact_address,
+            contact_phone=contact_phone,
+            birth_from=birth_from,
+            birth_to=birth_to,
+            admission_time_from=admission_time_from,
+            admission_time_to=admission_time_to,
+            discharge_time_from=discharge_time_from,
+            discharge_time_to=discharge_time_to,
+            disease_name=disease_name
         )
+
 
         # 调用数据库查询函数
         try:
