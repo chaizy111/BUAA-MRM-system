@@ -6,7 +6,7 @@ import sys
 
 from db.login_op import check_permission
 from ui.print_dialog import PrintDialog  # 假设打印窗口的类位于文件 print_dialog.py 中
-from db.statistic_op import get_disease_statistic
+from db.statistic_op import *
 
 
 class Ui_MainWindow(object):
@@ -70,6 +70,7 @@ class Ui_MainWindow(object):
         self.pushButton_4.clicked.connect(MainWindow.close)  # 关闭按钮
         self.pushButton_2.clicked.connect(self.openPrintDialog)  # 打印按钮
         self.pushButton.clicked.connect(self.query_data)
+        self.pushButton_3.clicked.connect(self.pdf)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -81,6 +82,9 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "打印(&P)"))
         self.pushButton_3.setText(_translate("MainWindow", "导出(&D)"))
         self.pushButton_4.setText(_translate("MainWindow", "退出(&E)"))
+
+    def pdf(self):
+        get_pdf_disease_statistic()
 
     def openPrintDialog(self):
         """打开打印窗口"""
