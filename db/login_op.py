@@ -124,7 +124,7 @@ def check_permission(username, function):
                         'discharge_info_search', '出院信息查询.py',
                         'discharge_info_search', '医疗费用报表.py',
                         'unit_visit_report',     '科室就诊情况报表.py',
-                        'disease_classification_report', '疾病分类报表.py',
+                        'disease_classification_report', '疾病分类年报表.py',
                         'discharge_info_report', '出院病人信息报表.py']}
     }
     # 根据身份获取权限列表

@@ -948,7 +948,9 @@ class Ui_MainWindow(object):
                 pathological_diagnosis_id = None
                 if self.lineEdit_354.text():
                     pathological_diagnosis_id = self.lineEdit_354.text()
-
+                unit_name = None
+                if self.lineEdit_345.text():
+                    unit_name = self.lineEdit_345.text()
                 admission_date = self.dateEdit_2.text()  # 入院日期
                 discharge_date = self.dateEdit_3.text()  # 出院日期
                 '''
@@ -999,7 +1001,7 @@ class Ui_MainWindow(object):
                     contact_info=contact_info,
                     admission_date=admission_date,
                     discharge_date=discharge_date,
-                    unit_name=discharge_code,
+                    unit_name=unit_name,
                     admission_diagnosis_id=admission_code,
                     discharge_diagnosis_id=discharge_code,
                     pathological_diagnosis_id=pathological_diagnosis_id,

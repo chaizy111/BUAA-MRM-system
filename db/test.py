@@ -9,14 +9,14 @@ from intermediate_data_structure.cost_info import CostInfo
 class MedicalRecordInfo:
     def __init__(self):
         self.patient_info = PatientInfo(
-            name="王五",
+            name="王三",
             gender="男",
             birth_date="1990-01-01",
             age=34,
             nationality="中国",
             place_of_birth="北京",
             ethnicity="汉",
-            id_card_number="123456789012345115",
+            id_card_number="123456789012345113",
             occupation="科员",
             marital_status="Married",
             current_address="123 Main St, Anytown, USA",
@@ -26,7 +26,7 @@ class MedicalRecordInfo:
         )
         self.contact_info = ContactInfo(
             patient_id=self.patient_info.id_card_number,
-            name="王六",
+            name="王三三",
             relationship="父亲",
             address="123 Main St, Anytown, USA",
             phone="987-654-3210"

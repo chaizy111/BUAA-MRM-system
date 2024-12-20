@@ -159,10 +159,10 @@ class Ui_MainWindow(object):
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(50, 200, 700, 300))
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(9)
+        self.tableWidget.setColumnCount(8)
         self.tableWidget.setHorizontalHeaderLabels([
-            "病历号", "患者姓名", "性别", "科室", "借阅人", "电话",
-            "借阅时间", "批准人", "借阅原因"
+            "病历号", "患者姓名", "性别", "科室", "借阅人",
+            "借阅时间", "借阅原因", "批准人"
         ])
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -196,24 +196,6 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "备注："))
 
     def perform_search(self):
-
-        username, ok = QInputDialog.getText(
-            None, "输入账号", "请输入您的账号："
-        )
-
-        if not ok or not username.strip():
-            QtWidgets.QMessageBox.warning(
-                None, "输入错误", "账号不能为空！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
-        # 检查权限
-        if not check_permission(username.strip(), "medical_record_borrow"):
-            QtWidgets.QMessageBox.critical(
-                None, "权限不足", "您没有权限查询病案！", QtWidgets.QMessageBox.Ok
-            )
-            return
-
         # 获取用户输入的查询条件
         medical_record_number = self.lineEdit_5.text()
         payment_method = self.lineEdit.text()

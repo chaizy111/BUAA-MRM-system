@@ -122,8 +122,8 @@ class Ui_MainWindow(object):
 
         # Setting column headers
         self.tableWidget.setHorizontalHeaderLabels([
-            "病历号", "患者姓名", "性别", "住院次数", "医疗付款方式",
-            "出院科室", "身份证号", "联系人姓名", "年龄"
+            "病历号", "患者姓名", "性别", "住院次数", "科室ID",
+            "入院诊断", "出院诊断", "病理诊断", "主治医师ID"
         ])
 
 

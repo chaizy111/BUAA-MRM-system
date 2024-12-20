@@ -216,7 +216,6 @@ class Ui_MainWindow1(object):
 
         for action_name, script_name in actions.items():
             action = getattr(self, action_name, None)
-            print(script_name)
             if action:
                 #print(script_name)
                 action.triggered.connect(lambda _, script=script_name: self.check_permission_and_open(script))
@@ -230,14 +229,12 @@ class Ui_MainWindow1(object):
     def check_permission_and_open(self, script):
         # 假设check_permission是你自己的权限检查函数
         function = check_permission(self.account, script)
-        print(function)
         if check_permission(self.account, script):
             self.open_script(script, self.account)
         else:
             QtWidgets.QMessageBox.warning(self.centralwidget, "权限不足", f"您没有权限访问 {script} 页面。")
 
     def open_script(self, script, account):
-        print(os.getcwd())
         temp = os.path.join(os.getcwd(), "ui")
         s_path = os.path.join(temp , script)
         if os.path.exists(s_path):

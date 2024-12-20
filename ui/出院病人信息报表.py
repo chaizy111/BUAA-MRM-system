@@ -12,7 +12,7 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
-from db.statistic_op import get_departurePatient_statistic
+from db.statistic_op import *
 from print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
 class Ui_MainWindow(object):
@@ -75,6 +75,7 @@ class Ui_MainWindow(object):
         self.pushButton_2.clicked.connect(self.openPrintDialog)  # 绑定打印按钮
         self.pushButton_4.clicked.connect(MainWindow.close)  # 绑定关闭按钮
         self.pushButton.clicked.connect(self.openQueryDialog)
+        self.pushButton_3.clicked.connect(self.pdf)
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
@@ -106,17 +107,22 @@ class Ui_MainWindow(object):
         self.tableWidget.setRowCount(0)
 
         # Assuming `results` is a list of tuples (total_time, avg_time, admission_time, discharge_time)
-        for row_data in results:
-            row_position = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(row_position)
-            for col, value in enumerate(row_data):
-                self.tableWidget.setItem(row_position, col, QtWidgets.QTableWidgetItem(str(value)))
-
+        # for row_data in results:
+        #     row_position = self.tableWidget.rowCount()
+        #     self.tableWidget.insertRow(row_position)
+        #     for col, value in enumerate(row_data):
+        #         self.tableWidget.setItem(row_position, col, QtWidgets.QTableWidgetItem(str(value)))
+        #
         for row_data in date:
             row_position = self.tableWidget.rowCount()
             self.tableWidget.insertRow(row_position)
+            self.tableWidget.setItem(row_position, 0, QtWidgets.QTableWidgetItem(str(results[0][0])))
+            self.tableWidget.setItem(row_position, 1, QtWidgets.QTableWidgetItem(str(results[0][1])))
             for col, value in enumerate(row_data):
-                self.tableWidget.setItem(row_position, col, QtWidgets.QTableWidgetItem(str(value)))
+                self.tableWidget.setItem(row_position, col + 2, QtWidgets.QTableWidgetItem(str(value)))
+
+    def pdf(self):
+        get_pdf_departurePatient_statistic(self.dateEdit.date().toString("yyyy-MM-dd"), self.dateEdit_2.date().toString("yyyy-MM-dd"))
 
 
 if __name__ == '__main__':

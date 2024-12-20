@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessag
 import sys
 
 from db.login_op import check_permission
-from db.statistic_op import get_diagnosisInUnit_statistic
+from db.statistic_op import *
 from ui.print_dialog import PrintDialog  # 导入打印窗口类（假设文件名为 print_dialog.py）
 
 
@@ -56,8 +56,8 @@ class Ui_MainWindow(object):
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(20, 120, 760, 400))
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(5)  # 根据实际表结构调整列数
-        self.tableWidget.setHorizontalHeaderLabels(["列1", "列2", "列3", "列4", "列5"])  # 替换为实际列名
+        self.tableWidget.setColumnCount(10)  # 根据实际表结构调整列数
+        self.tableWidget.setHorizontalHeaderLabels(["科室名", "科室ID", "总就诊人数", "0-7岁就诊人数", "8-18岁就诊人数", "19-30岁就诊人数", "31-45岁就诊人数", "46-60岁就诊人数", "61-75岁就诊人数", "75岁就诊人数"])  # 替换为实际列名
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -68,6 +68,7 @@ class Ui_MainWindow(object):
         self.pushButton_4.clicked.connect(MainWindow.close)  # 退出按钮
         self.pushButton_2.clicked.connect(self.openPrintDialog)  # 打印按钮绑定事件
         self.pushButton.clicked.connect(self.on_search_button_clicked)  # 查询按钮绑定事件
+        self.pushButton_3.clicked.connect(self.pdf)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -79,6 +80,9 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "打印(&P)"))
         self.pushButton_3.setText(_translate("MainWindow", "导出(&D)"))
         self.pushButton_4.setText(_translate("MainWindow", "退出(&E)"))
+
+    def pdf(self):
+        get_pdf_diagnosisInUnit_statistic()
 
     def openPrintDialog(self):
         """打开打印窗口"""
