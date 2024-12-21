@@ -6,9 +6,11 @@ import openpyxl
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(
         host='localhost',		# 主机名（或IP地址）
+        password='2003',  # 你本地的数据库密码,请自行更改
+        # host='110.42.33.194',  # 主机名（或IP地址）
+        # password='123456',  # 你本地的数据库密码,请自行更改
         port=3306,				# 端口号，默认为3306
         user='root',			# 用户名
-        password='2003',	# 你本地的数据库密码,请自行更改
         charset='utf8mb4'  		# 设置字符编码
     )
     conn.select_db("medical_record_management") # 选择数据库
@@ -26,7 +28,7 @@ def create_patients_table(conn, cursor):
     create_patients_table_query = """
        CREATE TABLE IF NOT EXISTS Patient (
            Name VARCHAR(255) NOT NULL,
-           Gender ENUM('1', '2') NOT NULL,
+           Gender ENUM('男', '女') NOT NULL,
            BirthDate DATE NOT NULL,
            Age INT,
            Nationality VARCHAR(50),
@@ -283,7 +285,7 @@ def load_unit_data():
     conn, cursor = make_connect()
 
     # 插入数据的SQL语句
-    insert_query = "INSERT INTO unit (UnitID, Name) VALUES (%s, %s)"
+    insert_query = "INSERT INTO Unit (UnitID, Name) VALUES (%s, %s)"
     # 遍历数据并插入到数据库
     for row in data:
         cursor.execute(insert_query, row)
@@ -305,7 +307,51 @@ def load_disease_data():
     conn, cursor = make_connect()
 
     # 插入数据的SQL语句
-    insert_query = "INSERT INTO disease (DiseaseID, Description) VALUES (%s, %s)"
+    insert_query = "INSERT INTO Disease (DiseaseID, Description) VALUES (%s, %s)"
+    # 遍历数据并插入到数据库
+    for row in data:
+        cursor.execute(insert_query, row)
+    conn.commit()
+
+    break_connect(conn, cursor)
+
+def load_staff_data():
+    #打开excel
+    workbook = xlrd.open_workbook('D:\桌面\医院职员表.xls') # xls表格路径
+    sheet = workbook.sheet_by_index(0)  # 选择第一个工作表
+
+    # 读取前两列数据
+    data = []
+    for row in range(0, sheet.nrows):
+        row_data = [sheet.cell_value(row, col) for col in range(0, 4)]
+        data.append(row_data)
+
+    conn, cursor = make_connect()
+
+    # 插入数据的SQL语句
+    insert_query = "INSERT INTO Staff (StaffID, Name, Position, UnitID) VALUES (%s, %s, %s, %s)"
+    # 遍历数据并插入到数据库
+    for row in data:
+        cursor.execute(insert_query, row)
+    conn.commit()
+
+    break_connect(conn, cursor)
+
+def load_ward_data():
+    #打开excel
+    workbook = xlrd.open_workbook('D:\桌面\病房表.xls') # xls表格路径
+    sheet = workbook.sheet_by_index(0)  # 选择第一个工作表
+
+    # 读取前两列数据
+    data = []
+    for row in range(0, sheet.nrows):
+        row_data = [sheet.cell_value(row, col) for col in range(0, 3)]
+        data.append(row_data)
+
+    conn, cursor = make_connect()
+
+    # 插入数据的SQL语句
+    insert_query = "INSERT INTO Ward (WardID, UnitID, Description) VALUES (%s, %s, %s)"
     # 遍历数据并插入到数据库
     for row in data:
         cursor.execute(insert_query, row)
@@ -327,7 +373,7 @@ def load_bloodType_data():
     conn, cursor = make_connect()
 
     # 插入数据的SQL语句
-    insert_query = "INSERT INTO bloodtype (BloodTypeID, Type, RhType) VALUES (%s, %s, %s)"
+    insert_query = "INSERT INTO BloodType (BloodTypeID, Type, RhType) VALUES (%s, %s, %s)"
     # 遍历数据并插入到数据库
     for row in data:
         cursor.execute(insert_query, row)
@@ -341,3 +387,5 @@ if __name__ == '__main__':
     load_unit_data()
     load_disease_data()
     load_bloodType_data()
+    load_staff_data()
+    load_ward_data()

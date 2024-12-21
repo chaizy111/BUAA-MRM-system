@@ -13,6 +13,7 @@ class MedicalRecordInfo:
         self.blood_type = blood_type
         self.doctor_name = doctor_name
         self.surgery_infos = surgery_infos
-        self.ward_info = ward_infos
+        self.ward_infos = ward_infos
         self.cost_infos = cost_infos
         self.payment_method = payment_method
+
