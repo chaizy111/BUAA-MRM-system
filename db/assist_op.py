@@ -70,7 +70,7 @@ def get_wardName_by_id(id, conn, cursor):
 
 def get_unitId_by_name(name, conn, cursor):
     query = """
-            SELECT UnitID FROM Unit WHERE Name = %s;
+            SELECT UnitID FROM Unit WHERE Name LIKE %s;
             """
     cursor.execute(query, (name,))
     result = cursor.fetchone()  # 获取查询结果的第一行

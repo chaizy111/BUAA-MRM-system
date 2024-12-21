@@ -87,22 +87,6 @@ class Ui_MainWindow(object):
         try:
             # 获取病案信息
             medical_record_info = get_record_by_recordID(search_info)
-
-            print("患者信息:", medical_record_info.patient_info)
-            print("联系方式:", medical_record_info.contact_info)
-            print("手术信息:", medical_record_info.surgery_infos)
-            print("住院信息:", medical_record_info.ward_infos)
-            print("费用信息:", medical_record_info.cost_infos)
-            print("入院日期:", medical_record_info.admission_date)
-            print("出院日期:", medical_record_info.discharge_date)
-            print("科室名称:", medical_record_info.unit_name)
-            print("入院诊断ID:", medical_record_info.admission_diagnosis_id)
-            print("出院诊断ID:", medical_record_info.discharge_diagnosis_id)
-            print("病理诊断ID:", medical_record_info.pathological_diagnosis_id)
-            print("主治医师:", medical_record_info.doctor_name)
-            print("血型:", medical_record_info.blood_type)
-            print("支付方式:", medical_record_info.payment_method)
-
             if not medical_record_info:
                 QtWidgets.QMessageBox.warning(
                     None, "未找到病案", "没有找到相关病案！", QtWidgets.QMessageBox.Ok
@@ -961,7 +945,9 @@ class Ui_MainWindow1(object):
             self.dateEdit_3.setDate(medical_record_info.discharge_date)
 
             self.lineEdit_364.setText(medical_record_info.doctor_name)
-            self.lineEdit_354.setText(medical_record_info.pathological_diagnosis_id)
+            self.lineEdit_343.setText(medical_record_info.admission_diagnosis_id)
+            self.lineEdit_349.setText(medical_record_info.discharge_diagnosis_id)
+            self.lineEdit_356.setText(medical_record_info.pathological_diagnosis_id)
 
             #血型
             blood_type = medical_record_info.blood_type
@@ -1131,7 +1117,7 @@ class Ui_MainWindow1(object):
                 phone2 = self.lineEdit_341.text()
 
                 doctor_name = self.lineEdit_364.text()
-
+                unit_name = self.lineEdit_345.text()
                 #bloodtype
                 shi = self.comboBox_23.currentIndex() + 1
                 ge = self.comboBox_24.currentIndex() + 1
@@ -1285,7 +1271,7 @@ class Ui_MainWindow1(object):
                     contact_info=contact_info,
                     admission_date=admission_date,
                     discharge_date=discharge_date,
-                    unit_name=discharge_code,
+                    unit_name=unit_name,
                     admission_diagnosis_id=admission_code,
                     discharge_diagnosis_id=discharge_code,
                     pathological_diagnosis_id=pathological_diagnosis_id,
