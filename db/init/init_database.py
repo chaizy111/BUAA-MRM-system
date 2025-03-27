@@ -29,8 +29,9 @@ def create_table(cursor, schema_name, table_name):
 
 if __name__ == '__main__':
     s = input("输入你本地的数据库密码")
-    # 连接到数据库  
+    # 连接到数据库
     conn = pymysql.connect(host='localhost', user='root', password=s)
+    #conn = pymysql.connect(host='110.42.33.194', user='dba', password=s)
     try:
         with conn.cursor() as cursor:
             # 执行逻辑  

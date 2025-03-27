@@ -3,10 +3,12 @@ import pymysql
 #################################### 数据库操作 ##############################################
 def make_connect():     # 建立数据库连接
     conn = pymysql.connect(
-        host='localhost',		# 主机名（或IP地址）
+        # host='localhost',		# 主机名（或IP地址）
+        # password='2003',  # 你本地的数据库密码,请自行更改
+        host='110.42.33.194',		# 主机名（或IP地址）
+        password='123456',  # 你本地的数据库密码,请自行更改
         port=3306,				# 端口号，默认为3306
-        user='root',			# 用户名
-        password='2003',	# 你本地的数据库密码,请自行更改
+        user='dba',			# 用户名
         charset='utf8mb4'  		# 设置字符编码
     )
     conn.select_db("medical_record_management") # 选择数据库
@@ -51,13 +53,13 @@ def sign(username, password, is_patient, is_doctor, name, id_number, department_
                 SELECT s.*, u.Name AS UnitName
                 FROM Staff s
                 JOIN Unit u ON s.UnitID = u.UnitID
-                WHERE s.name = %s AND s.IDCardNumber = %s AND u.Name = %s""",
+                WHERE s.name = %s AND s.StaffID = %s AND u.Name = %s""",
                        (name, id_number, department_name))
         doctor_info = cursor.fetchone()
         if doctor_info:
-            if doctor_info[3] != department_name:
+            if doctor_info[4] != department_name:
                 return False
-            elif doctor_info[3] == '病案科':
+            elif doctor_info[4] == '病案科':
                 cursor.execute("""
                         INSERT INTO login (name, password, identity)
                         VALUES (%s, %s, 'Manager')
@@ -90,40 +92,40 @@ def check_permission(username, function):
                         'surgery_info_search',
                         'patient_info_search',
                         '病案检索',
-                        '疾病信息查询',
-                        '手术信息查询',
-                        '患者信息查询']},
+                        '疾病信息查询.py',
+                        '手术信息查询.py',
+                        '患者信息查询.py']},
         'Doctor': {'permissions': [
-                        'medical_record_create', '新建病案',
-                        'medical_record_update', '修改病案',
-                        'medical_record_delete', '删除病案',
-                        'medical_record_borrow', '病案借阅',
-                        'medical_record_return', '病案归还',
-                        'medical_record_search', '病案检索',
-                        'disease_info_search',   '疾病信息查询',
-                        'surgery_info_search',   '手术信息查询',
-                        'patient_info_search',   '患者信息查询',
-                        'medical_record_borrow', '借阅信息查询',
-                        'admission_info_search', '入院信息查询',
-                        'discharge_info_search', '出院信息查询']},
+                        'medical_record_create', '新建病案.py',
+                        'medical_record_update', '修改病案.py',
+                        'medical_record_delete', '删除病案.py',
+                        'medical_record_borrow', '病案借阅.py',
+                        'medical_record_return', '病案归还.py',
+                        'medical_record_search', '病案检索.py',
+                        'disease_info_search',   '疾病信息查询.py',
+                        'surgery_info_search',   '手术信息查询.py',
+                        'patient_info_search',   '患者信息查询.py',
+                        'medical_record_borrow', '借阅信息查询.py',
+                        'admission_info_search', '入院信息查询.py',
+                        'discharge_info_search', '出院信息查询.py']},
         'Manager': {'permissions': [
-                        'medical_record_create', '新建病案',
-                        'medical_record_update', '修改病案',
-                        'medical_record_delete', '删除病案',
-                        'medical_record_borrow', '病案借阅',
-                        'medical_record_return', '病案归还',
-                        'borrow_approval',       '借阅审批',
-                        'medical_record_search', '病案检索',
-                        'disease_info_search',   '疾病信息查询',
-                        'surgery_info_search',   '手术信息查询',
-                        'patient_info_search',   '患者信息查询',
-                        'medical_record_borrow', '借阅信息查询',
-                        'admission_info_search', '入院信息查询',
-                        'discharge_info_search', '出院信息查询',
-                        'discharge_info_search', '医疗费用报表',
-                        'unit_visit_report',     '科室就诊情况报表',
-                        'disease_classification_report', '疾病分类报表',
-                        'discharge_info_report', '出院病人信息报表']}
+                        'medical_record_create', '新建病案.py',
+                        'medical_record_update', '修改病案.py',
+                        'medical_record_delete', '删除病案.py',
+                        'medical_record_borrow', '病案借阅.py',
+                        'medical_record_return', '病案归还.py',
+                        'borrow_approval',       '借阅审批.py',
+                        'medical_record_search', '病案检索.py',
+                        'disease_info_search',   '疾病信息查询.py',
+                        'surgery_info_search',   '手术信息查询.py',
+                        'patient_info_search',   '患者信息查询.py',
+                        'medical_record_borrow', '借阅信息查询.py',
+                        'admission_info_search', '入院信息查询.py',
+                        'discharge_info_search', '出院信息查询.py',
+                        'discharge_info_search', '医疗费用报表.py',
+                        'unit_visit_report',     '科室就诊情况报表.py',
+                        'disease_classification_report', '疾病分类年报表.py',
+                        'discharge_info_report', '出院病人信息报表.py']}
     }
     # 根据身份获取权限列表
     user_permissions = user_entities[identity]['permissions']
@@ -140,3 +142,8 @@ def get_user_identity(username):
         return result[0]  # 返回用户身份
     else:
         return None  # 如果没有找到，返回None
+
+
+#if __name__ == '__main__':
+    #print(sign(111, 111, False, True, "米琳", 77, "病案科"))
+    #print(login(111,111))
